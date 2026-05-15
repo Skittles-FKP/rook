@@ -1,0 +1,362 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --background: #05060a;
+  --foreground: #f7f9ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--background);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    radial-gradient(circle at 20% 0%, rgba(47, 140, 255, 0.2), transparent 28rem),
+    radial-gradient(circle at 85% 10%, rgba(138, 92, 255, 0.16), transparent 26rem),
+    var(--background);
+  background-size: 44px 44px, 44px 44px, auto, auto, auto;
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(47, 140, 255, 0.35);
+  color: #ffffff;
+}
+
+.focus-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rook-blue focus-visible:ring-offset-2 focus-visible:ring-offset-rook-void;
+}
+
+.surface-card {
+  @apply border border-white/10 bg-white/[0.045] shadow-panel backdrop-blur-xl;
+}
+
+.accent-border {
+  background:
+    linear-gradient(#10131d, #10131d) padding-box,
+    linear-gradient(135deg, rgba(47, 140, 255, 0.9), rgba(138, 92, 255, 0.7), rgba(53, 216, 255, 0.45)) border-box;
+  border: 1px solid transparent;
+}
+
+.graph-node {
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.graph-node:hover {
+  opacity: 0.92;
+}
+
+.rook-live-card {
+  animation: rook-card-arrival 360ms ease-out both;
+}
+
+.rook-live-card:hover {
+  box-shadow: 0 0 34px rgba(53, 216, 255, 0.08), 0 18px 60px rgba(0, 0, 0, 0.24);
+}
+
+.intelligence-packet {
+  position: relative;
+}
+
+.intelligence-packet::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(120deg, transparent, rgba(53, 216, 255, 0.055), transparent);
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.intelligence-packet:hover::after {
+  opacity: 1;
+}
+
+.cinematic-escalation {
+  animation: rook-live-arrival 520ms ease-out both;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 42px rgba(53, 216, 255, 0.08);
+}
+
+.ambient-scanline {
+  animation: ambient-scanline 9s ease-in-out infinite;
+}
+
+.rook-live-arrival {
+  animation: rook-live-arrival 520ms ease-out both;
+}
+
+.network-pulse {
+  animation: rook-network-pulse 2.8s ease-in-out infinite;
+}
+
+.pulse-shimmer {
+  background-size: 220% 100%;
+  animation: rook-pulse-shimmer 3.8s ease-in-out infinite;
+}
+
+.graph-relation-active {
+  stroke-dasharray: 7 7;
+  animation: graph-path-flow 7s linear infinite;
+}
+
+.graph-node-halo,
+.pulse-core-ring,
+.pulse-node,
+.pulse-volatility-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.graph-node-halo {
+  animation: graph-node-halo 3.8s ease-in-out infinite;
+}
+
+.graph-ripple {
+  animation: graph-ripple 1.8s ease-out both;
+}
+
+.pulse-heartbeat {
+  box-shadow: 0 0 38px rgba(53, 216, 255, 0.08);
+}
+
+.pulse-core-ring,
+.pulse-node {
+  animation: pulse-node 3.2s ease-in-out infinite;
+}
+
+.pulse-volatility-ring {
+  animation: pulse-volatility 2.4s ease-in-out infinite;
+}
+
+.mobile-safe-bottom {
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+}
+
+.mobile-safe-main {
+  padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+}
+
+.rook-hero-image {
+  animation: rook-hero-drift 18s ease-in-out infinite;
+  transform: translateZ(0) scale(1.02);
+  will-change: transform;
+}
+
+.hero-fog {
+  background:
+    radial-gradient(ellipse at 18% 50%, rgba(143, 155, 179, 0.16), transparent 55%),
+    radial-gradient(ellipse at 78% 45%, rgba(53, 216, 255, 0.08), transparent 48%);
+  filter: blur(18px);
+}
+
+.pulse-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background: rgba(53, 216, 255, 0.7);
+  box-shadow: 0 0 18px rgba(53, 216, 255, 0.55);
+  animation: pulse-particle 5.5s ease-in-out infinite;
+}
+
+.touch-pan-x {
+  touch-action: pan-x;
+}
+
+.touch-pan-y {
+  touch-action: pan-y;
+}
+
+@media (max-width: 640px) {
+  body {
+    background-size: 34px 34px, 34px 34px, auto, auto, auto;
+  }
+
+  .surface-card {
+    @apply backdrop-blur-lg;
+  }
+
+  .mobile-readable {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  .mobile-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .mobile-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes rook-hero-drift {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1.02);
+  }
+  50% {
+    transform: translate3d(-0.45rem, -0.35rem, 0) scale(1.035);
+  }
+}
+
+@keyframes pulse-particle {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.18;
+  }
+  45% {
+    transform: translateY(-18px);
+    opacity: 0.75;
+  }
+}
+
+@keyframes rook-card-arrival {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+    border-color: rgba(53, 216, 255, 0.34);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rook-live-arrival {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rook-network-pulse {
+  0%, 100% {
+    opacity: 0.6;
+    box-shadow: 0 0 12px rgba(46, 232, 159, 0.5);
+  }
+  45% {
+    opacity: 1;
+    box-shadow: 0 0 24px rgba(46, 232, 159, 0.85);
+  }
+}
+
+@keyframes rook-pulse-shimmer {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes graph-path-flow {
+  to {
+    stroke-dashoffset: -56;
+  }
+}
+
+@keyframes graph-node-halo {
+  0%, 100% {
+    opacity: 0.22;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 0.68;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes graph-ripple {
+  from {
+    opacity: 0.62;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+
+@keyframes pulse-node {
+  0%, 100% {
+    opacity: 0.62;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes pulse-volatility {
+  0%, 100% {
+    opacity: 0.28;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes ambient-scanline {
+  0%, 100% {
+    transform: translateY(-20vh);
+    opacity: 0;
+  }
+  45%, 55% {
+    opacity: 0.45;
+  }
+  50% {
+    transform: translateY(36vh);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rook-hero-image,
+  .pulse-particle,
+  .rook-live-card,
+  .rook-live-arrival,
+  .network-pulse,
+  .pulse-shimmer,
+  .graph-relation-active,
+  .graph-node-halo,
+  .graph-ripple,
+  .pulse-core-ring,
+  .pulse-node,
+  .pulse-volatility-ring,
+  .ambient-scanline {
+    animation: none;
+  }
+}

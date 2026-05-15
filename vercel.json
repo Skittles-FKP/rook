@@ -1,0 +1,14 @@
+{
+  "framework": "nextjs",
+  "regions": ["iad1"],
+  "crons": [
+    {
+      "path": "/api/cron/ai-queue",
+      "schedule": "*/10 * * * *"
+    },
+    {
+      "path": "/api/cron/ai-operators",
+      "schedule": "*/30 * * * *"
+    }
+  ]
+}

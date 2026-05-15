@@ -1,0 +1,18 @@
+import { NextResponse } from "next/server";
+import { processNextBriefJob } from "@/lib/queue";
+
+export const runtime = "nodejs";
+
+export async function GET(request: Request) {
+  const token = request.headers.get("authorization")?.replace("Bearer ", "");
+
+  if (process.env.CRON_SECRET && token !== process.env.CRON_SECRET) {
+    return NextResponse.json({ ok: false, message: "Unauthorized" }, { status: 401 });
+  }
+
+  const result = await processNextBriefJob();
+  return NextResponse.json({
+    ...result,
+    processedAt: new Date().toISOString(),
+  });
+}

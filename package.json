@@ -1,0 +1,38 @@
+{
+  "name": "rook",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "predev": "node scripts/repair-next-cache.mjs && tailwindcss -i ./src/app/globals.css -o ./public/rook.css --minify",
+    "dev": "next dev",
+    "prebuild": "node scripts/repair-next-cache.mjs && tailwindcss -i ./src/app/globals.css -o ./public/rook.css --minify",
+    "build": "next build",
+    "start": "next start",
+    "clean:next": "node scripts/repair-next-cache.mjs --force",
+    "lint": "eslint",
+    "seed:demo": "node scripts/seed-demo.mjs",
+    "deploy:check": "node scripts/deploy-check.mjs",
+    "worker:ai": "node scripts/worker-ai-queue.mjs"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.10.3",
+    "@supabase/supabase-js": "^2.105.4",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.468.0",
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.16.0",
+    "eslint-config-next": "^15.0.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2"
+  }
+}

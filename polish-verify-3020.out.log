@@ -1,0 +1,1258 @@
+   ▲ Next.js 15.5.18
+   - Local:        http://127.0.0.1:3020
+   - Network:      http://127.0.0.1:3020
+
+ ✓ Starting...
+ ✓ Ready in 1060ms
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:58:37.920Z',
+  operatorKey: 'news_sentinel',
+  operatorId: '00000000-0000-4999-8999-000000000001',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:58:37.923Z',
+  operatorKey: 'compute_radar',
+  operatorId: '00000000-0000-4999-8999-000000000002',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:58:37.925Z',
+  operatorKey: 'policy_watch',
+  operatorId: '00000000-0000-4999-8999-000000000003',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:58:37.926Z',
+  operatorKey: 'infra_watch',
+  operatorId: '00000000-0000-4999-8999-000000000004',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:58:37.927Z',
+  operatorKey: 'narrative_engine',
+  operatorId: '00000000-0000-4999-8999-000000000005',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:58:45.222Z',
+  operatorKey: 'compute_radar',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:58:45.225Z',
+  operatorKey: 'news_sentinel',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:58:45.230Z',
+  operatorKey: 'policy_watch',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:58:45.262Z',
+  operatorKey: 'infra_watch',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:58:45.264Z',
+  operatorKey: 'narrative_engine',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator bootstrap completed {
+  stage: 'operator bootstrap completed',
+  tracedAt: '2026-05-15T13:58:45.265Z',
+  required: [
+    'news_sentinel',
+    'compute_radar',
+    'policy_watch',
+    'infra_watch',
+    'narrative_engine'
+  ],
+  available: 0,
+  results: [
+    {
+      operatorKey: 'news_sentinel',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    },
+    {
+      operatorKey: 'compute_radar',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    },
+    {
+      operatorKey: 'policy_watch',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    },
+    {
+      operatorKey: 'infra_watch',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    },
+    {
+      operatorKey: 'narrative_engine',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    }
+  ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:58:45.418Z',
+  operatorKey: 'news_sentinel',
+  operatorId: '00000000-0000-4999-8999-000000000001',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:58:45.418Z',
+  operatorKey: 'compute_radar',
+  operatorId: '00000000-0000-4999-8999-000000000002',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:58:45.419Z',
+  operatorKey: 'policy_watch',
+  operatorId: '00000000-0000-4999-8999-000000000003',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:58:45.419Z',
+  operatorKey: 'infra_watch',
+  operatorId: '00000000-0000-4999-8999-000000000004',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:58:45.420Z',
+  operatorKey: 'narrative_engine',
+  operatorId: '00000000-0000-4999-8999-000000000005',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:58:52.463Z',
+  operatorKey: 'news_sentinel',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:58:52.464Z',
+  operatorKey: 'compute_radar',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:58:52.466Z',
+  operatorKey: 'policy_watch',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:58:52.487Z',
+  operatorKey: 'infra_watch',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:58:52.491Z',
+  operatorKey: 'narrative_engine',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator bootstrap completed {
+  stage: 'operator bootstrap completed',
+  tracedAt: '2026-05-15T13:58:52.491Z',
+  required: [
+    'news_sentinel',
+    'compute_radar',
+    'policy_watch',
+    'infra_watch',
+    'narrative_engine'
+  ],
+  available: 0,
+  results: [
+    {
+      operatorKey: 'news_sentinel',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    },
+    {
+      operatorKey: 'compute_radar',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    },
+    {
+      operatorKey: 'policy_watch',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    },
+    {
+      operatorKey: 'infra_watch',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    },
+    {
+      operatorKey: 'narrative_engine',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    }
+  ]
+}
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] snapshot {
+  requestedLimit: 64,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:59:06.782Z',
+  operatorKey: 'news_sentinel',
+  operatorId: '00000000-0000-4999-8999-000000000001',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:59:06.782Z',
+  operatorKey: 'compute_radar',
+  operatorId: '00000000-0000-4999-8999-000000000002',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:59:06.783Z',
+  operatorKey: 'policy_watch',
+  operatorId: '00000000-0000-4999-8999-000000000003',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:59:06.783Z',
+  operatorKey: 'infra_watch',
+  operatorId: '00000000-0000-4999-8999-000000000004',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:59:06.784Z',
+  operatorKey: 'narrative_engine',
+  operatorId: '00000000-0000-4999-8999-000000000005',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:59:13.869Z',
+  operatorKey: 'news_sentinel',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:59:13.873Z',
+  operatorKey: 'compute_radar',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:59:13.928Z',
+  operatorKey: 'policy_watch',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:59:13.931Z',
+  operatorKey: 'infra_watch',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:59:13.936Z',
+  operatorKey: 'narrative_engine',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator bootstrap completed {
+  stage: 'operator bootstrap completed',
+  tracedAt: '2026-05-15T13:59:13.939Z',
+  required: [
+    'news_sentinel',
+    'compute_radar',
+    'policy_watch',
+    'infra_watch',
+    'narrative_engine'
+  ],
+  available: 0,
+  results: [
+    {
+      operatorKey: 'news_sentinel',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    },
+    {
+      operatorKey: 'compute_radar',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    },
+    {
+      operatorKey: 'policy_watch',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    },
+    {
+      operatorKey: 'infra_watch',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    },
+    {
+      operatorKey: 'narrative_engine',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    }
+  ]
+}
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] snapshot {
+  requestedLimit: 48,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[pulse:pipeline] snapshot {
+  requestedLimit: 40,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:59:28.448Z',
+  operatorKey: 'news_sentinel',
+  operatorId: '00000000-0000-4999-8999-000000000001',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:59:28.449Z',
+  operatorKey: 'compute_radar',
+  operatorId: '00000000-0000-4999-8999-000000000002',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:59:28.450Z',
+  operatorKey: 'policy_watch',
+  operatorId: '00000000-0000-4999-8999-000000000003',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:59:28.450Z',
+  operatorKey: 'infra_watch',
+  operatorId: '00000000-0000-4999-8999-000000000004',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:59:28.450Z',
+  operatorKey: 'narrative_engine',
+  operatorId: '00000000-0000-4999-8999-000000000005',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:59:35.549Z',
+  operatorKey: 'compute_radar',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:59:35.551Z',
+  operatorKey: 'news_sentinel',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:59:35.553Z',
+  operatorKey: 'infra_watch',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:59:35.555Z',
+  operatorKey: 'policy_watch',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:59:35.557Z',
+  operatorKey: 'narrative_engine',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator bootstrap completed {
+  stage: 'operator bootstrap completed',
+  tracedAt: '2026-05-15T13:59:35.558Z',
+  required: [
+    'news_sentinel',
+    'compute_radar',
+    'policy_watch',
+    'infra_watch',
+    'narrative_engine'
+  ],
+  available: 0,
+  results: [
+    {
+      operatorKey: 'news_sentinel',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    },
+    {
+      operatorKey: 'compute_radar',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    },
+    {
+      operatorKey: 'policy_watch',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    },
+    {
+      operatorKey: 'infra_watch',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    },
+    {
+      operatorKey: 'narrative_engine',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    }
+  ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:59:35.579Z',
+  operatorKey: 'news_sentinel',
+  operatorId: '00000000-0000-4999-8999-000000000001',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:59:35.580Z',
+  operatorKey: 'compute_radar',
+  operatorId: '00000000-0000-4999-8999-000000000002',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:59:35.580Z',
+  operatorKey: 'policy_watch',
+  operatorId: '00000000-0000-4999-8999-000000000003',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:59:35.581Z',
+  operatorKey: 'infra_watch',
+  operatorId: '00000000-0000-4999-8999-000000000004',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T13:59:35.581Z',
+  operatorKey: 'narrative_engine',
+  operatorId: '00000000-0000-4999-8999-000000000005',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:59:42.702Z',
+  operatorKey: 'news_sentinel',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:59:42.707Z',
+  operatorKey: 'compute_radar',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:59:42.710Z',
+  operatorKey: 'policy_watch',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:59:42.776Z',
+  operatorKey: 'infra_watch',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T13:59:42.779Z',
+  operatorKey: 'narrative_engine',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator bootstrap completed {
+  stage: 'operator bootstrap completed',
+  tracedAt: '2026-05-15T13:59:42.779Z',
+  required: [
+    'news_sentinel',
+    'compute_radar',
+    'policy_watch',
+    'infra_watch',
+    'narrative_engine'
+  ],
+  available: 0,
+  results: [
+    {
+      operatorKey: 'news_sentinel',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    },
+    {
+      operatorKey: 'compute_radar',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    },
+    {
+      operatorKey: 'policy_watch',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    },
+    {
+      operatorKey: 'infra_watch',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    },
+    {
+      operatorKey: 'narrative_engine',
+      status: 'fulfilled',
+      profile: null,
+      reason: undefined
+    }
+  ]
+}
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] snapshot {
+  requestedLimit: 48,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[pulse:pipeline] snapshot {
+  requestedLimit: 48,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[pulse:pipeline] snapshot {
+  requestedLimit: 72,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[pulse:pipeline] snapshot {
+  requestedLimit: 40,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[pulse:pipeline] snapshot {
+  requestedLimit: 40,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[pulse:pipeline] snapshot {
+  requestedLimit: 40,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T14:00:04.510Z',
+  operatorKey: 'news_sentinel',
+  operatorId: '00000000-0000-4999-8999-000000000001',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T14:00:11.606Z',
+  operatorKey: 'news_sentinel',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T14:00:11.607Z',
+  operatorKey: 'compute_radar',
+  operatorId: '00000000-0000-4999-8999-000000000002',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T14:00:18.715Z',
+  operatorKey: 'compute_radar',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T14:00:18.715Z',
+  operatorKey: 'policy_watch',
+  operatorId: '00000000-0000-4999-8999-000000000003',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}
+[ai-signal-pipeline] operator profile ensure degraded {
+  stage: 'operator profile ensure degraded',
+  tracedAt: '2026-05-15T14:00:25.809Z',
+  operatorKey: 'policy_watch',
+  reason: 'Supabase transport unavailable during profile lookup.'
+}
+[ai-signal-pipeline] operator profile ensure started {
+  stage: 'operator profile ensure started',
+  tracedAt: '2026-05-15T14:00:25.809Z',
+  operatorKey: 'infra_watch',
+  operatorId: '00000000-0000-4999-8999-000000000004',
+  client: 'service-role',
+  requiredProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ],
+  conflictKeys: [ 'id', 'username' ]
+}

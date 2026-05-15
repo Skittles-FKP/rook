@@ -1,0 +1,141 @@
+   ▲ Next.js 15.5.18
+   - Local:        http://127.0.0.1:3028
+   - Network:      http://127.0.0.1:3028
+
+ ✓ Starting...
+ ✓ Ready in 921ms
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] snapshot {
+  requestedLimit: 64,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] snapshot {
+  requestedLimit: 48,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[pulse:pipeline] snapshot {
+  requestedLimit: 40,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] snapshot {
+  requestedLimit: 40,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[pulse:pipeline] snapshot {
+  requestedLimit: 40,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[pulse:pipeline] snapshot {
+  requestedLimit: 48,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] snapshot {
+  requestedLimit: 48,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[pulse:pipeline] snapshot {
+  requestedLimit: 48,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[pulse:pipeline] snapshot {
+  requestedLimit: 64,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[pulse:pipeline] snapshot {
+  requestedLimit: 64,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[pulse:pipeline] snapshot {
+  requestedLimit: 72,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[pulse:pipeline] snapshot {
+  requestedLimit: 40,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[pulse:pipeline] snapshot {
+  requestedLimit: 40,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[pulse:pipeline] snapshot {
+  requestedLimit: 40,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}
+[pulse:pipeline] network seed { providedSeedSignals: true, signalCount: 0 }
+[pulse:pipeline] interaction sources { signalCount: 0, amplifyCount: 0, commentCount: 0 }
+[pulse:pipeline] snapshot {
+  requestedLimit: 64,
+  signalCount: 0,
+  clusterCount: 0,
+  eventCount: 0,
+  topSignalIds: []
+}

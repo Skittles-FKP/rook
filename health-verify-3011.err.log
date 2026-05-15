@@ -1,0 +1,706 @@
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/profiles',
+  search: '?select=expertise_domains%2Creputation_score%2Csignal_accuracy_score%2Cbriefing_contribution_score%2Cpulse_influence_score&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)\n' +
+      '    at async k (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:4085)\n' +
+      '    at async rH.handleResponse (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:1:110708)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/profiles',
+  search: '?select=expertise_domains%2Creputation_score%2Csignal_accuracy_score%2Cbriefing_contribution_score%2Cpulse_influence_score&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)\n' +
+      '    at async k (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:4085)\n' +
+      '    at async rH.handleResponse (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:1:110708)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/profiles',
+  search: '?select=expertise_domains%2Creputation_score%2Csignal_accuracy_score%2Cbriefing_contribution_score%2Cpulse_influence_score&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)\n' +
+      '    at async k (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:4085)\n' +
+      '    at async rH.handleResponse (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:1:110708)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/profiles',
+  search: '?select=expertise_domains%2Creputation_score%2Csignal_accuracy_score%2Cbriefing_contribution_score%2Cpulse_influence_score&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)\n' +
+      '    at async k (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:4085)\n' +
+      '    at async rH.handleResponse (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:1:110708)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:feed-readiness] query failed {
+  query: '0002: profiles.select(expertise_domains,reputation_score,signal_accuracy_score,briefing_contribution_score,pulse_influence_score).limit(1)',
+  message: 'TypeError: fetch failed',
+  details: 'TypeError: fetch failed\n' +
+    '\n' +
+    'Caused by: AggregateError:  (EACCES)\n' +
+    'AggregateError: \n' +
+    '    at internalConnectMultiple (node:net:1134:18)\n' +
+    '    at afterConnectMultiple (node:net:1715:7)',
+  hint: '',
+  code: '',
+  table: null,
+  column: null,
+  relation: null,
+  raw: {
+    message: 'TypeError: fetch failed',
+    details: 'TypeError: fetch failed\n' +
+      '\n' +
+      'Caused by: AggregateError:  (EACCES)\n' +
+      'AggregateError: \n' +
+      '    at internalConnectMultiple (node:net:1134:18)\n' +
+      '    at afterConnectMultiple (node:net:1715:7)',
+    hint: '',
+    code: ''
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/briefs',
+  search: '?select=id%2Ccluster_key%2Csource_signal_ids%2Cstatus%2Cgenerated_by&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)\n' +
+      '    at async k (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:4085)\n' +
+      '    at async rH.handleResponse (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:1:110708)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/briefs',
+  search: '?select=id%2Ccluster_key%2Csource_signal_ids%2Cstatus%2Cgenerated_by&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)\n' +
+      '    at async k (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:4085)\n' +
+      '    at async rH.handleResponse (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:1:110708)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/briefs',
+  search: '?select=id%2Ccluster_key%2Csource_signal_ids%2Cstatus%2Cgenerated_by&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)\n' +
+      '    at async k (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:4085)\n' +
+      '    at async rH.handleResponse (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:1:110708)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/briefs',
+  search: '?select=id%2Ccluster_key%2Csource_signal_ids%2Cstatus%2Cgenerated_by&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)\n' +
+      '    at async k (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:4085)\n' +
+      '    at async rH.handleResponse (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:1:110708)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:feed-readiness] query failed {
+  query: '0002: briefs.select(id,cluster_key,source_signal_ids,status,generated_by).limit(1)',
+  message: 'TypeError: fetch failed',
+  details: 'TypeError: fetch failed\n' +
+    '\n' +
+    'Caused by: AggregateError:  (EACCES)\n' +
+    'AggregateError: \n' +
+    '    at internalConnectMultiple (node:net:1134:18)\n' +
+    '    at afterConnectMultiple (node:net:1715:7)',
+  hint: '',
+  code: '',
+  table: null,
+  column: null,
+  relation: null,
+  raw: {
+    message: 'TypeError: fetch failed',
+    details: 'TypeError: fetch failed\n' +
+      '\n' +
+      'Caused by: AggregateError:  (EACCES)\n' +
+      'AggregateError: \n' +
+      '    at internalConnectMultiple (node:net:1134:18)\n' +
+      '    at afterConnectMultiple (node:net:1715:7)',
+    hint: '',
+    code: ''
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/signals',
+  search: '?select=image_url%2Creference_url%2Cchart_url%2Cembed_url%2Cconfidence_score%2Cai_narrative_tags%2Ccontradiction_score%2Csentiment_overlay&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)\n' +
+      '    at async k (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:4085)\n' +
+      '    at async rH.handleResponse (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:1:110708)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/signals',
+  search: '?select=image_url%2Creference_url%2Cchart_url%2Cembed_url%2Cconfidence_score%2Cai_narrative_tags%2Ccontradiction_score%2Csentiment_overlay&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)\n' +
+      '    at async k (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:4085)\n' +
+      '    at async rH.handleResponse (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:1:110708)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/signals',
+  search: '?select=image_url%2Creference_url%2Cchart_url%2Cembed_url%2Cconfidence_score%2Cai_narrative_tags%2Ccontradiction_score%2Csentiment_overlay&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)\n' +
+      '    at async k (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:4085)\n' +
+      '    at async rH.handleResponse (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:1:110708)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/signals',
+  search: '?select=image_url%2Creference_url%2Cchart_url%2Cembed_url%2Cconfidence_score%2Cai_narrative_tags%2Ccontradiction_score%2Csentiment_overlay&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)\n' +
+      '    at async k (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:4085)\n' +
+      '    at async rH.handleResponse (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:1:110708)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:feed-readiness] query failed {
+  query: '0003: signals.select(image_url,reference_url,chart_url,embed_url,confidence_score,ai_narrative_tags,contradiction_score,sentiment_overlay).limit(1)',
+  message: 'TypeError: fetch failed',
+  details: 'TypeError: fetch failed\n' +
+    '\n' +
+    'Caused by: AggregateError:  (EACCES)\n' +
+    'AggregateError: \n' +
+    '    at internalConnectMultiple (node:net:1134:18)\n' +
+    '    at afterConnectMultiple (node:net:1715:7)',
+  hint: '',
+  code: '',
+  table: null,
+  column: null,
+  relation: null,
+  raw: {
+    message: 'TypeError: fetch failed',
+    details: 'TypeError: fetch failed\n' +
+      '\n' +
+      'Caused by: AggregateError:  (EACCES)\n' +
+      'AggregateError: \n' +
+      '    at internalConnectMultiple (node:net:1134:18)\n' +
+      '    at afterConnectMultiple (node:net:1715:7)',
+    hint: '',
+    code: ''
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/signal_contradictions',
+  search: '?select=id%2Csignal_a_id%2Csignal_b_id%2Cscore%2Crationale&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async Promise.allSettled (index 1)\n' +
+      '    at async Object.run (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:11374)\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/agent_runs',
+  search: '?select=id%2Cagent_key%2Cstatus%2Cnarrative_key%2Cresult_brief_id&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async Promise.allSettled (index 2)\n' +
+      '    at async Object.run (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:11374)\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/operator_alerts',
+  search: '?select=id%2Cuser_id%2Csource%2Ctitle%2Cseverity%2Cread_at&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async Promise.allSettled (index 0)\n' +
+      '    at async Object.run (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:11374)\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/signal_contradictions',
+  search: '?select=id%2Csignal_a_id%2Csignal_b_id%2Cscore%2Crationale&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async Promise.allSettled (index 1)\n' +
+      '    at async Object.run (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:11374)\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/agent_runs',
+  search: '?select=id%2Cagent_key%2Cstatus%2Cnarrative_key%2Cresult_brief_id&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async Promise.allSettled (index 2)\n' +
+      '    at async Object.run (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:11374)\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/operator_alerts',
+  search: '?select=id%2Cuser_id%2Csource%2Ctitle%2Cseverity%2Cread_at&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async Promise.allSettled (index 0)\n' +
+      '    at async Object.run (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:11374)\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/signal_contradictions',
+  search: '?select=id%2Csignal_a_id%2Csignal_b_id%2Cscore%2Crationale&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async Promise.allSettled (index 1)\n' +
+      '    at async Object.run (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:11374)\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/agent_runs',
+  search: '?select=id%2Cagent_key%2Cstatus%2Cnarrative_key%2Cresult_brief_id&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async Promise.allSettled (index 2)\n' +
+      '    at async Object.run (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:11374)\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/operator_alerts',
+  search: '?select=id%2Cuser_id%2Csource%2Ctitle%2Cseverity%2Cread_at&limit=1',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async Promise.allSettled (index 0)\n' +
+      '    at async Object.run (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:11374)\n' +
+      '    at async g (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:15146)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\health\\supabase-feed\\route.js:1:1082)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:getViewer] query failed {
+  query: 'auth.getUser()',
+  message: 'Auth session missing!',
+  details: undefined,
+  hint: undefined,
+  code: undefined,
+  table: null,
+  column: null,
+  relation: null,
+  raw: Error [AuthSessionMissingError]: Auth session missing!
+      at <unknown> (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:15102)
+      at cF._useSession (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:12459)
+      at async cF._getUser (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:14772)
+      at async (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:14566)
+      at async (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:11733) {
+    __isAuthError: true,
+    status: 400,
+    code: undefined
+  }
+}
+[supabase:getViewer] query failed {
+  query: 'auth.getUser()',
+  message: 'Auth session missing!',
+  details: undefined,
+  hint: undefined,
+  code: undefined,
+  table: null,
+  column: null,
+  relation: null,
+  raw: Error [AuthSessionMissingError]: Auth session missing!
+      at <unknown> (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:15102)
+      at cF._useSession (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:12459)
+      at async cF._getUser (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:14772)
+      at async (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:14566)
+      at async (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:11733) {
+    __isAuthError: true,
+    status: 400,
+    code: undefined
+  }
+}
+[supabase:getViewer] query failed {
+  query: 'auth.getUser()',
+  message: 'Auth session missing!',
+  details: undefined,
+  hint: undefined,
+  code: undefined,
+  table: null,
+  column: null,
+  relation: null,
+  raw: Error [AuthSessionMissingError]: Auth session missing!
+      at <unknown> (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:15102)
+      at cF._useSession (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:12459)
+      at async cF._getUser (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:14772)
+      at async (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:14566)
+      at async (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:11733) {
+    __isAuthError: true,
+    status: 400,
+    code: undefined
+  }
+}
+[supabase:getViewer] query failed {
+  query: 'auth.getUser()',
+  message: 'Auth session missing!',
+  details: undefined,
+  hint: undefined,
+  code: undefined,
+  table: null,
+  column: null,
+  relation: null,
+  raw: Error [AuthSessionMissingError]: Auth session missing!
+      at <unknown> (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:15102)
+      at cF._useSession (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:12459)
+      at async cF._getUser (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:14772)
+      at async (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:14566)
+      at async (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:11733) {
+    __isAuthError: true,
+    status: 400,
+    code: undefined
+  }
+}
+[supabase:getViewer] query failed {
+  query: 'auth.getUser()',
+  message: 'Auth session missing!',
+  details: undefined,
+  hint: undefined,
+  code: undefined,
+  table: null,
+  column: null,
+  relation: null,
+  raw: Error [AuthSessionMissingError]: Auth session missing!
+      at <unknown> (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:15102)
+      at cF._useSession (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:12459)
+      at async cF._getUser (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:14772)
+      at async (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:14566)
+      at async (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:11733) {
+    __isAuthError: true,
+    status: 400,
+    code: undefined
+  }
+}
+[supabase:getViewer] query failed {
+  query: 'auth.getUser()',
+  message: 'Auth session missing!',
+  details: undefined,
+  hint: undefined,
+  code: undefined,
+  table: null,
+  column: null,
+  relation: null,
+  raw: Error [AuthSessionMissingError]: Auth session missing!
+      at <unknown> (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:15102)
+      at cF._useSession (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:12459)
+      at async cF._getUser (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:14772)
+      at async (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:14566)
+      at async (C:\Users\prahk\Rook\.next\server\chunks\6167.js:37:11733) {
+    __isAuthError: true,
+    status: 400,
+    code: undefined
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/signals',
+  search: '?select=*%2Cauthor%3Aprofiles%21signals_author_id_fkey%28id%2Cusername%2Cdisplay_name%2Cavatar_url%2Coperator_type%2Cautonomous_status%29%2Cflock%3Aflocks%28id%2Cname%2Cslug%29&order=created_at.desc&limit=40',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/signals',
+  search: '?select=*%2Cauthor%3Aprofiles%21signals_author_id_fkey%28id%2Cusername%2Cdisplay_name%2Cavatar_url%2Coperator_type%2Cautonomous_status%29%2Cflock%3Aflocks%28id%2Cname%2Cslug%29&order=created_at.desc&limit=40',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/signals',
+  search: '?select=*%2Cauthor%3Aprofiles%21signals_author_id_fkey%28id%2Cusername%2Cdisplay_name%2Cavatar_url%2Coperator_type%2Cautonomous_status%29%2Cflock%3Aflocks%28id%2Cname%2Cslug%29&order=created_at.desc&limit=48',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async k (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\cron\\ai-queue\\route.js:1:4643)\n' +
+      '    at async h (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\cron\\ai-queue\\route.js:1:18727)\n' +
+      '    at async Promise.all (index 0)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\2369.js:1:7237)\n' +
+      '    at async Promise.allSettled (index 1)\n' +
+      '    at async s (C:\\Users\\prahk\\Rook\\.next\\server\\app\\(app)\\pulse\\page.js:2:11141)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}
+[supabase:fetch] failed {
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/flocks',
+  search: '?select=*&order=created_at.desc',
+  error: {
+    name: 'TypeError',
+    message: 'fetch failed',
+    stack: 'TypeError: fetch failed\n' +
+      '    at node:internal/deps/undici/undici:15845:13\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6266.js:1:17607)\n' +
+      '    at async C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\6167.js:1:5643\n' +
+      '    at async f (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\2369.js:1:3745)\n' +
+      '    at async Promise.all (index 2)\n' +
+      '    at async i (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\2369.js:1:7237)\n' +
+      '    at async Promise.allSettled (index 1)\n' +
+      '    at async s (C:\\Users\\prahk\\Rook\\.next\\server\\app\\(app)\\pulse\\page.js:2:11141)',
+    cause: [AggregateError: ] { code: 'EACCES' }
+  }
+}

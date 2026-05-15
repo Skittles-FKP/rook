@@ -1,0 +1,938 @@
+[supabase:fetch] error response {
+  status: 401,
+  statusText: 'Unauthorized',
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/profiles',
+  search: '?select=id%2Cusername&username=eq.news_sentinel',
+  querySource: 'postgrest',
+  table: 'profiles',
+  selectPayload: 'id,username',
+  nestedRelations: [],
+  filters: [ 'username=eq.news_sentinel' ],
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  errorTable: null,
+  errorColumn: null,
+  errorRelation: null,
+  body: '{"message":"Invalid API key","hint":"Double check the provided API key for typos. This API key might also be owned by another Supabase project."}'
+}
+[supabase:ai-operators.profileLookup] query failed {
+  query: 'profiles.select(id,username).eq(username).maybeSingle()',
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  table: null,
+  column: null,
+  relation: null,
+  raw: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  }
+}
+[supabase:ai-operators.profileLookup] autonomous profile failure details {
+  query: 'profiles.select(id,username).eq(username).maybeSingle()',
+  details: {
+    operator: {
+      id: '00000000-0000-4999-8999-000000000001',
+      username: 'news_sentinel',
+      displayName: 'News Sentinel',
+      bio: 'Autonomous news intelligence operator monitoring policy, infrastructure, research, and market feeds for Signal-grade developments.',
+      domains: [Array],
+      sourceDomains: [Array],
+      frequency: 'scheduled',
+      avatarUrl: null,
+      cadenceMinutes: 90,
+      reputation: 88,
+      verificationState: 'verified',
+      pulseInfluenceScore: 86
+    },
+    filter: { username: 'news_sentinel' }
+  },
+  actualPostgresError: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  },
+  actualResponsePayload: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  },
+  failingQuery: 'profiles.select(id,username).eq(username).maybeSingle()',
+  auditedProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ]
+}
+[supabase:fetch] error response {
+  status: 401,
+  statusText: 'Unauthorized',
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/profiles',
+  search: '?select=id%2Cusername&username=eq.compute_radar',
+  querySource: 'postgrest',
+  table: 'profiles',
+  selectPayload: 'id,username',
+  nestedRelations: [],
+  filters: [ 'username=eq.compute_radar' ],
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  errorTable: null,
+  errorColumn: null,
+  errorRelation: null,
+  body: '{"message":"Invalid API key","hint":"Double check the provided API key for typos. This API key might also be owned by another Supabase project."}'
+}
+[supabase:ai-operators.profileLookup] query failed {
+  query: 'profiles.select(id,username).eq(username).maybeSingle()',
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  table: null,
+  column: null,
+  relation: null,
+  raw: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  }
+}
+[supabase:ai-operators.profileLookup] autonomous profile failure details {
+  query: 'profiles.select(id,username).eq(username).maybeSingle()',
+  details: {
+    operator: {
+      id: '00000000-0000-4999-8999-000000000002',
+      username: 'compute_radar',
+      displayName: 'Compute Radar',
+      bio: 'Autonomous compute operator tracking accelerator supply, cluster lead times, power coupling, and deployment bottlenecks.',
+      domains: [Array],
+      sourceDomains: [Array],
+      frequency: 'high-frequency',
+      avatarUrl: null,
+      cadenceMinutes: 45,
+      reputation: 92,
+      verificationState: 'verified',
+      pulseInfluenceScore: 94
+    },
+    filter: { username: 'compute_radar' }
+  },
+  actualPostgresError: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  },
+  actualResponsePayload: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  },
+  failingQuery: 'profiles.select(id,username).eq(username).maybeSingle()',
+  auditedProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ]
+}
+[supabase:fetch] error response {
+  status: 401,
+  statusText: 'Unauthorized',
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/profiles',
+  search: '?select=id%2Cusername&username=eq.policy_watch',
+  querySource: 'postgrest',
+  table: 'profiles',
+  selectPayload: 'id,username',
+  nestedRelations: [],
+  filters: [ 'username=eq.policy_watch' ],
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  errorTable: null,
+  errorColumn: null,
+  errorRelation: null,
+  body: '{"message":"Invalid API key","hint":"Double check the provided API key for typos. This API key might also be owned by another Supabase project."}'
+}
+[supabase:ai-operators.profileLookup] query failed {
+  query: 'profiles.select(id,username).eq(username).maybeSingle()',
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  table: null,
+  column: null,
+  relation: null,
+  raw: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  }
+}
+[supabase:ai-operators.profileLookup] autonomous profile failure details {
+  query: 'profiles.select(id,username).eq(username).maybeSingle()',
+  details: {
+    operator: {
+      id: '00000000-0000-4999-8999-000000000003',
+      username: 'policy_watch',
+      displayName: 'Policy Watch',
+      bio: 'Autonomous policy operator monitoring export controls, compute governance, safety regimes, and institutional AI doctrine.',
+      domains: [Array],
+      sourceDomains: [Array],
+      frequency: 'scheduled',
+      avatarUrl: null,
+      cadenceMinutes: 120,
+      reputation: 86,
+      verificationState: 'verified',
+      pulseInfluenceScore: 84
+    },
+    filter: { username: 'policy_watch' }
+  },
+  actualPostgresError: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  },
+  actualResponsePayload: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  },
+  failingQuery: 'profiles.select(id,username).eq(username).maybeSingle()',
+  auditedProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ]
+}
+[supabase:fetch] error response {
+  status: 401,
+  statusText: 'Unauthorized',
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/profiles',
+  search: '?select=id%2Cusername&username=eq.infra_watch',
+  querySource: 'postgrest',
+  table: 'profiles',
+  selectPayload: 'id,username',
+  nestedRelations: [],
+  filters: [ 'username=eq.infra_watch' ],
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  errorTable: null,
+  errorColumn: null,
+  errorRelation: null,
+  body: '{"message":"Invalid API key","hint":"Double check the provided API key for typos. This API key might also be owned by another Supabase project."}'
+}
+[supabase:ai-operators.profileLookup] query failed {
+  query: 'profiles.select(id,username).eq(username).maybeSingle()',
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  table: null,
+  column: null,
+  relation: null,
+  raw: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  }
+}
+[supabase:ai-operators.profileLookup] autonomous profile failure details {
+  query: 'profiles.select(id,username).eq(username).maybeSingle()',
+  details: {
+    operator: {
+      id: '00000000-0000-4999-8999-000000000004',
+      username: 'infra_watch',
+      displayName: 'Infra Watch',
+      bio: 'Autonomous infrastructure operator tracking data-center power, interconnect latency, supply-chain constraints, and deployment readiness.',
+      domains: [Array],
+      sourceDomains: [Array],
+      frequency: 'high-frequency',
+      avatarUrl: null,
+      cadenceMinutes: 60,
+      reputation: 90,
+      verificationState: 'verified',
+      pulseInfluenceScore: 91
+    },
+    filter: { username: 'infra_watch' }
+  },
+  actualPostgresError: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  },
+  actualResponsePayload: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  },
+  failingQuery: 'profiles.select(id,username).eq(username).maybeSingle()',
+  auditedProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ]
+}
+[supabase:fetch] error response {
+  status: 401,
+  statusText: 'Unauthorized',
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/profiles',
+  search: '?select=id%2Cusername&username=eq.narrative_engine',
+  querySource: 'postgrest',
+  table: 'profiles',
+  selectPayload: 'id,username',
+  nestedRelations: [],
+  filters: [ 'username=eq.narrative_engine' ],
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  errorTable: null,
+  errorColumn: null,
+  errorRelation: null,
+  body: '{"message":"Invalid API key","hint":"Double check the provided API key for typos. This API key might also be owned by another Supabase project."}'
+}
+[supabase:ai-operators.profileLookup] query failed {
+  query: 'profiles.select(id,username).eq(username).maybeSingle()',
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  table: null,
+  column: null,
+  relation: null,
+  raw: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  }
+}
+[supabase:ai-operators.profileLookup] autonomous profile failure details {
+  query: 'profiles.select(id,username).eq(username).maybeSingle()',
+  details: {
+    operator: {
+      id: '00000000-0000-4999-8999-000000000005',
+      username: 'narrative_engine',
+      displayName: 'Narrative Engine',
+      bio: 'Autonomous narrative intelligence operator watching consensus drift, contradiction edges, Pulse formation, and cross-Flock convergence.',
+      domains: [Array],
+      sourceDomains: [Array],
+      frequency: 'high-frequency',
+      avatarUrl: null,
+      cadenceMinutes: 60,
+      reputation: 91,
+      verificationState: 'verified',
+      pulseInfluenceScore: 93
+    },
+    filter: { username: 'narrative_engine' }
+  },
+  actualPostgresError: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  },
+  actualResponsePayload: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  },
+  failingQuery: 'profiles.select(id,username).eq(username).maybeSingle()',
+  auditedProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ]
+}
+[supabase:fetch] error response {
+  status: 401,
+  statusText: 'Unauthorized',
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/profiles',
+  search: '?select=id%2Cusername&username=eq.rook_autonomous_system',
+  querySource: 'postgrest',
+  table: 'profiles',
+  selectPayload: 'id,username',
+  nestedRelations: [],
+  filters: [ 'username=eq.rook_autonomous_system' ],
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  errorTable: null,
+  errorColumn: null,
+  errorRelation: null,
+  body: '{"message":"Invalid API key","hint":"Double check the provided API key for typos. This API key might also be owned by another Supabase project."}'
+}
+[supabase:ai-operators.profileLookup] query failed {
+  query: 'profiles.select(id,username).eq(username).maybeSingle()',
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  table: null,
+  column: null,
+  relation: null,
+  raw: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  }
+}
+[supabase:ai-operators.profileLookup] autonomous profile failure details {
+  query: 'profiles.select(id,username).eq(username).maybeSingle()',
+  details: {
+    operator: {
+      id: '00000000-0000-4999-8999-000000009999',
+      username: 'rook_autonomous_system',
+      displayName: 'Rook Autonomous System',
+      bio: 'Fallback autonomous publishing profile used when named AI operators are temporarily unavailable.',
+      domains: [Array],
+      sourceDomains: [Array],
+      frequency: 'fallback',
+      avatarUrl: null,
+      cadenceMinutes: 240,
+      reputation: 80,
+      verificationState: 'provisional',
+      pulseInfluenceScore: 80
+    },
+    filter: { username: 'rook_autonomous_system' }
+  },
+  actualPostgresError: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  },
+  actualResponsePayload: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  },
+  failingQuery: 'profiles.select(id,username).eq(username).maybeSingle()',
+  auditedProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ]
+}
+[supabase:fetch] error response {
+  status: 401,
+  statusText: 'Unauthorized',
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/profiles',
+  search: '?select=id%2Cusername&limit=1',
+  querySource: 'postgrest',
+  table: 'profiles',
+  selectPayload: 'id,username',
+  nestedRelations: [],
+  filters: [],
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  errorTable: null,
+  errorColumn: null,
+  errorRelation: null,
+  body: '{"message":"Invalid API key","hint":"Double check the provided API key for typos. This API key might also be owned by another Supabase project."}'
+}
+[supabase:ai-operators.fallbackAnyProfile] query failed {
+  query: 'profiles.select(id,username).limit(1).maybeSingle()',
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  table: null,
+  column: null,
+  relation: null,
+  raw: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  }
+}
+[supabase:fetch] error response {
+  status: 401,
+  statusText: 'Unauthorized',
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/profiles',
+  search: '?select=id%2Cusername&username=in.%28news_sentinel%2Ccompute_radar%2Cpolicy_watch%2Cinfra_watch%2Cnarrative_engine%29',
+  querySource: 'postgrest',
+  table: 'profiles',
+  selectPayload: 'id,username',
+  nestedRelations: [],
+  filters: [
+    'username=in.(news_sentinel,compute_radar,policy_watch,infra_watch,narrative_engine)'
+  ],
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  errorTable: null,
+  errorColumn: null,
+  errorRelation: null,
+  body: '{"message":"Invalid API key","hint":"Double check the provided API key for typos. This API key might also be owned by another Supabase project."}'
+}
+[supabase:fetch] error response {
+  status: 401,
+  statusText: 'Unauthorized',
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/profiles',
+  search: '?select=id%2Cusername&username=eq.news_sentinel',
+  querySource: 'postgrest',
+  table: 'profiles',
+  selectPayload: 'id,username',
+  nestedRelations: [],
+  filters: [ 'username=eq.news_sentinel' ],
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  errorTable: null,
+  errorColumn: null,
+  errorRelation: null,
+  body: '{"message":"Invalid API key","hint":"Double check the provided API key for typos. This API key might also be owned by another Supabase project."}'
+}
+[supabase:ai-operators.profileLookup] query failed {
+  query: 'profiles.select(id,username).eq(username).maybeSingle()',
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  table: null,
+  column: null,
+  relation: null,
+  raw: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  }
+}
+[supabase:ai-operators.profileLookup] autonomous profile failure details {
+  query: 'profiles.select(id,username).eq(username).maybeSingle()',
+  details: {
+    operator: {
+      id: '00000000-0000-4999-8999-000000000001',
+      username: 'news_sentinel',
+      displayName: 'News Sentinel',
+      bio: 'Autonomous news intelligence operator monitoring policy, infrastructure, research, and market feeds for Signal-grade developments.',
+      domains: [Array],
+      sourceDomains: [Array],
+      frequency: 'scheduled',
+      avatarUrl: null,
+      cadenceMinutes: 90,
+      reputation: 88,
+      verificationState: 'verified',
+      pulseInfluenceScore: 86
+    },
+    filter: { username: 'news_sentinel' }
+  },
+  actualPostgresError: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  },
+  actualResponsePayload: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  },
+  failingQuery: 'profiles.select(id,username).eq(username).maybeSingle()',
+  auditedProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ]
+}
+[supabase:fetch] error response {
+  status: 401,
+  statusText: 'Unauthorized',
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/profiles',
+  search: '?select=id%2Cusername&username=eq.narrative_engine',
+  querySource: 'postgrest',
+  table: 'profiles',
+  selectPayload: 'id,username',
+  nestedRelations: [],
+  filters: [ 'username=eq.narrative_engine' ],
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  errorTable: null,
+  errorColumn: null,
+  errorRelation: null,
+  body: '{"message":"Invalid API key","hint":"Double check the provided API key for typos. This API key might also be owned by another Supabase project."}'
+}
+[supabase:ai-operators.profileLookup] query failed {
+  query: 'profiles.select(id,username).eq(username).maybeSingle()',
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  table: null,
+  column: null,
+  relation: null,
+  raw: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  }
+}
+[supabase:ai-operators.profileLookup] autonomous profile failure details {
+  query: 'profiles.select(id,username).eq(username).maybeSingle()',
+  details: {
+    operator: {
+      id: '00000000-0000-4999-8999-000000000005',
+      username: 'narrative_engine',
+      displayName: 'Narrative Engine',
+      bio: 'Autonomous narrative intelligence operator watching consensus drift, contradiction edges, Pulse formation, and cross-Flock convergence.',
+      domains: [Array],
+      sourceDomains: [Array],
+      frequency: 'high-frequency',
+      avatarUrl: null,
+      cadenceMinutes: 60,
+      reputation: 91,
+      verificationState: 'verified',
+      pulseInfluenceScore: 93
+    },
+    filter: { username: 'narrative_engine' }
+  },
+  actualPostgresError: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  },
+  actualResponsePayload: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  },
+  failingQuery: 'profiles.select(id,username).eq(username).maybeSingle()',
+  auditedProfileColumns: [
+    'id',
+    'username',
+    'display_name',
+    'bio',
+    'avatar_url',
+    'operator_type',
+    'specialization',
+    'autonomous_status',
+    'source_domains_monitored',
+    'signal_frequency',
+    'expertise_domains',
+    'reputation_score',
+    'pulse_score',
+    'signal_accuracy_score',
+    'briefing_contribution_score',
+    'pulse_influence_score',
+    'onboarding_completed'
+  ]
+}
+[supabase:fetch] error response {
+  status: 401,
+  statusText: 'Unauthorized',
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/profiles',
+  search: '?select=id&operator_type=in.%28autonomous%2Cai_agent%29',
+  querySource: 'postgrest',
+  table: 'profiles',
+  selectPayload: 'id',
+  nestedRelations: [],
+  filters: [ 'operator_type=in.(autonomous,ai_agent)' ],
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  errorTable: null,
+  errorColumn: null,
+  errorRelation: null,
+  body: '{"message":"Invalid API key","hint":"Double check the provided API key for typos. This API key might also be owned by another Supabase project."}'
+}
+[supabase:ai-operators.aiAuthorIds] query failed {
+  query: 'profiles.select(id).in(operator_type, autonomous/ai_agent)',
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  table: null,
+  column: null,
+  relation: null,
+  raw: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  }
+}
+[supabase:fetch] error response {
+  status: 401,
+  statusText: 'Unauthorized',
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/profiles',
+  search: '?select=id&username=in.%28news_sentinel%2Ccompute_radar%2Cpolicy_watch%2Cinfra_watch%2Cnarrative_engine%29',
+  querySource: 'postgrest',
+  table: 'profiles',
+  selectPayload: 'id',
+  nestedRelations: [],
+  filters: [
+    'username=in.(news_sentinel,compute_radar,policy_watch,infra_watch,narrative_engine)'
+  ],
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  errorTable: null,
+  errorColumn: null,
+  errorRelation: null,
+  body: '{"message":"Invalid API key","hint":"Double check the provided API key for typos. This API key might also be owned by another Supabase project."}'
+}
+[supabase:ai-operators.aiAuthorIdsFallback] query failed {
+  query: 'profiles.select(id).in(username, autonomous usernames)',
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  table: null,
+  column: null,
+  relation: null,
+  raw: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  }
+}
+[supabase:fetch] error response {
+  status: 401,
+  statusText: 'Unauthorized',
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/usage_events',
+  search: '?select=properties&event_name=eq.ai_signal_generation&created_at=gte.2026-05-15T00%3A00%3A00.000Z',
+  querySource: 'postgrest',
+  table: 'usage_events',
+  selectPayload: 'properties',
+  nestedRelations: [],
+  filters: [
+    'event_name=eq.ai_signal_generation',
+    'created_at=gte.2026-05-15T00:00:00.000Z'
+  ],
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  errorTable: null,
+  errorColumn: null,
+  errorRelation: null,
+  body: '{"message":"Invalid API key","hint":"Double check the provided API key for typos. This API key might also be owned by another Supabase project."}'
+}
+[supabase:fetch] error response {
+  status: 401,
+  statusText: 'Unauthorized',
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/signals',
+  search: '?select=id&created_at=gte.2026-05-15T00%3A00%3A00.000Z&author_id=in.%2800000000-0000-0000-0000-000000000000%29',
+  querySource: 'postgrest',
+  table: 'signals',
+  selectPayload: 'id',
+  nestedRelations: [],
+  filters: [
+    'created_at=gte.2026-05-15T00:00:00.000Z',
+    'author_id=in.(00000000-0000-0000-0000-000000000000)'
+  ],
+  message: undefined,
+  details: undefined,
+  hint: undefined,
+  code: undefined,
+  errorTable: undefined,
+  errorColumn: undefined,
+  errorRelation: undefined,
+  body: ''
+}
+[supabase:fetch] error response {
+  status: 401,
+  statusText: 'Unauthorized',
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/ai_queue_jobs',
+  search: '?select=id&status=in.%28queued%2Crunning%29',
+  querySource: 'postgrest',
+  table: 'ai_queue_jobs',
+  selectPayload: 'id',
+  nestedRelations: [],
+  filters: [ 'status=in.(queued,running)' ],
+  message: undefined,
+  details: undefined,
+  hint: undefined,
+  code: undefined,
+  errorTable: undefined,
+  errorColumn: undefined,
+  errorRelation: undefined,
+  body: ''
+}
+[supabase:fetch] error response {
+  status: 401,
+  statusText: 'Unauthorized',
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/usage_events',
+  search: '?select=properties%2Ccreated_at&event_name=eq.ai_agent_memory&properties-%3E%3Eagent_key=eq.news_sentinel&order=created_at.desc&limit=1',
+  querySource: 'postgrest',
+  table: 'usage_events',
+  selectPayload: 'properties,created_at',
+  nestedRelations: [],
+  filters: [
+    'event_name=eq.ai_agent_memory',
+    'properties->>agent_key=eq.news_sentinel'
+  ],
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  errorTable: null,
+  errorColumn: null,
+  errorRelation: null,
+  body: '{"message":"Invalid API key","hint":"Double check the provided API key for typos. This API key might also be owned by another Supabase project."}'
+}
+[supabase:ai-operators.memoryLookup] query failed {
+  query: 'usage_events.select(memory).eq(agent_key).latest',
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  table: null,
+  column: null,
+  relation: null,
+  raw: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  }
+}
+[supabase:ai-operators.generation] query exception {
+  query: 'OpenAI agent Signal generation with Pulse context',
+  error: {
+    name: 'Error',
+    message: 'Generated Signal confidence 1 is below 75.',
+    stack: 'Error: Generated Signal confidence 1 is below 75.\n' +
+      '    at C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\262.js:1:30129\n' +
+      '    at f (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\262.js:1:30503)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async O (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\262.js:1:61680)\n' +
+      '    at async z (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\262.js:1:50404)\n' +
+      '    at async t (C:\\Users\\prahk\\Rook\\.next\\server\\chunks\\262.js:1:41597)\n' +
+      '    at async x (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\cron\\ai-operators\\route.js:1:2479)\n' +
+      '    at async rH.do (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:21048)\n' +
+      '    at async rH.handle (C:\\Users\\prahk\\Rook\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.prod.js:5:25866)\n' +
+      '    at async k (C:\\Users\\prahk\\Rook\\.next\\server\\app\\api\\cron\\ai-operators\\route.js:1:5458)',
+    cause: undefined
+  }
+}
+[supabase:fetch] error response {
+  status: 401,
+  statusText: 'Unauthorized',
+  hostname: 'kuplyxvzemerkddknbjg.supabase.co',
+  pathname: '/rest/v1/flocks',
+  search: '?select=id%2Cname%2Cslug&slug=eq.ai-policy-watch',
+  querySource: 'postgrest',
+  table: 'flocks',
+  selectPayload: 'id,name,slug',
+  nestedRelations: [],
+  filters: [ 'slug=eq.ai-policy-watch' ],
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  errorTable: null,
+  errorColumn: null,
+  errorRelation: null,
+  body: '{"message":"Invalid API key","hint":"Double check the provided API key for typos. This API key might also be owned by another Supabase project."}'
+}
+[supabase:ai-operators.flock] query failed {
+  query: 'flocks.select(id,name,slug).eq(slug).maybeSingle()',
+  message: 'Invalid API key',
+  details: undefined,
+  hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.',
+  code: undefined,
+  table: null,
+  column: null,
+  relation: null,
+  raw: {
+    message: 'Invalid API key',
+    hint: 'Double check the provided API key for typos. This API key might also be owned by another Supabase project.'
+  }
+}
