@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import { Building2, Lock, ShieldCheck } from "lucide-react";
 import { PageHeader } from "@/components/shell/page-header";
 import { getAccessMatrix, getEnterpriseWorkspaces } from "@/lib/enterprise";

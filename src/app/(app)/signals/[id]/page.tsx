@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/shell/page-header";
 import { SignalCard } from "@/components/signal-card";

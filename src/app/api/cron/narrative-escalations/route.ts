@@ -1,7 +1,7 @@
+export const runtime = "edge";
+
 import { NextResponse } from "next/server";
 import { processNarrativeEscalations } from "@/lib/narrative-escalation";
-
-export const runtime = "nodejs";
 
 export async function GET(request: Request) {
   const token = request.headers.get("authorization")?.replace("Bearer ", "");

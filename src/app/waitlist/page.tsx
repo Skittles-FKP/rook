@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import { RookMark } from "@/components/brand";
 import { WaitlistForm } from "@/components/growth/waitlist-form";
 

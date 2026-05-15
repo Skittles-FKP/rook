@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import { Activity, DoorOpen, UsersRound } from "lucide-react";
 import { LiveRoomPresence } from "@/components/graph/live-room-presence";
 import { PageHeader } from "@/components/shell/page-header";

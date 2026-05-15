@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, BrainCircuit, Network, RadioTower, ShieldCheck, Sparkles } from "lucide-react";

@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import { UsersRound } from "lucide-react";
 import { PageHeader } from "@/components/shell/page-header";
 import { FlockComposer } from "@/components/flocks/flock-composer";

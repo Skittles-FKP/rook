@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import { AlertTriangle, BrainCircuit, Shield, UsersRound } from "lucide-react";
 import { PageHeader } from "@/components/shell/page-header";
 import { getBriefs } from "@/lib/data/briefs";

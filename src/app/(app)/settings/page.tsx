@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import { Bell, ShieldCheck, SlidersHorizontal } from "lucide-react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { PageHeader } from "@/components/shell/page-header";

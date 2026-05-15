@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import Link from "next/link";
 import { Activity, BrainCircuit, Network, RadioTower } from "lucide-react";
 import { IntelligenceGraph } from "@/components/graph/intelligence-graph";

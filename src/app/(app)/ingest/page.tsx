@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import { Database, Globe2, RadioTower } from "lucide-react";
 import { PageHeader } from "@/components/shell/page-header";
 import { getExternalSources, getFusionSurfaces } from "@/lib/ingestion";

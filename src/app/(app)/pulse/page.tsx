@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import Link from "next/link";
 import { Activity, ArrowUpRight, Layers3, RadioTower, ScanLine, TimerReset } from "lucide-react";
 import { PageHeader } from "@/components/shell/page-header";

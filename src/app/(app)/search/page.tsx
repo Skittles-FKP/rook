@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import Link from "next/link";
 import { Search, Server } from "lucide-react";
 import { PageHeader } from "@/components/shell/page-header";

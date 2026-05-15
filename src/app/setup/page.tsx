@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import { RookMark } from "@/components/brand";
 
 export default function SetupPage() {

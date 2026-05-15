@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AlertTriangle, ArrowLeft, BrainCircuit, CheckCircle2, GitCompareArrows, Waves } from "lucide-react";

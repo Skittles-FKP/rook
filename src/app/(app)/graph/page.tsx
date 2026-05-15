@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import { Activity, BrainCircuit, Network, RadioTower } from "lucide-react";
 import { IntelligenceGraph } from "@/components/graph/intelligence-graph";
 import { LiveRoomPresence } from "@/components/graph/live-room-presence";

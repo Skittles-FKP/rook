@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import { AuthForm } from "@/components/auth/auth-form";
 import { RookMark } from "@/components/brand";
 

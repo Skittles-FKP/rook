@@ -1,8 +1,8 @@
+export const runtime = "edge";
+
 import { NextResponse } from "next/server";
 import { getObservabilityStatus } from "@/lib/observability";
 import { getProductionReadiness } from "@/lib/production";
-
-export const runtime = "edge";
 
 export function GET() {
   const readiness = getProductionReadiness();

@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import Link from "next/link";
 import { BrainCircuit } from "lucide-react";
 import { RookMark } from "@/components/brand";

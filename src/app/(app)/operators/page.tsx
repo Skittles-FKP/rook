@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import Link from "next/link";
 import { BadgeCheck, Bot, RadioTower, UsersRound } from "lucide-react";
 import { OperatorAvatar } from "@/components/operator-avatar";

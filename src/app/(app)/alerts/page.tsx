@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import { AlertPreferences } from "@/components/agents/alert-preferences";
 import { NotificationFeed } from "@/components/agents/notification-feed";
 import { PageHeader } from "@/components/shell/page-header";

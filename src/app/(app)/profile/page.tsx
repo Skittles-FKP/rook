@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/shell/page-header";
 import { ProfileView } from "@/components/profile/profile-view";

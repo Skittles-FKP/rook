@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import Link from "next/link";
 import { AlertTriangle, BrainCircuit, FileText, Sparkles } from "lucide-react";
 import { GenerateBriefButton } from "@/components/briefs/generate-brief-button";

@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import { Activity, AlertTriangle, CheckCircle2, Database, LineChart, Server, ShieldCheck } from "lucide-react";
 import { PageHeader } from "@/components/shell/page-header";
 import { getInsightEngineSnapshot } from "@/lib/analytics";

@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import Link from "next/link";
 import { Activity, GitCompareArrows, RadioTower } from "lucide-react";
 import { PageHeader } from "@/components/shell/page-header";

@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import { PageHeader } from "@/components/shell/page-header";
 import { SignalCard } from "@/components/signal-card";
 import { SignalComposer } from "@/components/signals/signal-composer";

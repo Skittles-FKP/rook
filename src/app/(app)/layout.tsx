@@ -1,3 +1,6 @@
+export const runtime = "edge";
+export const preferredRegion = "auto";
+
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/shell/app-shell";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
