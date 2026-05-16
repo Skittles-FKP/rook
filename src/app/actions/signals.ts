@@ -272,6 +272,27 @@ export async function createCommentAction(
     return { ok: false, message: "Comment text is required." };
   }
 
+  if (parentCommentId) {
+    const { data: parent, error: parentError } = await supabase
+      .from("comments")
+      .select("id, signal_id")
+      .eq("id", parentCommentId)
+      .maybeSingle();
+
+    if (parentError) {
+      console.error("[signal-comments] parent lookup failed", {
+        signalId,
+        parentCommentId,
+        message: parentError.message,
+      });
+      return { ok: false, message: "Unable to verify the reply target. Refresh and try again." };
+    }
+
+    if (!parent || parent.signal_id !== signalId) {
+      return { ok: false, message: "This reply target is no longer available." };
+    }
+  }
+
   const { error } = await supabase.from("comments").insert({
     signal_id: signalId,
     author_id: userId,
@@ -280,6 +301,12 @@ export async function createCommentAction(
   });
 
   if (error) {
+    console.error("[signal-comments] insert failed", {
+      signalId,
+      parentCommentId: parentCommentId || null,
+      userId,
+      message: error.message,
+    });
     return { ok: false, message: error.message };
   }
 
@@ -295,21 +322,29 @@ export async function createCommentAction(
       : Promise.resolve({ data: null }),
   ]);
 
-  await createInteractionAlert({
-    supabase,
-    recipientId: parent?.author_id ?? signal?.author_id,
-    actorName: actor?.display_name ?? "An operator",
-    signal,
-    kind: parentCommentId ? "reply" : "comment",
-  });
-
-  if (signal && shouldEmitPulseInteraction(signal)) {
+  try {
     await createInteractionAlert({
       supabase,
-      recipientId: signal.author_id,
-      actorName: "Pulse Engine",
+      recipientId: parent?.author_id ?? signal?.author_id,
+      actorName: actor?.display_name ?? "An operator",
       signal,
-      kind: "pulse",
+      kind: parentCommentId ? "reply" : "comment",
+    });
+
+    if (signal && shouldEmitPulseInteraction(signal)) {
+      await createInteractionAlert({
+        supabase,
+        recipientId: signal.author_id,
+        actorName: "Pulse Engine",
+        signal,
+        kind: "pulse",
+      });
+    }
+  } catch (alertError) {
+    console.error("[signal-comments] alert side effect failed", {
+      signalId,
+      parentCommentId: parentCommentId || null,
+      error: alertError instanceof Error ? alertError.message : String(alertError),
     });
   }
 

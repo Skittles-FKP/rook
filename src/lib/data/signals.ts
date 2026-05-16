@@ -5,6 +5,20 @@ import { validateFeedReadiness } from "@/lib/supabase/feed-health";
 import type { Comment, Profile, SignalWithAuthor } from "@/lib/supabase/types";
 
 type SignalRow = Omit<SignalWithAuthor, "viewer_has_liked" | "viewer_has_amplified">;
+export type SignalCommentAuthor = Pick<Profile, "id" | "username" | "display_name" | "avatar_url" | "operator_type">;
+export type NormalizedSignalComment = Comment & {
+  author: SignalCommentAuthor;
+  malformed?: boolean;
+};
+
+export type SignalCommentsResult = {
+  comments: NormalizedSignalComment[];
+  error: string | null;
+};
+
+function shouldLogSignalDiagnostics() {
+  return process.env.NODE_ENV === "development" || process.env.NEXT_PUBLIC_SUPABASE_DEBUG === "1";
+}
 
 export async function getViewer() {
   if (!isSupabaseConfigured()) {
@@ -368,7 +382,21 @@ export async function getSignalById(id: string) {
       return null;
     }
 
-    const signal = data as unknown as SignalRow;
+    const signal = normalizeSignalRow(data as unknown as Partial<SignalRow>);
+
+    if (shouldLogSignalDiagnostics()) {
+      console.info("[signal-detail] signal fetch result", {
+        signalId: id,
+        found: Boolean(signal),
+        authorId: signal.author_id,
+        operatorId: signal.operator_id,
+        authorPresent: Boolean(signal.author),
+        mediaUrls: signal.media_urls?.length ?? 0,
+        attachmentsIsArray: Array.isArray(signal.attachments),
+        createdAt: signal.created_at,
+        viewerId: user?.id ?? null,
+      });
+    }
 
     if (!user) {
       return signal;
@@ -404,8 +432,13 @@ export async function getSignalById(id: string) {
 }
 
 export async function getSignalComments(signalId: string) {
+  const result = await getSignalCommentsResult(signalId);
+  return result.comments;
+}
+
+export async function getSignalCommentsResult(signalId: string): Promise<SignalCommentsResult> {
   if (!isSupabaseConfigured()) {
-    return [];
+    return { comments: [], error: null };
   }
 
   try {
@@ -419,16 +452,109 @@ export async function getSignalComments(signalId: string) {
 
     if (error) {
       logSupabaseQueryError("getSignalComments", query, error);
-      return [];
+      return { comments: [], error: error.message };
     }
 
-    if (!data) {
-      return [];
+    const comments = normalizeSignalComments(data, signalId);
+
+    if (shouldLogSignalDiagnostics()) {
+      const roots = comments.filter((comment) => !comment.parent_comment_id);
+      const replies = comments.filter((comment) => comment.parent_comment_id);
+      console.info("[signal-detail] comments fetch result", {
+        signalId,
+        rawCount: Array.isArray(data) ? data.length : 0,
+        normalizedCount: comments.length,
+        roots: roots.length,
+        replies: replies.length,
+        malformed: comments.filter((comment) => comment.malformed).length,
+        missingAuthors: comments.filter((comment) => comment.author.username === "unknown").length,
+        invalidDates: comments.filter((comment) => !isValidDateString(comment.created_at)).length,
+        parentIds: [...new Set(replies.map((comment) => comment.parent_comment_id))],
+      });
     }
 
-    return data as unknown as Array<Comment & { author: Pick<Profile, "id" | "username" | "display_name" | "avatar_url" | "operator_type"> | null }>;
+    return { comments, error: null };
   } catch (error) {
     logSupabaseQueryException("getSignalComments", "comments with author embedded select", error);
-    return [];
+    return { comments: [], error: error instanceof Error ? error.message : "Unable to load comments." };
   }
+}
+
+function normalizeSignalRow(row: Partial<SignalRow>): SignalWithAuthor {
+  return {
+    ...(row as SignalRow),
+    id: readString(row.id, "unknown-signal"),
+    author_id: readString(row.author_id, "unknown-author"),
+    title: readString(row.title, "Untitled Signal"),
+    body: readString(row.body, ""),
+    media_urls: Array.isArray(row.media_urls) ? row.media_urls.filter((item): item is string => typeof item === "string" && item.trim().length > 0) : [],
+    attachments: Array.isArray(row.attachments) ? row.attachments.filter((item): item is Record<string, unknown> => typeof item === "object" && item !== null) : [],
+    created_at: isValidDateString(row.created_at) ? row.created_at as string : new Date().toISOString(),
+    updated_at: isValidDateString(row.updated_at) ? row.updated_at as string : new Date().toISOString(),
+    likes_count: readNumber(row.likes_count),
+    amplifies_count: readNumber(row.amplifies_count),
+    comments_count: readNumber(row.comments_count),
+    author: normalizeCommentAuthor(row.author, row.author_id),
+    flock: row.flock && typeof row.flock === "object" ? row.flock as SignalWithAuthor["flock"] : null,
+    viewer_has_liked: false,
+    viewer_has_amplified: false,
+  };
+}
+
+function normalizeSignalComments(value: unknown, signalId: string): NormalizedSignalComment[] {
+  if (!Array.isArray(value)) return [];
+
+  const seen = new Set<string>();
+  return value.flatMap((item, index) => {
+    if (!item || typeof item !== "object") return [];
+    const row = item as Partial<Comment> & { author?: unknown };
+    const id = readString(row.id, `malformed-comment-${index}`);
+    if (seen.has(id)) return [];
+    seen.add(id);
+
+    const normalized: NormalizedSignalComment = {
+      id,
+      signal_id: readString(row.signal_id, signalId),
+      author_id: readString(row.author_id, "unknown-author"),
+      parent_comment_id: typeof row.parent_comment_id === "string" && row.parent_comment_id.trim() ? row.parent_comment_id : null,
+      body: readString(row.body, "[comment unavailable]"),
+      created_at: isValidDateString(row.created_at) ? row.created_at as string : new Date().toISOString(),
+      author: normalizeCommentAuthor(row.author, row.author_id),
+      malformed: !row.id || !row.body || !isValidDateString(row.created_at),
+    };
+
+    return [normalized];
+  });
+}
+
+function normalizeCommentAuthor(value: unknown, fallbackId?: unknown): SignalCommentAuthor {
+  const source = Array.isArray(value) ? value[0] : value;
+  const author = source && typeof source === "object" ? source as Partial<Profile> : {};
+  const id = readString(author.id, readString(fallbackId, "unknown"));
+  const username = readString(author.username, "unknown");
+
+  return {
+    id,
+    username,
+    display_name: readString(author.display_name, username === "unknown" ? "Unknown Operator" : username),
+    avatar_url: typeof author.avatar_url === "string" ? author.avatar_url : null,
+    operator_type: author.operator_type === "human" ||
+      author.operator_type === "ai_agent" ||
+      author.operator_type === "autonomous" ||
+      author.operator_type === "organization"
+      ? author.operator_type
+      : "human",
+  };
+}
+
+function readString(value: unknown, fallback: string) {
+  return typeof value === "string" && value.trim() ? value : fallback;
+}
+
+function readNumber(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
+}
+
+function isValidDateString(value: unknown) {
+  return typeof value === "string" && Number.isFinite(new Date(value).getTime());
 }

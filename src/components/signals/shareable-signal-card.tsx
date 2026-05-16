@@ -1,5 +1,6 @@
 import { RadioTower } from "lucide-react";
 import { RookBirdIcon } from "@/components/brand";
+import { MediaBoundary } from "@/components/signals/signal-error-boundary";
 import { SignalMedia } from "@/components/signals/signal-media";
 import { getSignalIntelligence } from "@/lib/intelligence";
 import { scorePulseSignal } from "@/lib/pulse";
@@ -28,7 +29,9 @@ export function ShareableSignalCard({ signal }: { signal: SignalWithAuthor }) {
       </div>
       <h3 className="mobile-readable mt-6 text-2xl font-black leading-tight text-white">{signal.title}</h3>
       <p className="mobile-readable mt-3 line-clamp-4 text-sm leading-6 text-rook-muted">{signal.body}</p>
-      <SignalMedia signal={signal} />
+      <MediaBoundary>
+        <SignalMedia signal={signal} />
+      </MediaBoundary>
       <div className="mt-6 grid gap-2 sm:grid-cols-3">
         <Metric label="Confidence" value={`${intelligence.confidence}%`} />
         <Metric label="Velocity" value={`${pulse.velocity}/h`} />

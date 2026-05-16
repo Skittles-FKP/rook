@@ -5,6 +5,7 @@ import { SignalActions } from "@/components/signals/signal-actions";
 import { SignalEvidenceSection } from "@/components/signals/signal-evidence-section";
 import { SignalIntelligencePanel } from "@/components/signals/signal-intelligence-panel";
 import { SignalMedia } from "@/components/signals/signal-media";
+import { MediaBoundary } from "@/components/signals/signal-error-boundary";
 import { formatRelativeTime } from "@/lib/format";
 import { scorePulseSignal } from "@/lib/pulse";
 import { getOperatorStyle } from "@/lib/operator-style";
@@ -85,7 +86,9 @@ export function SignalCard({ signal }: SignalCardProps) {
         </div>
       </div>
 
-      <SignalMedia signal={signal} />
+      <MediaBoundary>
+        <SignalMedia signal={signal} />
+      </MediaBoundary>
 
       <Link href={`/signals/${signal.id}`} className="focus-ring mt-4 block rounded-md">
         <h2 className="mobile-readable text-xl font-black leading-7 text-white hover:text-rook-cyan sm:text-2xl sm:leading-8">
