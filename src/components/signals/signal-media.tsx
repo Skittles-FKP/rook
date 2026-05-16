@@ -260,12 +260,12 @@ export function normalizeSignalMediaItems(signal: SignalWithAuthor): NormalizedM
     });
   }
 
-  for (const url of signal.media_urls ?? []) {
+  for (const url of Array.isArray(signal.media_urls) ? signal.media_urls : []) {
     candidates.push({ mediaUrl: url });
   }
 
   candidates.push(
-    { rawType: signal.media_type, mediaUrl: signal.media_url, thumbnailUrl: signal.thumbnail_url, embedUrl: signal.embed_url, ogTitle: signal.og_title, ogDescription: signal.og_description, ogImage: signal.og_image, aiGenerated: signal.media_type === "ai_generated" || signal.media_metadata?.aiGenerated === true },
+    { rawType: signal.media_type, mediaUrl: signal.media_url, thumbnailUrl: signal.thumbnail_url, embedUrl: signal.embed_url, ogTitle: signal.og_title, ogDescription: signal.og_description, ogImage: signal.og_image, aiGenerated: signal.media_type === "ai_generated" || isRecord(signal.media_metadata) && signal.media_metadata.aiGenerated === true },
     { rawType: "image", mediaUrl: signal.image_url, thumbnailUrl: signal.image_url },
     { rawType: "video", mediaUrl: signal.video_url },
     { rawType: "chart", mediaUrl: signal.chart_url, thumbnailUrl: signal.chart_url },
@@ -305,7 +305,7 @@ function normalizeMediaCandidate(
     ogDescription: candidate.ogDescription ?? signal.og_description ?? null,
     ogImage: candidate.ogImage ?? signal.og_image ?? null,
     domain: getSafeHostname(mediaUrl),
-    aiGenerated: Boolean(candidate.aiGenerated || mediaType === "ai_generated" || signal.media_metadata?.aiGenerated === true),
+    aiGenerated: Boolean(candidate.aiGenerated || mediaType === "ai_generated" || isRecord(signal.media_metadata) && signal.media_metadata.aiGenerated === true),
   };
 }
 
@@ -332,6 +332,10 @@ function safeEmbedUrl(value: string | null | undefined, mediaType: SignalMediaTy
   if (!value || !["youtube", "x_post", "video"].includes(mediaType)) return null;
   const detected = detectMediaUrl(value);
   return detected.embedUrl;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function isImageMedia(mediaType: SignalMediaType) {

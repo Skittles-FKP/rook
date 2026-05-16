@@ -8,12 +8,13 @@ type ContinuityDelta = {
 };
 
 export function deriveSignalContinuity(signal: SignalWithAuthor, pulse: PulseSignal) {
-  const tags = signal.ai_narrative_tags ?? [];
+  const tags = Array.isArray(signal.ai_narrative_tags) ? signal.ai_narrative_tags.filter((tag): tag is string => typeof tag === "string") : [];
   const state = readTag(tags, "state:") ?? "stable";
   const escalationDelta = readDelta(tags, "delta:escalation:");
   const pulseMovement = readDelta(tags, "delta:pulse:");
   const contradictionDelta = readDelta(tags, "delta:contradiction:");
-  const previousReference = signal.body.match(/continuity:\s*(.+)$/i)?.[1]?.trim() ?? null;
+  const body = typeof signal.body === "string" ? signal.body : "";
+  const previousReference = body.match(/continuity:\s*(.+)$/i)?.[1]?.trim() ?? null;
   const createdAt = Date.parse(signal.created_at);
   const narrativeAgeHours = Number.isFinite(createdAt)
     ? Math.max(0, Math.round((Date.now() - createdAt) / 36_000) / 100)

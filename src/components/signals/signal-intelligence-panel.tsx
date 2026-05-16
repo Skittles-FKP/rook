@@ -1,5 +1,5 @@
 import { Activity, AlertTriangle, BrainCircuit, GitBranch, ShieldCheck } from "lucide-react";
-import { getSignalIntelligence } from "@/lib/intelligence";
+import { getSignalIntelligence } from "@/lib/signal-intelligence";
 import { scorePulseSignal } from "@/lib/pulse";
 import { deriveSignalContinuity } from "@/lib/signal-continuity";
 import type { SignalWithAuthor } from "@/lib/supabase/types";
@@ -7,6 +7,10 @@ import type { SignalWithAuthor } from "@/lib/supabase/types";
 export function SignalIntelligencePanel({ signal }: { signal: SignalWithAuthor }) {
   const intelligence = getSignalIntelligence(signal);
   const continuity = deriveSignalContinuity(signal, scorePulseSignal(signal));
+  const tags = Array.isArray(intelligence.narrative_tags) && intelligence.narrative_tags.length > 0
+    ? intelligence.narrative_tags
+    : ["unclassified"];
+  const velocityHistory = Array.isArray(intelligence.velocity_history) ? intelligence.velocity_history : [];
 
   return (
     <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.035] p-3">
@@ -21,7 +25,7 @@ export function SignalIntelligencePanel({ signal }: { signal: SignalWithAuthor }
             <p className="text-[10px] font-black uppercase tracking-[0.14em]">Tags</p>
           </div>
           <div className="mt-2 flex flex-wrap gap-1.5">
-            {(intelligence.narrative_tags.length > 0 ? intelligence.narrative_tags : ["unclassified"]).map((tag) => (
+            {tags.map((tag) => (
               <span key={tag} className="rounded-full bg-rook-blue/10 px-2 py-1 text-[10px] font-bold text-rook-cyan">
                 {tag}
               </span>
@@ -30,7 +34,7 @@ export function SignalIntelligencePanel({ signal }: { signal: SignalWithAuthor }
         </div>
       </div>
       <div className="mt-3 flex h-12 items-end gap-1 rounded-lg bg-rook-void/40 px-2 py-2">
-        {intelligence.velocity_history.map((value, index) => (
+        {velocityHistory.map((value, index) => (
           <div
             key={`${value}-${index}`}
             className="flex-1 rounded-sm bg-gradient-to-t from-rook-blue to-rook-green"

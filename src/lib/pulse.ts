@@ -50,11 +50,11 @@ const STOP_WORDS = new Set([
 
 function hoursSince(value: string) {
   const age = Date.now() - new Date(value).getTime();
-  return Math.max(age / 36e5, 0.25);
+  return Number.isFinite(age) ? Math.max(age / 36e5, 0.25) : 0.25;
 }
 
 export function extractTopicTerms(signal: Pick<SignalWithAuthor, "title" | "body" | "flock">) {
-  const text = `${signal.title} ${signal.body} ${signal.flock?.name ?? ""}`.toLowerCase();
+  const text = `${readText(signal.title)} ${readText(signal.body)} ${readText(signal.flock?.name)}`.toLowerCase();
   const terms = text
     .replace(/[^a-z0-9\s-]/g, " ")
     .split(/\s+/)
@@ -73,17 +73,20 @@ export function extractTopicTerms(signal: Pick<SignalWithAuthor, "title" | "body
 
 export function scorePulseSignal(signal: SignalWithAuthor): PulseSignal {
   const ageHours = hoursSince(signal.created_at);
-  const engagement = signal.likes_count + signal.comments_count + signal.amplifies_count;
-  const amplificationVelocity = signal.amplifies_count / ageHours;
-  const commentVelocity = signal.comments_count / ageHours;
+  const likes = readNumber(signal.likes_count);
+  const comments = readNumber(signal.comments_count);
+  const amplifies = readNumber(signal.amplifies_count);
+  const engagement = likes + comments + amplifies;
+  const amplificationVelocity = amplifies / ageHours;
+  const commentVelocity = comments / ageHours;
   const engagementVelocity = engagement / ageHours;
   const recentGrowthWeight = Math.min(2.4, 1 + 8 / (ageHours + 8));
   const acceleration =
-    (signal.likes_count * 1.2 + signal.comments_count * 2.4 + signal.amplifies_count * 3.1) *
+    (likes * 1.2 + comments * 2.4 + amplifies * 3.1) *
     recentGrowthWeight;
   const anomalyScore =
-    signal.comments_count > 0 && signal.likes_count <= 1
-      ? signal.comments_count * 1.8
+    comments > 0 && likes <= 1
+      ? comments * 1.8
       : amplificationVelocity > commentVelocity * 2
         ? amplificationVelocity * 1.4
         : Math.max(0, engagementVelocity - 2);
@@ -99,6 +102,11 @@ export function scorePulseSignal(signal: SignalWithAuthor): PulseSignal {
 
   return {
     ...signal,
+    title: readText(signal.title, "Untitled Signal"),
+    body: readText(signal.body),
+    likes_count: likes,
+    comments_count: comments,
+    amplifies_count: amplifies,
     pulse_score: pulseScore,
     velocity: Number(engagementVelocity.toFixed(2)),
     acceleration: Number(acceleration.toFixed(2)),
@@ -109,6 +117,14 @@ export function scorePulseSignal(signal: SignalWithAuthor): PulseSignal {
     pulse_labels: labels,
     topic_terms: extractTopicTerms(signal),
   };
+}
+
+function readNumber(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
+}
+
+function readText(value: unknown, fallback = "") {
+  return typeof value === "string" ? value : fallback;
 }
 
 export function clusterPulseSignals(signals: PulseSignal[]): PulseCluster[] {

@@ -15,6 +15,7 @@ const evidenceIcons: Record<SignalEvidenceType, React.ComponentType<{ className?
 
 export function SignalEvidenceSection({ signal }: { signal: SignalWithAuthor }) {
   const packet = buildSignalEvidencePacket(signal);
+  const items = Array.isArray(packet.items) ? packet.items : [];
 
   return (
     <details className="group mt-4 overflow-hidden rounded-lg border border-white/10 bg-rook-void/35">
@@ -40,8 +41,9 @@ export function SignalEvidenceSection({ signal }: { signal: SignalWithAuthor }) 
           <EvidenceStat label="Timestamp" value={formatRelativeTime(packet.timestamp)} />
         </div>
         <div className="mt-3 grid gap-2">
-          {packet.items.map((item) => {
+          {items.map((item) => {
             const Icon = evidenceIcons[item.type];
+            if (!Icon || !item.href) return null;
             return (
               <Link
                 key={`${item.type}-${item.href}`}

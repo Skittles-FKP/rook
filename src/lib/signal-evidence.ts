@@ -1,6 +1,6 @@
 import type { SignalWithAuthor } from "@/lib/supabase/types";
 
-export type SignalEvidenceType = "source" | "image" | "chart" | "video" | "graph";
+export type SignalEvidenceType = "source" | "image" | "chart" | "video" | "media" | "graph";
 
 export type SignalEvidenceItem = {
   type: SignalEvidenceType;
@@ -35,18 +35,23 @@ const TRUSTED_SOURCE_HINTS = [
 ];
 
 export function buildSignalEvidencePacket(signal: SignalWithAuthor): SignalEvidencePacket {
+  const title = typeof signal.title === "string" ? signal.title : "Untitled Signal";
+  const createdAt = Number.isFinite(new Date(signal.created_at).getTime()) ? signal.created_at : new Date().toISOString();
+  const tags = Array.isArray(signal.ai_narrative_tags) ? signal.ai_narrative_tags : [];
   const items = [
     buildEvidenceItem(signal, "source", signal.reference_url, "Primary source reference"),
-    buildEvidenceItem(signal, "image", signal.image_url, "Image evidence"),
+    buildEvidenceItem(signal, "image", signal.image_url ?? signal.thumbnail_url, "Image evidence"),
+    buildEvidenceItem(signal, "video", signal.video_url, "Video evidence"),
+    buildEvidenceItem(signal, "media", signal.media_url, "Media evidence"),
     buildEvidenceItem(signal, "chart", signal.chart_url, "Chart evidence"),
     buildEvidenceItem(signal, "video", signal.embed_url, "Embedded media evidence"),
     {
       type: "graph" as const,
       title: "Related Rook graph",
-      href: `/graph?focus=${encodeURIComponent(signal.ai_narrative_tags?.[0] ?? signal.title)}`,
+      href: `/graph?focus=${encodeURIComponent(tags[0] ?? title)}`,
       domain: "rook.local",
       credibility: 82,
-      timestamp: signal.created_at,
+      timestamp: createdAt,
       summary: "Internal graph context derived from related Signals, topics, Flocks, and Pulse velocity.",
     },
   ].filter((item): item is SignalEvidenceItem => Boolean(item));
@@ -57,7 +62,7 @@ export function buildSignalEvidencePacket(signal: SignalWithAuthor): SignalEvide
     sourceTitle: primary?.title ?? "Rook internal intelligence graph",
     sourceDomain: primary?.domain ?? "rook.local",
     credibility: primary?.credibility ?? deriveCredibility("rook.local"),
-    timestamp: primary?.timestamp ?? signal.created_at,
+    timestamp: primary?.timestamp ?? createdAt,
     evidenceType: primary?.type ?? "graph",
     items,
   };
