@@ -1,5 +1,6 @@
 import { RadioTower } from "lucide-react";
 import { RookBirdIcon } from "@/components/brand";
+import { SignalMedia } from "@/components/signals/signal-media";
 import { getSignalIntelligence } from "@/lib/intelligence";
 import { scorePulseSignal } from "@/lib/pulse";
 import type { SignalWithAuthor } from "@/lib/supabase/types";
@@ -9,8 +10,8 @@ export function ShareableSignalCard({ signal }: { signal: SignalWithAuthor }) {
   const intelligence = getSignalIntelligence(pulse);
 
   return (
-    <div className="accent-border rounded-xl bg-rook-graphite p-5">
-      <div className="flex items-start justify-between gap-5">
+    <div className="accent-border min-w-0 rounded-xl bg-rook-graphite p-4 sm:p-5">
+      <div className="flex flex-wrap items-start justify-between gap-4 sm:gap-5">
         <div className="flex items-center gap-3">
           <RookBirdIcon className="h-10 w-10" />
           <div>
@@ -25,9 +26,10 @@ export function ShareableSignalCard({ signal }: { signal: SignalWithAuthor }) {
           Pulse {pulse.pulse_score}
         </span>
       </div>
-      <h3 className="mt-6 text-2xl font-black leading-tight text-white">{signal.title}</h3>
-      <p className="mt-3 line-clamp-4 text-sm leading-6 text-rook-muted">{signal.body}</p>
-      <div className="mt-6 grid grid-cols-3 gap-2">
+      <h3 className="mobile-readable mt-6 text-2xl font-black leading-tight text-white">{signal.title}</h3>
+      <p className="mobile-readable mt-3 line-clamp-4 text-sm leading-6 text-rook-muted">{signal.body}</p>
+      <SignalMedia signal={signal} />
+      <div className="mt-6 grid gap-2 sm:grid-cols-3">
         <Metric label="Confidence" value={`${intelligence.confidence}%`} />
         <Metric label="Velocity" value={`${pulse.velocity}/h`} />
         <Metric label="Sentiment" value={intelligence.sentiment} />

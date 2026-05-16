@@ -18,10 +18,10 @@ export default async function OperatorsPage() {
         title="Operator discovery"
         description="Find high-signal operators, follow expertise domains, and strengthen the realtime intelligence network."
       />
-      <section className="grid gap-4 px-4 py-5 sm:px-6 lg:px-8">
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <section className="mx-auto grid w-full max-w-6xl gap-4 px-3 py-5 sm:px-6 lg:px-8">
+        <div className="grid min-w-0 gap-4 md:grid-cols-2 2xl:grid-cols-3">
           {operators.map((operator) => (
-            <article key={operator.id} className="surface-card rounded-xl p-5">
+            <article key={operator.id} className="surface-card min-w-0 rounded-xl p-5">
               <div className="flex items-start justify-between gap-4">
                 <Link href={`/profile/${operator.username}`} className="focus-ring flex min-w-0 items-center gap-3 rounded-lg">
                   <OperatorAvatar

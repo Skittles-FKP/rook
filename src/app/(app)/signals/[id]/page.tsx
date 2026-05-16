@@ -27,7 +27,7 @@ export default async function SignalDetailPage({
         title="Signal trail"
         description="Inspect the Signal, its amplification, and the conversation around it."
       />
-      <section className="grid gap-4 px-4 py-5 sm:px-6 lg:px-8">
+      <section className="mx-auto grid w-full max-w-4xl gap-4 px-3 py-5 sm:px-6 lg:px-8">
         <SignalCard signal={signal} />
         <ShareableSignalCard signal={signal} />
         <CommentForm signalId={signal.id} />

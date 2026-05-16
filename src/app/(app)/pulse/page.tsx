@@ -5,6 +5,7 @@ import { Activity, ArrowUpRight, Layers3, RadioTower, ScanLine, TimerReset } fro
 import { PageHeader } from "@/components/shell/page-header";
 import { PulseLiveIndicator } from "@/components/pulse/pulse-live-indicator";
 import { PulseRadar } from "@/components/pulse/pulse-radar";
+import { SignalMedia } from "@/components/signals/signal-media";
 import { getPulseSnapshot } from "@/lib/data/pulse";
 import { getIntelligenceGraph } from "@/lib/intelligence";
 
@@ -40,7 +41,7 @@ export default async function PulsePage() {
         description="Detect accelerating Signals, narrative convergence, anomaly activity, emerging topics, and cross-Flock amplification without reducing the network to trends."
         action={<PulseLiveIndicator />}
       />
-      <section className="grid gap-4 px-4 py-5 sm:px-6 lg:px-8">
+      <section className="mx-auto grid w-full max-w-6xl gap-4 px-3 py-5 sm:px-6 lg:px-8">
         {degraded && (
           <div className="surface-card rounded-xl border-rook-amber/30 p-4">
             <p className="text-sm font-black text-rook-amber">Pulse running in degraded mode</p>
@@ -56,7 +57,7 @@ export default async function PulsePage() {
               Pulse ticker
             </p>
           </div>
-          <div className="flex gap-3 overflow-x-auto px-4 py-3">
+          <div className="mobile-scrollbar flex gap-3 overflow-x-auto px-4 py-3">
             {topSignals.length === 0 ? (
               <span className="text-sm text-rook-muted">Awaiting velocity data.</span>
             ) : (
@@ -64,7 +65,7 @@ export default async function PulsePage() {
                 <Link
                   key={signal.id}
                   href={`/signals/${signal.id}`}
-                  className="focus-ring inline-flex min-w-64 items-center justify-between gap-4 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 transition hover:border-rook-cyan/40"
+                  className="focus-ring inline-flex min-w-[14rem] max-w-[18rem] items-center justify-between gap-4 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 transition hover:border-rook-cyan/40 sm:min-w-64"
                 >
                   <span className="truncate text-sm font-bold text-white">{signal.title}</span>
                   <span className="shrink-0 text-xs font-black text-rook-green">+{signal.pulse_score}</span>
@@ -104,7 +105,7 @@ export default async function PulsePage() {
           </div>
         )}
 
-        <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+        <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Layers3 className="h-5 w-5 text-rook-cyan" />
@@ -167,6 +168,7 @@ export default async function PulsePage() {
                 <p className="mt-2 text-sm leading-6 text-rook-muted">
                   Velocity {signal.velocity}/h, comments {signal.comment_velocity}/h, amplifies {signal.amplification_velocity}/h.
                 </p>
+                <SignalMedia signal={signal} />
                 <div className="mt-3 flex flex-wrap gap-2">
                   {signal.pulse_labels.map((label) => (
                     <span key={label} className="rounded-full bg-white/[0.05] px-2.5 py-1 text-[11px] font-black text-rook-muted">

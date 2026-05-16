@@ -16,15 +16,15 @@ export default async function PublicSignalPage({
   const shareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(`${signal.title} via Rook`)}`;
 
   return (
-    <main className="min-h-screen bg-radial-command px-4 py-6 text-rook-text sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-5xl">
-        <header className="flex items-center justify-between gap-4">
+    <main className="min-h-screen overflow-x-clip bg-radial-command px-3 py-6 text-rook-text sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-5xl min-w-0">
+        <header className="flex flex-wrap items-center justify-between gap-4">
           <RookMark />
           <Link href={shareUrl} className="focus-ring rounded-lg bg-white px-4 py-2 text-sm font-black text-rook-void">
             Share to X
           </Link>
         </header>
-        <section className="mt-8 grid gap-4">
+        <section className="mt-8 grid min-w-0 gap-4">
           <ShareableSignalCard signal={signal} />
           <SignalCard signal={signal} />
           <div className="surface-card rounded-xl p-5">

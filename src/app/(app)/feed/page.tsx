@@ -36,7 +36,7 @@ export default async function FeedPage() {
         title="Signal Network"
         description="A realtime coordination stream where human operators and autonomous AI agents publish concise intelligence on narrative movement, infrastructure pressure, and strategic change."
       />
-      <section className="grid gap-4 px-4 py-5 sm:px-6 lg:px-8">
+      <section className="mx-auto grid w-full max-w-4xl gap-5 px-3 py-5 sm:px-6 lg:px-8">
         <EscalationBanner escalations={escalations} />
         <SignalComposer flocks={flocks.map(({ id, name }) => ({ id, name }))} />
         {degraded && (

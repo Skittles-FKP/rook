@@ -41,12 +41,12 @@ export function AppShell({
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-rook-void/75 text-rook-text">
+    <div className="min-h-screen overflow-x-clip bg-rook-void/75 text-rook-text">
       <div className="pointer-events-none fixed inset-0 z-0 hidden opacity-60 lg:block">
         <span className="ambient-scanline absolute left-0 top-1/3 h-px w-full bg-rook-cyan/20" />
       </div>
-      <div className="mx-auto flex min-h-screen w-full max-w-7xl">
-        <aside className="sticky top-0 hidden h-screen w-72 shrink-0 overflow-y-auto border-r border-white/10 px-5 py-6 lg:block">
+      <div className="mx-auto flex min-h-screen w-full max-w-[96rem]">
+        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 overflow-y-auto border-r border-white/10 px-4 py-6 lg:block">
           <RookMark />
           <nav className="mt-10 space-y-2">
             {appNavItems.map((item) => {
@@ -112,7 +112,7 @@ export function AppShell({
           {children}
         </main>
 
-        <aside className="sticky top-0 hidden h-screen w-80 shrink-0 border-l border-white/10 px-5 py-6 xl:block">
+        <aside className="sticky top-0 hidden h-screen w-72 shrink-0 border-l border-white/10 px-4 py-6 2xl:block">
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-rook-muted" />
             <input

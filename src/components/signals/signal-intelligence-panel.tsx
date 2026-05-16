@@ -10,7 +10,7 @@ export function SignalIntelligencePanel({ signal }: { signal: SignalWithAuthor }
 
   return (
     <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.035] p-3">
-      <div className="grid gap-3 sm:grid-cols-5">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <IntelMetric icon={ShieldCheck} label="Confidence" value={intelligence.confidence} suffix="%" />
         <IntelMetric icon={AlertTriangle} label="Contradiction" value={intelligence.contradiction_score} suffix="%" />
         <IntelMetric icon={Activity} label="Sentiment" value={intelligence.sentiment} />
