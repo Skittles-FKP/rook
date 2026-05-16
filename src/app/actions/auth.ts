@@ -21,6 +21,22 @@ export type ActionState = {
   message: string;
 };
 
+export async function logSignupDiagnosticAction(payload: {
+  eventType: "signup_pending_confirmation" | "signup_success" | "signup_failure" | "verification_resend" | "verification_resend_failure";
+  email?: string | null;
+  status?: "ok" | "failed" | "pending";
+  errorMessage?: string | null;
+  metadata?: Record<string, unknown>;
+}) {
+  await logAuthEvent({
+    eventType: payload.eventType,
+    email: payload.email,
+    status: payload.status,
+    errorMessage: payload.errorMessage,
+    metadata: payload.metadata,
+  });
+}
+
 function authErrorMessage(message: string) {
   if (message !== "fetch failed") {
     return message;
