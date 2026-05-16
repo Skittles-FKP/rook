@@ -31,6 +31,18 @@ export function CommentThread({
   }, [initialComments, initialError, signalId]);
 
   useEffect(() => {
+    function handleCommentCreated(event: Event) {
+      const detail = (event as CustomEvent<{ signalId?: string; comment?: ThreadComment }>).detail;
+      if (detail?.signalId !== signalId || !detail.comment?.id) return;
+      setComments((current) => normalizeThreadComments([...current, detail.comment as ThreadComment], signalId));
+      setLoadError(null);
+    }
+
+    window.addEventListener("rook:comment-created", handleCommentCreated);
+    return () => window.removeEventListener("rook:comment-created", handleCommentCreated);
+  }, [signalId]);
+
+  useEffect(() => {
     let supabase: ReturnType<typeof createClient>;
     try {
       supabase = createClient();
