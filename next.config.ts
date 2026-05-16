@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
   experimental: {
     devtoolSegmentExplorer: false,
     serverActions: {
-      bodySizeLimit: "3mb",
+      bodySizeLimit: "28mb",
     },
   },
   images: {

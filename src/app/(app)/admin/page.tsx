@@ -1,6 +1,7 @@
 export const runtime = "edge";
 
-import { AlertTriangle, BrainCircuit, Shield, UsersRound } from "lucide-react";
+import Link from "next/link";
+import { AlertTriangle, BrainCircuit, Mail, Shield, UsersRound } from "lucide-react";
 import { PageHeader } from "@/components/shell/page-header";
 import { getBriefs } from "@/lib/data/briefs";
 import { getFlocks } from "@/lib/data/flocks";
@@ -24,6 +25,10 @@ export default async function AdminPage() {
           <AdminStat icon={BrainCircuit} label="Brief Queue" value={briefs.length} />
           <AdminStat icon={AlertTriangle} label="Review Flags" value={reports.length} />
         </div>
+        <Link href="/admin/email-health" className="surface-card focus-ring inline-flex w-fit items-center gap-2 rounded-xl px-4 py-3 text-sm font-black text-rook-cyan transition hover:border-rook-cyan/40 hover:text-white">
+          <Mail className="h-4 w-4" />
+          Email health console
+        </Link>
         <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
           <article className="surface-card rounded-xl p-5">
             <p className="text-xs font-black uppercase tracking-[0.22em] text-rook-cyan">Pulse Monitoring</p>

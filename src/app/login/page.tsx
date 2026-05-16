@@ -11,8 +11,9 @@ export default async function LoginPage({
   const params = await searchParams;
 
   return (
-    <main className="grid min-h-screen place-items-center px-4 py-10">
-      <div className="w-full max-w-md">
+    <main className="relative grid min-h-screen place-items-center overflow-hidden px-4 py-10">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(53,216,255,0.14),transparent_24rem),radial-gradient(circle_at_76%_24%,rgba(138,92,255,0.13),transparent_26rem)]" />
+      <div className="relative w-full max-w-md">
         <div className="mb-6">
           <RookMark />
         </div>

@@ -8,7 +8,10 @@ export function WaitlistForm({ referralCode = "" }: { referralCode?: string }) {
   const [state, action] = useActionState(joinWaitlistAction, { ok: false, message: "" });
 
   return (
-    <form action={action} className="surface-card rounded-2xl p-5 sm:p-6">
+    <form action={action} className="surface-card relative overflow-hidden rounded-2xl p-5 sm:p-6">
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(53,216,255,0.07)_1px,transparent_1px),linear-gradient(90deg,rgba(53,216,255,0.05)_1px,transparent_1px)] bg-[size:30px_30px] opacity-35" />
+      <div className="relative">
+      <input type="hidden" name="source" value={referralCode ? "invite-page" : "waitlist"} />
       <p className="text-xs font-black uppercase tracking-[0.24em] text-rook-cyan">Invite Queue</p>
       <h1 className="mt-3 text-3xl font-black text-white">Request operator access</h1>
       <p className="mt-3 text-sm leading-6 text-rook-muted">
@@ -46,7 +49,8 @@ export function WaitlistForm({ referralCode = "" }: { referralCode?: string }) {
           {state.message}
         </p>
       )}
-      <SubmitButton className="mt-5 w-full" pendingLabel="Routing request...">Join Waitlist</SubmitButton>
+      <SubmitButton className="mt-5 w-full" pendingLabel="Routing request...">Request invite</SubmitButton>
+      </div>
     </form>
   );
 }

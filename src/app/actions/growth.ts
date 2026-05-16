@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { logAuthEvent } from "@/lib/auth/events";
 import { captureOperationalError } from "@/lib/production";
 
 export type GrowthActionState = {
@@ -16,6 +17,7 @@ export async function joinWaitlistAction(
   const email = String(formData.get("email") ?? "").trim();
   const role = String(formData.get("role") ?? "").trim();
   const referralCode = String(formData.get("referralCode") ?? "").trim();
+  const source = String(formData.get("source") ?? "waitlist").trim();
 
   if (!email.includes("@")) {
     return { ok: false, message: "Enter a valid operator email." };
@@ -23,10 +25,16 @@ export async function joinWaitlistAction(
 
   try {
     const supabase = await createClient();
-    const { error } = await supabase.from("waitlist_entries").insert({
+    const { error } = await supabase.from("waitlist_entries").upsert({
       email,
+      source,
       role: role || null,
       referral_code: referralCode || null,
+      invited_by: referralCode || null,
+      status: "pending",
+    }, {
+      onConflict: "email",
+      ignoreDuplicates: false,
     });
 
     if (error) {
@@ -34,6 +42,12 @@ export async function joinWaitlistAction(
       return { ok: true, message: "Request received. Launch access queue noted locally." };
     }
 
+    await logAuthEvent({
+      eventType: "waitlist_request",
+      email,
+      status: "pending",
+      metadata: { role, referralCode, source },
+    });
     revalidatePath("/waitlist");
     return { ok: true, message: "Request received. We will route an invite when capacity opens." };
   } catch {

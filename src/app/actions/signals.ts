@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { slugify } from "@/lib/format";
 import { createInteractionAlert, shouldEmitPulseInteraction } from "@/lib/interactions";
+import { detectMediaUrl, uploadMediaFile, type SignalMediaType } from "@/lib/media";
+import { fetchOgMetadata } from "@/lib/og";
 import { checkActionRateLimit, scoreSignalAbuseRisk } from "@/lib/security";
 import type { ActionState } from "@/app/actions/auth";
 
@@ -32,6 +34,9 @@ export async function createSignalAction(
   const referenceUrl = String(formData.get("referenceUrl") ?? "").trim();
   const chartUrl = String(formData.get("chartUrl") ?? "").trim();
   const embedUrl = String(formData.get("embedUrl") ?? "").trim();
+  const mediaUrlInput = String(formData.get("mediaUrl") ?? "").trim();
+  const aiGenerated = String(formData.get("aiGenerated") ?? "") === "on";
+  const mediaFile = formData.get("mediaFile");
   const { supabase, userId } = await getUserId();
 
   if (!userId) {
@@ -49,22 +54,64 @@ export async function createSignalAction(
   const abuse = scoreSignalAbuseRisk({
     title,
     body,
-    urls: [imageUrl, referenceUrl, chartUrl, embedUrl],
+    urls: [imageUrl, referenceUrl, chartUrl, embedUrl, mediaUrlInput],
   });
 
   if (abuse.risk >= 75) {
     return { ok: false, message: `Signal held by quality controls: ${abuse.flags.join(", ")}.` };
   }
 
+  let mediaDetection = detectMediaUrl(mediaUrlInput || imageUrl || chartUrl || embedUrl || referenceUrl, aiGenerated);
+  let uploadedMediaUrl: string | null = null;
+  let uploadedMediaType = mediaDetection.mediaType;
+  let mediaMetadata: Record<string, unknown> = { ...mediaDetection.metadata };
+
+  if (mediaFile instanceof File && mediaFile.size > 0) {
+    const upload = await uploadMediaFile(supabase, userId, mediaFile);
+    if (!upload.ok) {
+      return { ok: false, message: upload.message };
+    }
+
+    uploadedMediaUrl = upload.publicUrl;
+    const validatedMediaType = upload.mediaType as SignalMediaType;
+    uploadedMediaType = aiGenerated && validatedMediaType === "image" ? "ai_generated" : validatedMediaType;
+    mediaMetadata = {
+      ...mediaMetadata,
+      storagePath: upload.path,
+      contentType: mediaFile.type,
+      size: mediaFile.size,
+      originalName: mediaFile.name,
+      aiGenerated,
+    };
+    mediaDetection = {
+      mediaType: uploadedMediaType,
+      mediaUrl: uploadedMediaUrl,
+      embedUrl: null,
+      thumbnailUrl: upload.thumbnailUrl,
+      metadata: mediaMetadata,
+    };
+  }
+
+  const finalMediaUrl = (uploadedMediaUrl ?? mediaDetection.mediaUrl) || null;
+  const shouldFetchOg = finalMediaUrl && ["link", "youtube", "x_post"].includes(mediaDetection.mediaType ?? "");
+  const og = shouldFetchOg ? await fetchOgMetadata(finalMediaUrl) : { ogTitle: null, ogDescription: null, ogImage: null };
+
   const payload = {
     author_id: userId,
     title,
     body,
     flock_id: flockId || null,
-    image_url: imageUrl || null,
-    reference_url: referenceUrl || null,
-    chart_url: chartUrl || null,
-    embed_url: embedUrl || null,
+    image_url: imageUrl || (mediaDetection.mediaType === "image" || mediaDetection.mediaType === "ai_generated" ? finalMediaUrl : null),
+    reference_url: referenceUrl || (mediaDetection.mediaType === "link" ? finalMediaUrl : null),
+    chart_url: chartUrl || (mediaDetection.mediaType === "chart" ? finalMediaUrl : null),
+    embed_url: embedUrl || mediaDetection.embedUrl || (mediaDetection.mediaType === "youtube" || mediaDetection.mediaType === "x_post" ? finalMediaUrl : null),
+    media_type: mediaDetection.mediaType,
+    media_url: finalMediaUrl,
+    thumbnail_url: mediaDetection.thumbnailUrl ?? og.ogImage,
+    og_title: og.ogTitle,
+    og_description: og.ogDescription,
+    og_image: og.ogImage,
+    media_metadata: mediaMetadata,
   };
 
   const { error } = await supabase.from("signals").insert(payload);

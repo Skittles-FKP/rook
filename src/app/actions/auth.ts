@@ -4,6 +4,9 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getSupabaseEnvDiagnostics } from "@/lib/supabase/env";
+import { getSiteUrl } from "@/lib/auth/env";
+import { logAuthEvent } from "@/lib/auth/events";
+import { generateOperatorProfile } from "@/lib/auth/operator-profile";
 import {
   OPERATOR_AVATAR_BUCKET,
   OPERATOR_AVATAR_MAX_BYTES,
@@ -35,47 +38,81 @@ export async function signUpAction(
 ): Promise<ActionState> {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
-  const username = normaliseUsername(String(formData.get("username") ?? ""));
-  const displayName = String(formData.get("displayName") ?? "").trim();
+  const inviteCode = String(formData.get("invite") ?? "").trim();
+  const source = String(formData.get("source") ?? "signup").trim();
 
-  if (!email || !password || !username || !displayName) {
-    return { ok: false, message: "Email, password, username, and display name are required." };
+  if (!email || !password) {
+    return { ok: false, message: "Email and password are required." };
   }
 
-  if (username.length < 3) {
-    return { ok: false, message: "Username must be at least 3 characters." };
-  }
+  await logAuthEvent({ eventType: "signup_attempt", email, status: "pending", metadata: { inviteCode, source } });
 
+  const generated = generateOperatorProfile(email);
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
+      emailRedirectTo: `${getSiteUrl()}/auth/callback?next=/feed`,
       data: {
-        username,
-        display_name: displayName,
+        username: generated.username,
+        display_name: generated.displayName,
+        codename: generated.codename,
+        avatar_gradient: generated.avatarGradient,
+        tactical_specialization: generated.tacticalSpecialization,
+        specialization: generated.tacticalSpecialization,
+        reputation_score: generated.reputationScore,
+        pulse_score: generated.pulseScore,
+        alignment: generated.alignment,
+        intelligence_category: generated.intelligenceCategory,
+        invite_code: inviteCode || null,
+        source,
       },
     },
   });
 
   if (error) {
+    await logAuthEvent({
+      eventType: "signup_failure",
+      email,
+      status: "failed",
+      errorMessage: error.message,
+      metadata: { inviteCode, source },
+    });
     return { ok: false, message: authErrorMessage(error.message) };
   }
+
+  await logAuthEvent({
+    eventType: inviteCode ? "invite_signup" : "signup_success",
+    email,
+    userId: data.user?.id,
+    status: data.session ? "ok" : "pending",
+    metadata: { inviteCode, source, confirmationSent: !data.session },
+  });
 
   if (data.user && data.session) {
     await supabase.from("profiles").upsert({
       id: data.user.id,
-      username,
-      display_name: displayName,
-      onboarding_completed: false,
+      username: generated.username,
+      display_name: generated.displayName,
+      codename: generated.codename,
+      avatar_gradient: generated.avatarGradient,
+      tactical_specialization: generated.tacticalSpecialization,
+      specialization: generated.tacticalSpecialization,
+      reputation_score: generated.reputationScore,
+      pulse_score: generated.pulseScore,
+      alignment: generated.alignment,
+      intelligence_category: generated.intelligenceCategory,
+      invite_code: inviteCode || null,
+      onboarding_completed: true,
     });
     revalidatePath("/", "layout");
-    redirect("/onboarding");
+    redirect("/feed");
   }
 
   return {
     ok: true,
-    message: "Check your email to confirm your Rook account, then log in.",
+    message: "Signal received. Check your email to confirm access, then you will route into the feed.",
   };
 }
 
@@ -95,11 +132,41 @@ export async function loginAction(
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
+    await logAuthEvent({ eventType: "login_failure", email, status: "failed", errorMessage: error.message });
     return { ok: false, message: authErrorMessage(error.message) };
   }
 
+  await logAuthEvent({ eventType: "login_success", email });
   revalidatePath("/", "layout");
   redirect(next.startsWith("/") ? next : "/feed");
+}
+
+export async function oauthAction(formData: FormData) {
+  const provider = String(formData.get("provider") ?? "");
+  const next = String(formData.get("next") ?? "/feed");
+
+  if (provider !== "google" && provider !== "github") {
+    return;
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider,
+    options: {
+      redirectTo: `${getSiteUrl()}/auth/callback?next=${encodeURIComponent(next.startsWith("/") ? next : "/feed")}`,
+    },
+  });
+
+  if (error) {
+    await logAuthEvent({ eventType: "oauth_failure", provider, status: "failed", errorMessage: error.message });
+    redirect(`/login?error=${encodeURIComponent(authErrorMessage(error.message))}`);
+  }
+
+  await logAuthEvent({ eventType: "oauth_start", provider, status: "pending" });
+
+  if (data.url) {
+    redirect(data.url);
+  }
 }
 
 export async function logoutAction() {

@@ -121,6 +121,29 @@ textarea {
   animation: rook-pulse-shimmer 3.8s ease-in-out infinite;
 }
 
+.rook-media-frame {
+  position: relative;
+  box-shadow: 0 0 32px rgba(53, 216, 255, 0.06);
+}
+
+.rook-media-frame::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.22;
+  mix-blend-mode: screen;
+}
+
+.rook-ai-media-frame {
+  animation: rook-media-pulse 3.4s ease-in-out infinite;
+}
+
 .graph-relation-active {
   stroke-dasharray: 7 7;
   animation: graph-path-flow 7s linear infinite;
@@ -257,6 +280,15 @@ textarea {
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes rook-media-pulse {
+  0%, 100% {
+    box-shadow: 0 0 28px rgba(53, 216, 255, 0.08), inset 0 0 0 1px rgba(53, 216, 255, 0.08);
+  }
+  50% {
+    box-shadow: 0 0 44px rgba(53, 216, 255, 0.18), inset 0 0 0 1px rgba(53, 216, 255, 0.18);
   }
 }
 

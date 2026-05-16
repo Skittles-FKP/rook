@@ -22,6 +22,7 @@ export function getProductionReadiness() {
   ];
   const optionalEnv = [
     "OPENAI_API_KEY",
+    "RESEND_API_KEY",
     "SENTRY_DSN",
     "SUPABASE_SERVICE_ROLE_KEY",
   ];
@@ -50,6 +51,7 @@ export function getDeploymentChecklist() {
     { label: "Supabase public URL", ready: !readiness.missingRequired.includes("NEXT_PUBLIC_SUPABASE_URL") },
     { label: "Supabase anon key", ready: !readiness.missingRequired.includes("NEXT_PUBLIC_SUPABASE_ANON_KEY") },
     { label: "Public site URL", ready: !readiness.missingRequired.includes("NEXT_PUBLIC_SITE_URL") },
+    { label: "Resend SMTP key", ready: !readiness.missingOptional.includes("RESEND_API_KEY") },
     { label: "OpenAI provider", ready: readiness.aiConfigured },
     { label: "Sentry DSN", ready: !readiness.missingOptional.includes("SENTRY_DSN") },
     { label: "Service role for workers", ready: !readiness.missingOptional.includes("SUPABASE_SERVICE_ROLE_KEY") },

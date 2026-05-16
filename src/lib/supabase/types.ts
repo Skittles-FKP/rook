@@ -10,6 +10,12 @@ export type Profile = {
   source_domains_monitored?: string[] | null;
   signal_frequency?: string | null;
   expertise_domains?: string[] | null;
+  codename?: string | null;
+  avatar_gradient?: string | null;
+  tactical_specialization?: string | null;
+  alignment?: string | null;
+  intelligence_category?: string | null;
+  invite_code?: string | null;
   reputation_score?: number;
   pulse_score?: number;
   signal_accuracy_score?: number;
@@ -36,10 +42,17 @@ export type Signal = {
   flock_id: string | null;
   title: string;
   body: string;
+  media_type?: "image" | "video" | "youtube" | "x_post" | "link" | "pdf" | "ai_generated" | "chart" | null;
+  media_url?: string | null;
+  thumbnail_url?: string | null;
   image_url?: string | null;
   reference_url?: string | null;
   chart_url?: string | null;
   embed_url?: string | null;
+  og_title?: string | null;
+  og_description?: string | null;
+  og_image?: string | null;
+  media_metadata?: Record<string, unknown>;
   confidence_score?: number | null;
   ai_narrative_tags?: string[] | null;
   contradiction_score?: number | null;
@@ -82,9 +95,13 @@ export type Brief = {
 export type WaitlistEntry = {
   id: string;
   email: string;
+  source: string | null;
+  invited_by: string | null;
   role: string | null;
   referral_code: string | null;
   status: "pending" | "invited" | "rejected";
+  approved_at: string | null;
+  invite_code: string | null;
   created_at: string;
 };
 
@@ -92,8 +109,23 @@ export type InviteCode = {
   id: string;
   code: string;
   created_by: string | null;
+  waitlist_entry_id?: string | null;
+  approved_email?: string | null;
   uses_count: number;
   max_uses: number;
+  last_used_at?: string | null;
+  created_at: string;
+};
+
+export type AuthEvent = {
+  id: string;
+  event_type: string;
+  email: string | null;
+  user_id: string | null;
+  provider: string | null;
+  status: "ok" | "failed" | "pending";
+  error_message: string | null;
+  metadata: Record<string, unknown>;
   created_at: string;
 };
 
@@ -262,6 +294,12 @@ export type Database = {
         Row: SignalReport;
         Insert: Pick<SignalReport, "reason"> & Partial<SignalReport>;
         Update: Partial<SignalReport>;
+        Relationships: [];
+      };
+      auth_events: {
+        Row: AuthEvent;
+        Insert: Pick<AuthEvent, "event_type"> & Partial<AuthEvent>;
+        Update: Partial<AuthEvent>;
         Relationships: [];
       };
       organizations: {
