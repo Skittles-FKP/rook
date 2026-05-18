@@ -10,7 +10,7 @@ export function PageHeader({
   action?: React.ReactNode;
 }) {
   return (
-    <section className="border-b border-white/10 px-4 py-6 sm:px-6 lg:px-8">
+    <section className="hidden border-b border-white/10 px-4 py-6 sm:px-6 lg:block lg:px-8">
       <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.28em] text-rook-cyan">

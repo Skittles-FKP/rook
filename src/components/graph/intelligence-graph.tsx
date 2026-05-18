@@ -67,7 +67,7 @@ export function IntelligenceGraph({
   const selectedHref = selectedNode ? getNodeHref(selectedNode) : null;
 
   return (
-    <div className="surface-card relative min-h-[520px] overflow-hidden rounded-xl sm:min-h-[620px]">
+    <div className="surface-card relative min-h-[74vh] overflow-hidden rounded-xl sm:min-h-[620px]">
       <div className="absolute inset-x-0 top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-rook-void/70 px-3 py-3 backdrop-blur-xl sm:px-4">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.2em] text-rook-cyan">
@@ -75,6 +75,9 @@ export function IntelligenceGraph({
           </p>
           <p className="mt-1 text-xs text-rook-muted">
             {nodes.length} nodes · {edges.length} links · live {liveEvents}
+          </p>
+          <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.12em] text-rook-muted sm:hidden">
+            Drag to pan · tap nodes · double tap zoom
           </p>
         </div>
         <div className="flex items-center gap-1.5 sm:gap-2">
@@ -100,7 +103,8 @@ export function IntelligenceGraph({
 
       <svg
         viewBox="0 0 1100 640"
-        className="h-[520px] w-full cursor-grab touch-none select-none pt-20 active:cursor-grabbing sm:h-[620px] sm:pt-14"
+        className="h-[74vh] min-h-[520px] w-full cursor-grab touch-none select-none pt-28 active:cursor-grabbing sm:h-[620px] sm:pt-14"
+        onDoubleClick={() => setScale((value) => Math.min(1.8, value + 0.18))}
         onWheel={(event) => {
           event.preventDefault();
           setScale((value) => Math.min(1.8, Math.max(0.55, value + (event.deltaY > 0 ? -0.08 : 0.08))));
@@ -289,7 +293,7 @@ function GraphButton({
       aria-label={label}
       title={label}
       onClick={onClick}
-      className="focus-ring grid h-9 w-9 place-items-center rounded-lg border border-white/10 bg-white/[0.05] text-rook-muted transition hover:text-white"
+      className="focus-ring grid h-11 w-11 place-items-center rounded-lg border border-white/10 bg-white/[0.05] text-rook-muted transition hover:text-white sm:h-9 sm:w-9"
     >
       {children}
     </button>

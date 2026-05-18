@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, Plus, Search } from "lucide-react";
+import { Bell, Menu, Plus, Search, X } from "lucide-react";
 import { clsx } from "clsx";
 import { OperatorSwitcher } from "@/components/auth/operator-switcher";
 import { SignOutButton } from "@/components/auth/sign-out-button";
@@ -25,6 +25,7 @@ export function AppShell({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -45,38 +46,54 @@ export function AppShell({
       <div className="pointer-events-none fixed inset-0 z-0 hidden opacity-60 lg:block">
         <span className="ambient-scanline absolute left-0 top-1/3 h-px w-full bg-rook-cyan/20" />
       </div>
-      <div className="mx-auto flex min-h-screen w-full max-w-[96rem]">
-        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 overflow-y-auto border-r border-white/10 px-4 py-6 lg:block">
-          <RookMark />
-          <nav className="mt-10 space-y-2">
-            {appNavItems.map((item) => {
-              const Icon = item.icon;
-              const active = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={clsx(
-                    "focus-ring flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-semibold transition",
-                    active
-                      ? "accent-border text-white shadow-glow"
-                      : "text-rook-muted hover:bg-white/[0.06] hover:text-white",
-                  )}
-                >
-                  <Icon className="h-5 w-5" />
-                  {item.label}
-                </Link>
-              );
-            })}
+      <div className="mx-auto flex min-h-screen w-full max-w-[104rem]">
+        <aside className="sticky top-0 hidden h-screen w-16 shrink-0 overflow-y-auto border-r border-white/10 px-2 py-4 lg:block xl:w-40 xl:px-2.5">
+          <div className="grid place-items-center xl:block">
+            <span className="xl:hidden"><RookMark compact /></span>
+            <span className="hidden xl:block"><RookMark /></span>
+          </div>
+          <nav className="mt-6 space-y-3">
+            {desktopNavGroups.map((group, groupIndex) => (
+              <details key={group.label} open={groupIndex < 2} className="group">
+                <summary className="flex min-h-8 cursor-pointer list-none items-center justify-center rounded-lg px-2 text-[10px] font-black uppercase tracking-[0.16em] text-rook-muted transition hover:bg-white/[0.04] hover:text-white xl:justify-between">
+                  <span className="hidden xl:inline">{group.label}</span>
+                  <span className="h-1.5 w-1.5 rounded-full bg-rook-cyan/60 xl:hidden" />
+                  <span className="hidden text-rook-cyan transition group-open:rotate-90 xl:inline">›</span>
+                </summary>
+                <div className="mt-1 grid gap-1">
+                  {group.items.map((item) => {
+                    const Icon = item.icon;
+                    const active = pathname === item.href;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        title={item.label}
+                        className={clsx(
+                          "focus-ring flex min-h-11 items-center justify-center gap-3 rounded-lg px-2 text-sm font-semibold transition xl:justify-start xl:px-3",
+                          active
+                            ? "accent-border text-white shadow-glow"
+                            : "text-rook-muted hover:bg-white/[0.06] hover:text-white",
+                        )}
+                      >
+                        <Icon className="h-5 w-5 shrink-0" />
+                        <span className="hidden truncate xl:inline">{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </details>
+            ))}
           </nav>
           <Link
             href="/feed"
-            className="mt-8 flex min-h-12 items-center justify-center gap-2 rounded-lg bg-white text-sm font-black text-rook-void transition hover:bg-rook-cyan"
+            title="Create Signal"
+            className="mt-5 flex min-h-11 items-center justify-center gap-2 rounded-lg bg-white text-sm font-black text-rook-void transition hover:bg-rook-cyan"
           >
             <Plus className="h-4 w-4" />
-            Create Signal
+            <span className="hidden xl:inline">Create Signal</span>
           </Link>
-          <div className="surface-card mt-8 rounded-xl p-4">
+          <div className="surface-card mt-5 hidden rounded-xl p-3 xl:block">
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-rook-cyan">
               Signed in
             </p>
@@ -95,24 +112,40 @@ export function AppShell({
         </aside>
 
         <main className="mobile-safe-main min-w-0 flex-1 lg:pb-0">
-          <header className="sticky top-0 z-30 border-b border-white/10 bg-rook-void/80 px-4 py-3 backdrop-blur-xl lg:hidden">
+          <header className="sticky top-0 z-30 border-b border-white/10 bg-rook-void/86 px-3 py-2.5 backdrop-blur-2xl lg:hidden">
             <div className="flex items-center justify-between gap-3">
-              <RookMark compact />
-              <div className="flex items-center gap-2">
-                <Link href="/search" className="focus-ring grid h-10 w-10 place-items-center rounded-lg border border-white/10 bg-white/[0.05] text-rook-muted">
+              <button
+                type="button"
+                aria-label="Open operator menu"
+                onClick={() => setDrawerOpen(true)}
+                className="focus-ring grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.055] text-rook-muted"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+              <Link href="/feed" className="focus-ring rounded-lg">
+                <RookMark compact />
+              </Link>
+              <div className="flex items-center gap-1.5">
+                <Link href="/search" aria-label="Search" className="focus-ring grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.05] text-rook-muted">
                   <Search className="h-4 w-4" />
                 </Link>
-                <Link href="/alerts" className="focus-ring grid h-10 w-10 place-items-center rounded-lg border border-white/10 bg-white/[0.05] text-rook-muted">
+                <Link href="/alerts" aria-label="Alerts" className="focus-ring relative grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.05] text-rook-muted">
                   <Bell className="h-4 w-4" />
+                  {events.length > 0 && <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-rook-cyan shadow-glow" />}
                 </Link>
-                <SignOutButton compact className="grid h-10 w-10 place-items-center px-0" />
               </div>
+            </div>
+            <div className="mt-2 flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-3 py-2">
+              <Search className="h-4 w-4 shrink-0 text-rook-cyan" />
+              <Link href="/search" className="min-w-0 flex-1 text-sm font-semibold text-rook-muted">
+                Search Signals, operators, narratives
+              </Link>
             </div>
           </header>
           {children}
         </main>
 
-        <aside className="sticky top-0 hidden h-screen w-72 shrink-0 border-l border-white/10 px-4 py-6 2xl:block">
+        <aside className="sticky top-0 hidden h-screen w-56 shrink-0 border-l border-white/10 px-3 py-5 opacity-90 2xl:block">
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-rook-muted" />
             <input
@@ -122,7 +155,7 @@ export function AppShell({
             />
           </div>
           <NetworkEventStream initialEvents={events} />
-          <div className="surface-card mt-5 rounded-xl p-4">
+          <div className="surface-card mt-4 rounded-xl border-white/[0.07] bg-white/[0.032] p-3">
             <div className="flex items-center justify-between">
               <p className="text-sm font-black text-white">Autonomous Sync</p>
               <span className="network-pulse h-2 w-2 rounded-full bg-rook-cyan" />
@@ -141,7 +174,7 @@ export function AppShell({
               ))}
             </div>
           </div>
-          <div className="surface-card mt-5 rounded-xl p-4">
+          <div className="surface-card mt-4 rounded-xl border-white/[0.07] bg-white/[0.032] p-3">
             <p className="text-sm font-black text-white">Network Readiness</p>
             <div className="mt-4 space-y-4">
               {["Identity", "Signals", "Flocks", "AI Briefs"].map((item, index) => (
@@ -163,7 +196,15 @@ export function AppShell({
         </aside>
       </div>
 
-      <nav className="mobile-safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-rook-void/90 px-2 pt-2 backdrop-blur-xl lg:hidden">
+      <Link
+        href="/feed#compose"
+        aria-label="Create Signal"
+        className="mobile-compose-fab focus-ring fixed bottom-[calc(4.25rem+env(safe-area-inset-bottom))] right-4 z-40 grid h-12 w-12 place-items-center rounded-full bg-white text-rook-void shadow-glow transition active:scale-95 lg:hidden"
+      >
+        <Plus className="h-5 w-5" />
+      </Link>
+
+      <nav className="mobile-safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-rook-void/92 px-2 pt-1 backdrop-blur-2xl lg:hidden">
         <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
           {mobileNavItems.map((item) => {
             const Icon = item.icon;
@@ -173,19 +214,98 @@ export function AppShell({
                 key={item.href}
                 href={item.href}
                 className={clsx(
-                  "focus-ring flex min-h-14 touch-manipulation flex-col items-center justify-center gap-1 rounded-lg px-1 text-[10px] font-bold transition sm:text-[11px]",
+                  "focus-ring flex min-h-11 touch-manipulation flex-col items-center justify-center gap-0.5 rounded-md px-1 text-[9px] font-bold transition sm:text-[10px]",
                   active
                     ? "bg-white text-rook-void"
                     : "text-rook-muted hover:bg-white/[0.06] hover:text-white",
                 )}
               >
-                <Icon className="h-5 w-5" />
+                <Icon className="h-4 w-4" />
                 {item.label}
               </Link>
             );
           })}
         </div>
       </nav>
+
+      <div className={clsx("fixed inset-0 z-50 lg:hidden", drawerOpen ? "pointer-events-auto" : "pointer-events-none")}>
+        <button
+          type="button"
+          aria-label="Close operator menu"
+          onClick={() => setDrawerOpen(false)}
+          className={clsx(
+            "absolute inset-0 bg-rook-void/70 backdrop-blur-sm transition-opacity duration-300",
+            drawerOpen ? "opacity-100" : "opacity-0",
+          )}
+        />
+        <aside
+          className={clsx(
+            "mobile-safe-bottom absolute bottom-0 left-0 top-0 flex w-[86vw] max-w-sm flex-col border-r border-white/10 bg-rook-ink/96 px-4 py-5 shadow-panel transition-transform duration-300 ease-out",
+            drawerOpen ? "translate-x-0" : "-translate-x-full",
+          )}
+        >
+          <div className="flex items-center justify-between gap-3">
+            <RookMark />
+            <button
+              type="button"
+              aria-label="Close operator menu"
+              onClick={() => setDrawerOpen(false)}
+              className="focus-ring grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.05] text-rook-muted"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="mt-5 rounded-xl border border-rook-cyan/20 bg-rook-cyan/[0.055] p-4">
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-rook-cyan">Operator</p>
+            <p className="mt-2 text-sm leading-6 text-rook-muted">
+              {profile
+                ? `${profile.display_name} is operating as @${profile.username}.`
+                : "Complete onboarding to activate your operator profile."}
+            </p>
+          </div>
+          <nav className="mt-5 grid min-h-0 flex-1 gap-1.5 overflow-y-auto pb-4">
+            {appNavItems.map((item) => {
+              const Icon = item.icon;
+              const active = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setDrawerOpen(false)}
+                  className={clsx(
+                    "focus-ring flex min-h-12 items-center gap-3 rounded-lg px-3 text-sm font-bold transition",
+                    active ? "bg-white text-rook-void" : "text-rook-muted hover:bg-white/[0.06] hover:text-white",
+                  )}
+                >
+                  <Icon className="h-5 w-5" />
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+          <div className="mt-auto border-t border-white/10 pt-4">
+            <OperatorSwitcher profile={profile} />
+            <div className="mt-3">
+              <SignOutButton className="w-full" />
+            </div>
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }
+
+const desktopNavGroups = [
+  {
+    label: "Signal",
+    items: appNavItems.filter((item) => ["/feed", "/graph", "/pulse", "/narratives", "/briefs"].includes(item.href)),
+  },
+  {
+    label: "Network",
+    items: appNavItems.filter((item) => ["/agents", "/operators", "/flocks", "/rooms", "/alerts"].includes(item.href)),
+  },
+  {
+    label: "Operator",
+    items: appNavItems.filter((item) => ["/search", "/ingest", "/workspaces", "/ops", "/admin", "/profile", "/settings"].includes(item.href)),
+  },
+];

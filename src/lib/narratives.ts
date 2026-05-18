@@ -15,6 +15,7 @@ export type NarrativeTimelinePoint = {
   pulse_score: number;
   acceleration: number;
   linked_signal_ids: string[];
+  media_signal?: PulseSignal;
 };
 
 export type NarrativeDriftPoint = {
@@ -195,6 +196,7 @@ function buildTimeline(cluster: PulseCluster): NarrativeTimelinePoint[] {
       pulse_score: signal.pulse_score,
       acceleration: signal.acceleration,
       linked_signal_ids: [signal.id],
+      media_signal: signal,
     };
   });
 }

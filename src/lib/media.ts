@@ -13,11 +13,49 @@ export type SignalMediaType =
   | "ai_generated"
   | "chart";
 
+export type SignalVisualMode = "intel" | "financial" | "cyber" | "geopolitics" | "science";
+
+export type SignalAttachment = {
+  type?: SignalMediaType | string | null;
+  url?: string | null;
+  media_url?: string | null;
+  mediaUrl?: string | null;
+  thumbnail_url?: string | null;
+  thumbnailUrl?: string | null;
+  embed_url?: string | null;
+  embedUrl?: string | null;
+  title?: string | null;
+  description?: string | null;
+  width?: number | null;
+  height?: number | null;
+  metadata?: Record<string, unknown>;
+};
+
+export type SignalMediaRecord = SignalAttachment & {
+  cover_image?: string | null;
+  thumbnail?: string | null;
+};
+
 export type MediaDetection = {
   mediaType: SignalMediaType | null;
   mediaUrl: string;
   embedUrl: string | null;
   thumbnailUrl: string | null;
+  metadata: Record<string, unknown>;
+};
+
+export type NormalizedSignalMedia = {
+  type: SignalMediaType;
+  url: string;
+  thumbnailUrl: string | null;
+  embedUrl: string | null;
+  title: string | null;
+  description: string | null;
+  domain: string | null;
+  width: number | null;
+  height: number | null;
+  aiGenerated: boolean;
+  synthetic: boolean;
   metadata: Record<string, unknown>;
 };
 
@@ -92,8 +130,10 @@ export async function uploadMediaFile(supabase: StorageClient, userId: string, f
     return { ok: false as const, message: validation.message };
   }
 
+  const mediaType = validation.mediaType as SignalMediaType;
+  const bucket = mediaType === "image" ? "signal-images" : mediaType === "video" ? "signal-videos" : ROOK_MEDIA_BUCKET;
   const path = mediaStoragePath(userId, file);
-  const { error } = await supabase.storage.from(ROOK_MEDIA_BUCKET).upload(path, file, {
+  const { error } = await supabase.storage.from(bucket).upload(path, file, {
     cacheControl: "31536000",
     contentType: file.type,
     upsert: false,
@@ -103,15 +143,136 @@ export async function uploadMediaFile(supabase: StorageClient, userId: string, f
     return { ok: false as const, message: error.message };
   }
 
-  const { data } = supabase.storage.from(ROOK_MEDIA_BUCKET).getPublicUrl(path);
-  const mediaType = validation.mediaType as SignalMediaType;
+  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+  if (!data.publicUrl) {
+    return { ok: false as const, message: "Upload completed but Supabase did not return a public URL." };
+  }
+
   return {
     ok: true as const,
     path,
     publicUrl: data.publicUrl,
+    bucket,
     mediaType,
     thumbnailUrl: generateThumbnail(data.publicUrl, mediaType),
   };
+}
+
+export function getSignalMedia(
+  signal: {
+    id?: string | null;
+    title?: string | null;
+    body?: string | null;
+    media?: Array<Record<string, unknown>> | null;
+    attachments?: Array<Record<string, unknown>> | null;
+    media_urls?: string[] | null;
+    cover_image?: string | null;
+    thumbnail?: string | null;
+    media_type?: string | null;
+    media_url?: string | null;
+    image_url?: string | null;
+    video_url?: string | null;
+    chart_url?: string | null;
+    embed_url?: string | null;
+    reference_url?: string | null;
+    thumbnail_url?: string | null;
+    og_title?: string | null;
+    og_description?: string | null;
+    og_image?: string | null;
+    media_metadata?: Record<string, unknown> | null;
+    ai_narrative_tags?: string[] | null;
+    visual_mode?: SignalVisualMode | string | null;
+  } & Record<string, unknown>,
+  options: { fallback?: boolean } = {},
+): NormalizedSignalMedia[] {
+  const candidates: Array<{
+    rawType?: string | null;
+    url?: string | null;
+    thumbnailUrl?: string | null;
+    embedUrl?: string | null;
+    title?: string | null;
+    description?: string | null;
+    width?: number | null;
+    height?: number | null;
+    aiGenerated?: boolean;
+    synthetic?: boolean;
+    metadata?: Record<string, unknown>;
+  }> = [];
+
+  const structured = [
+    ...(Array.isArray(signal.media) ? signal.media : []),
+    ...(Array.isArray(signal.attachments) ? signal.attachments : []),
+  ];
+
+  for (const item of structured) {
+    if (!isRecord(item)) continue;
+    const attachment = item as SignalAttachment & Record<string, unknown>;
+    candidates.push({
+      rawType: readString(attachment.type),
+      url: readString(attachment.url) ?? readString(attachment.media_url) ?? readString(attachment.mediaUrl),
+      thumbnailUrl: readString(attachment.thumbnail_url) ?? readString(attachment.thumbnailUrl),
+      embedUrl: readString(attachment.embed_url) ?? readString(attachment.embedUrl),
+      title: readString(attachment.title),
+      description: readString(attachment.description),
+      width: readNumber(attachment.width),
+      height: readNumber(attachment.height),
+      aiGenerated: attachment.type === "ai_generated" || attachment.metadata?.aiGenerated === true,
+      metadata: attachment.metadata ?? {},
+    });
+  }
+
+  for (const url of Array.isArray(signal.media_urls) ? signal.media_urls : []) {
+    candidates.push({ url });
+  }
+
+  candidates.push(
+    {
+      rawType: readString(signal.media_type),
+      url: readString(signal.media_url) ?? readString(signal.mediaUrl),
+      thumbnailUrl: readString(signal.thumbnail_url) ?? readString(signal.thumbnailUrl) ?? readString(signal.thumbnail),
+      embedUrl: readString(signal.embed_url) ?? readString(signal.embedUrl),
+      title: readString(signal.og_title),
+      description: readString(signal.og_description),
+      aiGenerated: signal.media_type === "ai_generated" || signal.media_metadata?.aiGenerated === true,
+      metadata: signal.media_metadata ?? {},
+    },
+    { rawType: "image", url: readString(signal.image_url) ?? readString(signal.imageUrl), thumbnailUrl: readString(signal.image_url) ?? readString(signal.imageUrl) },
+    { rawType: "image", url: readString(signal.visual_url) ?? readString(signal.visualUrl), thumbnailUrl: readString(signal.visual_url) ?? readString(signal.visualUrl) },
+    { rawType: "image", url: readString(signal.cover_image), thumbnailUrl: readString(signal.thumbnail) ?? readString(signal.cover_image) },
+    { rawType: "image", url: readString(signal.thumbnail), thumbnailUrl: readString(signal.thumbnail) },
+    { rawType: "image", url: readString(signal.og_image), thumbnailUrl: readString(signal.og_image) },
+    { rawType: "video", url: readString(signal.video_url) ?? readString(signal.videoUrl) },
+    { rawType: "chart", url: readString(signal.chart_url) ?? readString(signal.chartUrl), thumbnailUrl: readString(signal.chart_url) ?? readString(signal.chartUrl) },
+    { url: readString(signal.embed_url) ?? readString(signal.embedUrl), embedUrl: readString(signal.embed_url) ?? readString(signal.embedUrl) },
+    { rawType: "link", url: readString(signal.reference_url) ?? readString(signal.referenceUrl), title: readString(signal.og_title), description: readString(signal.og_description) },
+  );
+
+  const seen = new Set<string>();
+  const media = candidates
+    .map((candidate) => normalizeSignalMediaCandidate(candidate, signal))
+    .filter((item): item is NormalizedSignalMedia => {
+      if (!item || seen.has(item.url)) return false;
+      seen.add(item.url);
+      return true;
+    })
+    .slice(0, 6);
+
+  if (media.length > 0 || !options.fallback) return media;
+
+  return [{
+    type: "ai_generated",
+    url: buildSignalFallbackImage(signal),
+    thumbnailUrl: null,
+    embedUrl: null,
+    title: signal.title ?? "Signal visual",
+    description: "AI-generated fallback visual",
+    domain: null,
+    width: 1400,
+    height: 900,
+    aiGenerated: true,
+    synthetic: true,
+    metadata: { source: "fallback_visual" },
+  }];
 }
 
 export function generateThumbnail(publicUrl: string, mediaType: SignalMediaType) {
@@ -132,6 +293,7 @@ export function detectMediaUrl(rawUrl: string, aiGenerated = false): MediaDetect
     const hostname = parsed.hostname.toLowerCase();
     const path = parsed.pathname.toLowerCase();
     const youtubeId = getYouTubeId(parsed);
+    const loomId = getLoomId(parsed);
     const xPostId = getXPostId(parsed);
 
     if (youtubeId) {
@@ -154,6 +316,16 @@ export function detectMediaUrl(rawUrl: string, aiGenerated = false): MediaDetect
       };
     }
 
+    if (loomId) {
+      return {
+        mediaType: "video",
+        mediaUrl,
+        embedUrl: `https://www.loom.com/embed/${loomId}`,
+        thumbnailUrl: null,
+        metadata: { provider: "loom", loomId },
+      };
+    }
+
     if (path.endsWith(".pdf")) {
       return { mediaType: "pdf", mediaUrl, embedUrl: null, thumbnailUrl: null, metadata: { extension: "pdf" } };
     }
@@ -171,6 +343,152 @@ export function detectMediaUrl(rawUrl: string, aiGenerated = false): MediaDetect
     return { mediaType: null, mediaUrl: "", embedUrl: null, thumbnailUrl: null, metadata: {} };
   }
 }
+
+export function inferSignalVisualMode(input: {
+  title?: string | null;
+  body?: string | null;
+  flock?: { name?: string | null; slug?: string | null } | null;
+  ai_narrative_tags?: string[] | null;
+  visual_mode?: SignalVisualMode | string | null;
+}): SignalVisualMode {
+  if (isSignalVisualMode(input.visual_mode)) return input.visual_mode;
+
+  const text = [
+    input.title,
+    input.body,
+    input.flock?.name,
+    input.flock?.slug,
+    ...(Array.isArray(input.ai_narrative_tags) ? input.ai_narrative_tags : []),
+  ].filter(Boolean).join(" ").toLowerCase();
+
+  if (/\b(market|macro|rates|earnings|capital|liquidity|price|finance|financial|equity|credit)\b/.test(text)) return "financial";
+  if (/\b(cyber|breach|malware|exploit|vulnerability|security|ransomware|zero-day|cve)\b/.test(text)) return "cyber";
+  if (/\b(policy|geopolitic|export control|sanction|defense|border|election|treaty|governance)\b/.test(text)) return "geopolitics";
+  if (/\b(science|research|paper|lab|clinical|biology|physics|model eval|experiment)\b/.test(text)) return "science";
+  return "intel";
+}
+
+export function buildSignalFallbackImage(input: {
+  id?: string | null;
+  title?: string | null;
+  body?: string | null;
+  flock?: { name?: string | null; slug?: string | null } | null;
+  ai_narrative_tags?: string[] | null;
+  visual_mode?: SignalVisualMode | string | null;
+}) {
+  const mode = inferSignalVisualMode(input);
+  const palette = VISUAL_MODE_PALETTES[mode];
+  const title = sanitizeSvgText(input.title || "Signal visual");
+  const tag = sanitizeSvgText(input.ai_narrative_tags?.[0] || input.flock?.name || mode);
+  const seed = hashString(`${input.id ?? ""}:${input.title ?? ""}:${input.body ?? ""}`);
+  const x = 18 + seed % 54;
+  const y = 18 + Math.floor(seed / 7) % 48;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900"><defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="${palette.bg1}"/><stop offset="1" stop-color="${palette.bg2}"/></linearGradient><radialGradient id="r" cx="${x}%" cy="${y}%" r="70%"><stop stop-color="${palette.glow}" stop-opacity=".52"/><stop offset=".55" stop-color="${palette.glow}" stop-opacity=".12"/><stop offset="1" stop-color="${palette.glow}" stop-opacity="0"/></radialGradient><pattern id="grid" width="58" height="58" patternUnits="userSpaceOnUse"><path d="M58 0H0v58" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="1"/></pattern></defs><rect width="1400" height="900" fill="url(#g)"/><rect width="1400" height="900" fill="url(#r)"/><rect width="1400" height="900" fill="url(#grid)" opacity=".55"/><path d="M160 650 C360 460 470 720 650 510 S980 360 1220 210" fill="none" stroke="${palette.line}" stroke-width="9" stroke-linecap="round" opacity=".72"/><path d="M170 690 C380 520 500 760 690 570 S1010 430 1240 290" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="2" stroke-dasharray="16 18"/><circle cx="236" cy="604" r="13" fill="${palette.line}"/><circle cx="668" cy="524" r="18" fill="${palette.line}"/><circle cx="1118" cy="282" r="14" fill="${palette.line}"/><text x="88" y="116" fill="${palette.line}" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="800" letter-spacing="5">${mode.toUpperCase()} / AI VISUAL</text><text x="88" y="754" fill="#f7f9ff" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="900">${title.slice(0, 42)}</text><text x="88" y="815" fill="rgba(247,249,255,.68)" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700">${tag.toUpperCase()}</text></svg>`;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
+function isSignalVisualMode(value: unknown): value is SignalVisualMode {
+  return value === "intel" || value === "financial" || value === "cyber" || value === "geopolitics" || value === "science";
+}
+
+function normalizeSignalMediaCandidate(
+  candidate: {
+    rawType?: string | null;
+    url?: string | null;
+    thumbnailUrl?: string | null;
+    embedUrl?: string | null;
+    title?: string | null;
+    description?: string | null;
+    width?: number | null;
+    height?: number | null;
+    aiGenerated?: boolean;
+    synthetic?: boolean;
+    metadata?: Record<string, unknown>;
+  },
+  signal: {
+    thumbnail?: string | null;
+    thumbnail_url?: string | null;
+    og_image?: string | null;
+    cover_image?: string | null;
+    image_url?: string | null;
+    chart_url?: string | null;
+    media_metadata?: Record<string, unknown> | null;
+  },
+): NormalizedSignalMedia | null {
+  const url = candidate.url?.trim();
+  if (!url) return null;
+
+  const rawType = normalizeMediaType(candidate.rawType);
+  const detected = detectMediaUrl(url, Boolean(candidate.aiGenerated || rawType === "ai_generated"));
+  const type = rawType ?? detected.mediaType ?? "link";
+  const embedUrl = safeEmbedUrl(candidate.embedUrl, type) ?? detected.embedUrl;
+
+  return {
+    type,
+    url,
+    thumbnailUrl: candidate.thumbnailUrl ?? detected.thumbnailUrl ?? signal.thumbnail ?? signal.thumbnail_url ?? signal.og_image ?? signal.cover_image ?? signal.image_url ?? signal.chart_url ?? null,
+    embedUrl,
+    title: candidate.title ?? null,
+    description: candidate.description ?? null,
+    domain: getSafeHostname(url),
+    width: candidate.width ?? null,
+    height: candidate.height ?? null,
+    aiGenerated: Boolean(candidate.aiGenerated || type === "ai_generated" || signal.media_metadata?.aiGenerated === true),
+    synthetic: Boolean(candidate.synthetic),
+    metadata: candidate.metadata ?? {},
+  };
+}
+
+function normalizeMediaType(value: unknown): SignalMediaType | null {
+  return value === "image" ||
+    value === "video" ||
+    value === "youtube" ||
+    value === "x_post" ||
+    value === "link" ||
+    value === "pdf" ||
+    value === "ai_generated" ||
+    value === "chart"
+    ? value
+    : null;
+}
+
+function safeEmbedUrl(value: string | null | undefined, mediaType: SignalMediaType) {
+  if (!value || !["youtube", "x_post", "video"].includes(mediaType)) return null;
+  const detected = detectMediaUrl(value);
+  return detected.embedUrl;
+}
+
+function readString(value: unknown) {
+  return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
+}
+
+function readNumber(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function sanitizeSvgText(value: string) {
+  return value.replace(/[<>&"]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function hashString(value: string) {
+  let hash = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
+  }
+  return hash;
+}
+
+const VISUAL_MODE_PALETTES: Record<SignalVisualMode, { bg1: string; bg2: string; glow: string; line: string }> = {
+  intel: { bg1: "#05060a", bg2: "#101827", glow: "#35d8ff", line: "#35d8ff" },
+  financial: { bg1: "#06110d", bg2: "#14180c", glow: "#2ee89f", line: "#2ee89f" },
+  cyber: { bg1: "#05090a", bg2: "#111827", glow: "#8aff6a", line: "#8aff6a" },
+  geopolitics: { bg1: "#0b0907", bg2: "#18110a", glow: "#ffb84d", line: "#ffb84d" },
+  science: { bg1: "#070817", bg2: "#11172a", glow: "#8a5cff", line: "#8a5cff" },
+};
 
 export function isSafePublicUrl(url: URL) {
   return url.protocol === "https:" || (url.protocol === "http:" && ["localhost", "127.0.0.1"].includes(url.hostname));
@@ -205,4 +523,14 @@ function getXPostId(url: URL) {
   const parts = url.pathname.split("/").filter(Boolean);
   const statusIndex = parts.findIndex((part) => part === "status");
   return statusIndex >= 0 ? parts[statusIndex + 1] ?? null : null;
+}
+
+function getLoomId(url: URL) {
+  const hostname = url.hostname.toLowerCase();
+  if (!hostname.endsWith("loom.com")) return null;
+  const parts = url.pathname.split("/").filter(Boolean);
+  if (parts[0] === "share" || parts[0] === "embed") {
+    return parts[1] ?? null;
+  }
+  return null;
 }

@@ -487,6 +487,7 @@ function normalizeSignalRow(row: Partial<SignalRow>): SignalWithAuthor {
     author_id: readString(row.author_id, "unknown-author"),
     title: readString(row.title, "Untitled Signal"),
     body: readString(row.body, ""),
+    media: Array.isArray(row.media) ? row.media.filter((item): item is Record<string, unknown> => typeof item === "object" && item !== null) : [],
     media_urls: Array.isArray(row.media_urls) ? row.media_urls.filter((item): item is string => typeof item === "string" && item.trim().length > 0) : [],
     attachments: Array.isArray(row.attachments) ? row.attachments.filter((item): item is Record<string, unknown> => typeof item === "object" && item !== null) : [],
     created_at: isValidDateString(row.created_at) ? row.created_at as string : new Date().toISOString(),

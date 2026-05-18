@@ -377,6 +377,7 @@ let activeAgentPublish = false;
 
 declare global {
   var __rookAutonomousBootstrapStatus: BootstrapStatus | undefined;
+  var __rookAutonomousBootstrapTimer: ReturnType<typeof setTimeout> | undefined;
 }
 
 function getAutonomousBootstrapStatus() {
@@ -422,6 +423,68 @@ function summarizeBootstrapCache(status: BootstrapStatus): AutonomousBootstrapRe
 
 function countCanonicalProfiles(profiles: Map<string, AutonomousProfileRef>) {
   return CANONICAL_OPERATOR_USERNAMES.filter((username) => profiles.has(username)).length;
+}
+
+export function getAutonomousOperatorBootstrapSnapshot() {
+  const status = getAutonomousBootstrapStatus();
+  return {
+    state: status.state,
+    available: countCanonicalProfiles(status.profiles),
+    required: CANONICAL_OPERATOR_USERNAMES.length,
+    lastAttemptAt: status.lastAttemptAt || null,
+    lastSuccessAt: status.lastSuccessAt || null,
+    failureCount: status.failureCount,
+    lastError: status.lastError,
+    initializing: Boolean(status.promise),
+  };
+}
+
+export function bootstrapAutonomousOperatorProfilesInBackground(options: EnsureBootstrapOptions = {}) {
+  const status = getAutonomousBootstrapStatus();
+
+  if (!isRuntimeAutonomousBootstrapEnabled(options)) {
+    status.state = status.state === "idle" ? "stale" : status.state;
+    status.lastError = "Runtime autonomous bootstrap skipped; database migrations provide seeded operator defaults.";
+    return getAutonomousOperatorBootstrapSnapshot();
+  }
+
+  if (status.promise || isBootstrapFresh(status) || globalThis.__rookAutonomousBootstrapTimer) {
+    return getAutonomousOperatorBootstrapSnapshot();
+  }
+
+  globalThis.__rookAutonomousBootstrapTimer = setTimeout(() => {
+    globalThis.__rookAutonomousBootstrapTimer = undefined;
+    void ensureAutonomousOperatorProfiles(options).then((result) => {
+      if (!result.ok) {
+        console.warn("[autonomous-operators] background bootstrap degraded", {
+          source: options.source ?? "unspecified",
+          ...getAutonomousOperatorBootstrapSnapshot(),
+          message: result.message,
+          failedOperators: result.failedOperators ?? [],
+        });
+      }
+    }).catch((error) => {
+      const statusAfterFailure = getAutonomousBootstrapStatus();
+      statusAfterFailure.state = "failed";
+      statusAfterFailure.lastAttemptAt = Date.now();
+      statusAfterFailure.failureCount += 1;
+      statusAfterFailure.lastError = error instanceof Error ? error.message : String(error);
+      console.warn("[autonomous-operators] background bootstrap exception", {
+        source: options.source ?? "unspecified",
+        ...getAutonomousOperatorBootstrapSnapshot(),
+        error: error instanceof Error
+          ? { name: error.name, message: error.message, stack: error.stack }
+          : error,
+      });
+    });
+  }, 0);
+
+  return getAutonomousOperatorBootstrapSnapshot();
+}
+
+function isRuntimeAutonomousBootstrapEnabled(options: EnsureBootstrapOptions) {
+  if (options.force) return true;
+  return process.env.ROOK_ENABLE_RUNTIME_AUTONOMOUS_BOOTSTRAP === "1";
 }
 
 export async function runSeededAiOperatorActivity() {

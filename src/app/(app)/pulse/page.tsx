@@ -131,6 +131,11 @@ export default async function PulsePage() {
                   <Metric label="Flock spread" value={Math.max(cluster.flock_count, 1)} />
                   <Metric label="Anomaly" value={cluster.anomaly_score} />
                 </div>
+                {cluster.signals[0] && (
+                  <div className="mt-4">
+                    <SignalMedia signal={cluster.signals[0]} compact fallback />
+                  </div>
+                )}
                 <div className="mt-4 flex flex-wrap gap-2">
                   {cluster.terms.map((term) => (
                     <span key={term} className="rounded-full border border-white/10 px-3 py-1 text-xs font-bold text-rook-muted">

@@ -42,17 +42,42 @@ export type Signal = {
   flock_id: string | null;
   title: string;
   body: string;
+  cover_image?: string | null;
+  thumbnail?: string | null;
+  media?: Array<Record<string, unknown>> | null;
+  visual_mode?: "intel" | "financial" | "cyber" | "geopolitics" | "science" | null;
   media_type?: "image" | "video" | "youtube" | "x_post" | "link" | "pdf" | "ai_generated" | "chart" | null;
   media_url?: string | null;
+  media_urls?: string[] | null;
   thumbnail_url?: string | null;
   image_url?: string | null;
+  video_url?: string | null;
   reference_url?: string | null;
   chart_url?: string | null;
   embed_url?: string | null;
+  attachments?: Array<Record<string, unknown>> | null;
   og_title?: string | null;
   og_description?: string | null;
   og_image?: string | null;
   media_metadata?: Record<string, unknown>;
+  summary?: string | null;
+  content?: string | null;
+  operator?: string | null;
+  operator_handle?: string | null;
+  operator_avatar?: string | null;
+  narrative_velocity?: number | null;
+  propagation_score?: number | null;
+  tags?: string[] | null;
+  categories?: string[] | null;
+  source_url?: string | null;
+  source_name?: string | null;
+  source_preview?: string | null;
+  engagement?: Record<string, unknown> | null;
+  trend_direction?: string | null;
+  graph_data?: Record<string, unknown> | null;
+  ai_summary?: string | null;
+  references?: Array<Record<string, unknown>> | null;
+  related_signals?: string[] | null;
   confidence_score?: number | null;
   ai_narrative_tags?: string[] | null;
   contradiction_score?: number | null;
@@ -205,6 +230,31 @@ export type AgentRun = {
   completed_at: string | null;
 };
 
+export type AutonomousProfile = {
+  id: string;
+  profile_id: string | null;
+  username: string;
+  display_name: string;
+  status: string;
+  domains: string[];
+  source_domains: string[];
+  metadata: Record<string, unknown>;
+  last_bootstrap_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type AiActivity = {
+  id: string;
+  agent_key: string;
+  activity_type: string;
+  status: string;
+  title: string | null;
+  detail: string | null;
+  payload: Record<string, unknown>;
+  created_at: string;
+};
+
 export type SignalContradiction = {
   id: string;
   signal_a_id: string;
@@ -348,6 +398,18 @@ export type Database = {
         Row: AgentRun;
         Insert: Pick<AgentRun, "agent_key"> & Partial<AgentRun>;
         Update: Partial<AgentRun>;
+        Relationships: [];
+      };
+      autonomous_profiles: {
+        Row: AutonomousProfile;
+        Insert: Pick<AutonomousProfile, "username" | "display_name"> & Partial<AutonomousProfile>;
+        Update: Partial<AutonomousProfile>;
+        Relationships: [];
+      };
+      ai_activity: {
+        Row: AiActivity;
+        Insert: Pick<AiActivity, "agent_key"> & Partial<AiActivity>;
+        Update: Partial<AiActivity>;
         Relationships: [];
       };
       signal_contradictions: {

@@ -15,6 +15,7 @@ const BUILD_ID =
   process.env.NEXT_PUBLIC_ROOK_BUILD_ID ??
   "local";
 const BUILD_TIME = process.env.CF_PAGES ? process.env.CF_PAGES_BRANCH ?? "cloudflare" : "local";
+const RUNTIME_DIAGNOSTIC_VERSION = "signal-runtime-diagnostics-2026-05-19";
 
 export default async function SignalDetailPage({
   params,
@@ -41,6 +42,13 @@ export default async function SignalDetailPage({
     commentsError: commentsPayload.error,
     signalShape: summarizeSignalShape(signal),
     commentsShape: summarizeCommentsShape(commentsPayload.comments),
+    runtimeDiagnosticVersion: RUNTIME_DIAGNOSTIC_VERSION,
+    cloudflare: {
+      pages: process.env.CF_PAGES ?? null,
+      branch: process.env.CF_PAGES_BRANCH ?? null,
+      commit: process.env.CF_PAGES_COMMIT_SHA?.slice(0, 8) ?? null,
+      deploymentId: process.env.CF_PAGES_DEPLOYMENT_ID ?? null,
+    },
     failure: {
       signalReason: signalResult.status === "rejected" ? serializeError(signalResult.reason) : null,
       commentsReason: commentsResult.status === "rejected" ? serializeError(commentsResult.reason) : null,
@@ -70,7 +78,7 @@ export default async function SignalDetailPage({
           <CommentThread signalId={signal.id} initialComments={commentsPayload.comments} initialError={commentsPayload.error} />
         </CommentThreadBoundary>
         <p className="px-1 text-[10px] font-bold uppercase tracking-[0.16em] text-rook-muted">
-          Build {BUILD_ID} · {BUILD_TIME}
+          Build {BUILD_ID} · {BUILD_TIME} · {RUNTIME_DIAGNOSTIC_VERSION}
         </p>
       </section>
     </>

@@ -3,23 +3,34 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Bot, Download, ExternalLink, FileText, ImageIcon, Link2, Maximize2, Play, X } from "lucide-react";
-import { detectMediaUrl, getSafeHostname, type SignalAttachment, type SignalMediaType } from "@/lib/media";
+import { BarChart3, Bot, Download, ExternalLink, FileText, ImageIcon, Link2, Maximize2, Play, X } from "lucide-react";
+import { buildSignalFallbackImage, getSignalMedia, inferSignalVisualMode, type NormalizedSignalMedia, type SignalMediaType, type SignalVisualMode } from "@/lib/media";
 import type { SignalWithAuthor } from "@/lib/supabase/types";
 
-export function SignalMedia({ signal }: { signal: SignalWithAuthor }) {
+export function SignalMedia({
+  signal,
+  compact = false,
+  fallback = false,
+}: {
+  signal: SignalWithAuthor;
+  compact?: boolean;
+  fallback?: boolean;
+}) {
   const [previewMedia, setPreviewMedia] = useState<NormalizedMedia | null>(null);
-  const mediaItems = useMemo(() => normalizeSignalMediaItems(signal), [signal]);
+  const mediaItems = useMemo(() => normalizeSignalMediaItems(signal, { fallback }), [signal, fallback]);
 
   if (mediaItems.length === 0) {
     return null;
   }
 
+  const mode = inferSignalVisualMode(signal);
+  const fallbackSrc = buildSignalFallbackImage(signal);
+
   return (
     <div className="mt-4 space-y-3">
       {mediaItems.length > 0 && (
         <div className={mediaItems.length > 1 ? "grid gap-3" : ""}>
-          <MediaFrame media={mediaItems[0]} priority onOpenPreview={() => setPreviewMedia(mediaItems[0])} />
+          <MediaFrame media={mediaItems[0]} priority compact={compact} mode={mode} fallbackSrc={fallbackSrc} onOpenPreview={() => setPreviewMedia(mediaItems[0])} />
           {mediaItems.length > 1 && (
             <div className="grid gap-3 sm:grid-cols-2">
               {mediaItems.slice(1, 5).map((media, index) => (
@@ -27,6 +38,8 @@ export function SignalMedia({ signal }: { signal: SignalWithAuthor }) {
                   key={`${media.mediaUrl}-${index}`}
                   media={media}
                   compact
+                  mode={mode}
+                  fallbackSrc={fallbackSrc}
                   onOpenPreview={() => setPreviewMedia(media)}
                 />
               ))}
@@ -52,41 +65,53 @@ type NormalizedMedia = {
   ogImage: string | null;
   domain: string | null;
   aiGenerated: boolean;
-};
-
-type MediaCandidate = Partial<Omit<NormalizedMedia, "mediaUrl" | "thumbnailUrl" | "embedUrl" | "ogTitle" | "ogDescription" | "ogImage" | "domain">> & {
-  rawType?: string | null;
-  mediaUrl?: string | null;
-  thumbnailUrl?: string | null;
-  embedUrl?: string | null;
-  ogTitle?: string | null;
-  ogDescription?: string | null;
-  ogImage?: string | null;
+  synthetic: boolean;
 };
 
 function MediaFrame({
   media,
   compact = false,
   priority = false,
+  mode,
+  fallbackSrc,
   onOpenPreview,
 }: {
   media: NormalizedMedia;
   compact?: boolean;
   priority?: boolean;
+  mode: SignalVisualMode;
+  fallbackSrc: string;
   onOpenPreview: () => void;
 }) {
   const imageFit = media.mediaType === "chart" ? "object-contain" : "object-cover";
+  const imageAspect = compact ? "aspect-[4/3]" : "aspect-[16/9]";
+  const sparseLink = media.mediaType === "link" && !media.ogTitle && !media.ogDescription && !media.ogImage;
   const frameClass = media.aiGenerated
-    ? "rook-media-frame rook-ai-media-frame rounded-xl border border-rook-cyan/35 bg-rook-cyan/5"
-    : "rook-media-frame rounded-xl border border-white/10 bg-white/[0.035]";
+    ? `rook-media-frame rook-ai-media-frame rook-visual-${mode} rounded-xl border border-rook-cyan/35 bg-rook-cyan/5`
+    : `rook-media-frame rook-visual-${mode} rounded-xl border border-white/10 bg-white/[0.035]`;
+
+  if (sparseLink) {
+    return (
+      <Link
+        href={media.mediaUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="focus-ring media-link-chip flex min-w-0 max-w-full items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-bold text-rook-muted transition hover:border-rook-cyan/30 hover:text-white"
+      >
+        <Link2 className="h-4 w-4 shrink-0 text-rook-cyan" />
+        <span className="min-w-0 flex-1 truncate">{media.domain ?? media.mediaUrl}</span>
+        <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+      </Link>
+    );
+  }
 
   return (
-    <div className={`${frameClass} overflow-hidden`}>
+    <div className={`${frameClass} media-frame-safe overflow-hidden`}>
       <div className="flex items-center justify-between gap-3 border-b border-white/10 px-3 py-2">
         <div className="flex min-w-0 items-center gap-2">
           {media.aiGenerated ? <Bot className="h-4 w-4 text-rook-cyan" /> : media.mediaType === "pdf" ? <FileText className="h-4 w-4 text-rook-cyan" /> : media.mediaType === "video" || media.mediaType === "youtube" ? <Play className="h-4 w-4 text-rook-cyan" /> : <ImageIcon className="h-4 w-4 text-rook-cyan" />}
           <p className="truncate text-xs font-black uppercase tracking-[0.16em] text-rook-cyan">
-            {media.aiGenerated ? "AI Generated" : media.mediaType.replace("_", " ")}
+            {media.synthetic ? "AI Fallback" : media.aiGenerated ? "AI Generated" : media.mediaType.replace("_", " ")}
           </p>
         </div>
         {media.domain && (
@@ -96,8 +121,22 @@ function MediaFrame({
         )}
       </div>
 
-      {isImageMedia(media.mediaType) && (
-        <button type="button" onClick={onOpenPreview} className={`group relative block w-full overflow-hidden bg-rook-void ${compact ? "aspect-[4/3]" : "aspect-[16/9]"}`}>
+      {media.mediaType === "chart" && (
+        <button
+          type="button"
+          onClick={onOpenPreview}
+          className="group relative block h-24 max-h-24 w-full overflow-hidden bg-rook-void md:h-28 md:max-h-28"
+        >
+          <ChartTrendStrip title={media.ogTitle ?? "Chart signal"} />
+          <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-rook-void/75 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-cyan backdrop-blur-md">
+            <Maximize2 className="h-3.5 w-3.5" />
+            Expand
+          </span>
+        </button>
+      )}
+
+      {isImageMedia(media.mediaType) && media.mediaType !== "chart" && (
+        <button type="button" onClick={onOpenPreview} className={`group relative block w-full overflow-hidden bg-rook-void ${imageAspect}`}>
           <FallbackImage
             src={media.mediaUrl}
             alt={media.ogTitle ?? "Signal visual evidence"}
@@ -105,11 +144,13 @@ function MediaFrame({
             sizes="(min-width: 1024px) 760px, 100vw"
             placeholder="blur"
             blurDataURL={BLUR_DATA_URL}
-            className={`${imageFit} blur-0 transition duration-500 group-hover:scale-[1.025]`}
+            className={`${imageFit} blur-0 transition duration-700 group-hover:scale-[1.055]`}
             loading={priority ? undefined : "lazy"}
             priority={priority}
+            fallbackSrc={fallbackSrc}
           />
-          <div className="absolute inset-0 bg-[linear-gradient(transparent,rgba(5,6,10,0.42))] opacity-80" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,6,10,0.02),rgba(5,6,10,0.18)_45%,rgba(5,6,10,0.74))] opacity-90 transition duration-500 group-hover:opacity-70" />
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-[radial-gradient(ellipse_at_bottom,rgba(53,216,255,0.22),transparent_62%)] opacity-70" />
           <span className="absolute right-3 top-3 inline-flex items-center gap-2 rounded-full bg-rook-void/75 px-3 py-1 text-xs font-black text-white backdrop-blur-md">
             <Maximize2 className="h-3.5 w-3.5 text-rook-cyan" />
             <span className="hidden sm:inline">Expand</span>
@@ -174,21 +215,21 @@ function MediaFrame({
       )}
 
       {media.mediaType === "link" && (
-        <Link href={media.mediaUrl} target="_blank" rel="noreferrer" className="focus-ring grid w-full min-w-0 gap-0 overflow-hidden transition hover:border-rook-cyan/40 md:grid-cols-[minmax(180px,240px)_1fr]">
-          <div className="relative aspect-video min-h-40 bg-rook-void md:aspect-auto">
+        <Link href={media.mediaUrl} target="_blank" rel="noreferrer" className="focus-ring media-link-card flex w-full min-w-0 max-w-full overflow-hidden transition hover:border-rook-cyan/40">
+          <div className="relative aspect-video w-32 shrink-0 bg-rook-void sm:w-40">
             {media.ogImage ? (
-              <FallbackImage src={media.ogImage} alt="" fill sizes="(min-width: 768px) 240px, 100vw" className="object-cover" loading="lazy" />
+              <FallbackImage src={media.ogImage} alt="" fill sizes="(min-width: 768px) 240px, 100vw" className="object-cover" loading="lazy" fallbackSrc={fallbackSrc} />
             ) : (
-              <div className="grid h-full min-h-32 place-items-center">
+              <div className="grid h-full place-items-center">
                 <Link2 className="h-8 w-8 text-rook-cyan" />
               </div>
             )}
           </div>
-          <div className="min-w-0 p-4">
+          <div className="min-w-0 flex-1 p-3 sm:p-4">
             {media.domain && <p className="text-[10px] font-black uppercase tracking-[0.16em] text-rook-cyan">{media.domain}</p>}
-            <p className="mt-1 text-base font-black leading-6 text-white [overflow-wrap:anywhere]">{media.ogTitle ?? media.domain ?? "External intelligence source"}</p>
-            <p className="mt-2 text-sm leading-6 text-rook-muted [overflow-wrap:anywhere]">{media.ogDescription ?? "Open source preview attached to this Signal."}</p>
-            <p className="mt-4 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-rook-cyan">
+            <p className="media-link-title mt-1 text-sm font-black leading-5 text-white">{media.ogTitle ?? media.domain ?? "External intelligence source"}</p>
+            <p className="media-link-desc mt-1.5 text-xs leading-5 text-rook-muted">{media.ogDescription ?? "Open source preview attached to this Signal."}</p>
+            <p className="mt-2 inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.12em] text-rook-cyan">
               <ExternalLink className="h-3.5 w-3.5" />
               Open source
             </p>
@@ -199,28 +240,51 @@ function MediaFrame({
   );
 }
 
-function FallbackImage({ alt, onError, src, unoptimized, ...props }: React.ComponentProps<typeof Image>) {
-  const [failed, setFailed] = useState(false);
-  const isExternal = typeof src === "string" && /^https?:\/\//i.test(src);
-
-  if (failed) {
-    return (
-      <div className="absolute inset-0 grid place-items-center bg-rook-void">
-        <div className="rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-black text-rook-muted">
-          Media unavailable
+function ChartTrendStrip({ title }: { title: string }) {
+  return (
+    <div className="chart-trend-strip relative h-full w-full overflow-hidden px-3 py-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-2">
+          <BarChart3 className="h-4 w-4 shrink-0 text-rook-green" />
+          <p className="truncate text-[10px] font-black uppercase tracking-[0.14em] text-rook-green">
+            Compact trend
+          </p>
         </div>
+        <p className="truncate text-[10px] font-bold text-rook-muted">{title}</p>
       </div>
-    );
-  }
+      <div className="mt-3 flex h-10 items-end gap-1.5">
+        {[34, 46, 38, 62, 54, 78, 66, 88, 72, 92, 84, 98].map((height, index) => (
+          <span
+            key={`${height}-${index}`}
+            className="chart-trend-bar flex-1 rounded-t-sm bg-gradient-to-t from-rook-blue/35 via-rook-cyan/70 to-rook-green"
+            style={{ height: `${height}%`, animationDelay: `${index * 55}ms` }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FallbackImage({
+  alt,
+  fallbackSrc,
+  onError,
+  src,
+  unoptimized,
+  ...props
+}: React.ComponentProps<typeof Image> & { fallbackSrc: string }) {
+  const [failed, setFailed] = useState(false);
+  const resolvedSrc = failed ? fallbackSrc : src;
+  const isExternal = typeof resolvedSrc === "string" && /^https?:\/\//i.test(resolvedSrc);
 
   return (
     <Image
       {...props}
-      src={src}
+      src={resolvedSrc}
       alt={alt}
       unoptimized={unoptimized ?? isExternal}
       onError={(event) => {
-        setFailed(true);
+        if (!failed) setFailed(true);
         onError?.(event);
       }}
     />
@@ -244,98 +308,23 @@ function ImagePreviewModal({ media, onClose }: { media: NormalizedMedia; onClose
   );
 }
 
-export function normalizeSignalMediaItems(signal: SignalWithAuthor): NormalizedMedia[] {
-  const candidates: MediaCandidate[] = [];
-  const attachments = normalizeAttachments(signal.attachments);
-
-  for (const attachment of attachments) {
-    candidates.push({
-      rawType: attachment.type ?? null,
-      mediaUrl: attachment.media_url ?? attachment.url ?? null,
-      thumbnailUrl: attachment.thumbnail_url ?? null,
-      embedUrl: attachment.embed_url ?? null,
-      ogTitle: attachment.title ?? null,
-      ogDescription: attachment.description ?? null,
-      aiGenerated: attachment.type === "ai_generated" || attachment.metadata?.aiGenerated === true,
-    });
-  }
-
-  for (const url of Array.isArray(signal.media_urls) ? signal.media_urls : []) {
-    candidates.push({ mediaUrl: url });
-  }
-
-  candidates.push(
-    { rawType: signal.media_type, mediaUrl: signal.media_url, thumbnailUrl: signal.thumbnail_url, embedUrl: signal.embed_url, ogTitle: signal.og_title, ogDescription: signal.og_description, ogImage: signal.og_image, aiGenerated: signal.media_type === "ai_generated" || isRecord(signal.media_metadata) && signal.media_metadata.aiGenerated === true },
-    { rawType: "image", mediaUrl: signal.image_url, thumbnailUrl: signal.image_url },
-    { rawType: "video", mediaUrl: signal.video_url },
-    { rawType: "chart", mediaUrl: signal.chart_url, thumbnailUrl: signal.chart_url },
-    { mediaUrl: signal.embed_url, embedUrl: signal.embed_url },
-    { rawType: "link", mediaUrl: signal.reference_url, ogTitle: signal.og_title, ogDescription: signal.og_description, ogImage: signal.og_image },
-  );
-
-  const seen = new Set<string>();
-  return candidates
-    .map((candidate) => normalizeMediaCandidate(candidate, signal))
-    .filter((media): media is NormalizedMedia => {
-      if (!media?.mediaUrl || seen.has(media.mediaUrl)) return false;
-      seen.add(media.mediaUrl);
-      return true;
-    })
-    .slice(0, 6);
+export function normalizeSignalMediaItems(signal: SignalWithAuthor, options: { fallback?: boolean } = {}): NormalizedMedia[] {
+  return getSignalMedia(signal, options).map((media) => ({
+    mediaType: media.type,
+    mediaUrl: media.url,
+    thumbnailUrl: media.thumbnailUrl,
+    embedUrl: media.embedUrl,
+    ogTitle: media.title,
+    ogDescription: media.description,
+    ogImage: signal.og_image ?? null,
+    domain: media.domain,
+    aiGenerated: media.aiGenerated,
+    synthetic: media.synthetic,
+  }));
 }
 
-function normalizeMediaCandidate(
-  candidate: MediaCandidate,
-  signal: SignalWithAuthor,
-): NormalizedMedia | null {
-  const mediaUrl = candidate.mediaUrl?.trim();
-  if (!mediaUrl) return null;
-
-  const detected = detectMediaUrl(mediaUrl, candidate.aiGenerated || candidate.rawType === "ai_generated");
-  const detectedType = detected.mediaType ?? (candidate.rawType as SignalMediaType | null) ?? "link";
-  const mediaType = normalizeMediaType(candidate.rawType) ?? detectedType;
-  const embedUrl = safeEmbedUrl(candidate.embedUrl, mediaType) ?? detected.embedUrl;
-
-  return {
-    mediaType,
-    mediaUrl,
-    thumbnailUrl: candidate.thumbnailUrl ?? detected.thumbnailUrl ?? signal.thumbnail_url ?? signal.og_image ?? signal.image_url ?? signal.chart_url ?? null,
-    embedUrl,
-    ogTitle: candidate.ogTitle ?? signal.og_title ?? null,
-    ogDescription: candidate.ogDescription ?? signal.og_description ?? null,
-    ogImage: candidate.ogImage ?? signal.og_image ?? null,
-    domain: getSafeHostname(mediaUrl),
-    aiGenerated: Boolean(candidate.aiGenerated || mediaType === "ai_generated" || isRecord(signal.media_metadata) && signal.media_metadata.aiGenerated === true),
-  };
-}
-
-function normalizeAttachments(value: SignalWithAuthor["attachments"]): SignalAttachment[] {
-  return Array.isArray(value)
-    ? value.filter((item): item is SignalAttachment => typeof item === "object" && item !== null)
-    : [];
-}
-
-function normalizeMediaType(value: string | null | undefined): SignalMediaType | null {
-  return value === "image" ||
-    value === "video" ||
-    value === "youtube" ||
-    value === "x_post" ||
-    value === "link" ||
-    value === "pdf" ||
-    value === "ai_generated" ||
-    value === "chart"
-    ? value
-    : null;
-}
-
-function safeEmbedUrl(value: string | null | undefined, mediaType: SignalMediaType) {
-  if (!value || !["youtube", "x_post", "video"].includes(mediaType)) return null;
-  const detected = detectMediaUrl(value);
-  return detected.embedUrl;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
+export function normalizeSignalMediaRecords(signal: SignalWithAuthor, options: { fallback?: boolean } = {}): NormalizedSignalMedia[] {
+  return getSignalMedia(signal, options);
 }
 
 function isImageMedia(mediaType: SignalMediaType) {

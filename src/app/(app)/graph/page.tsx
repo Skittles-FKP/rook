@@ -5,24 +5,29 @@ import { IntelligenceGraph } from "@/components/graph/intelligence-graph";
 import { LiveRoomPresence } from "@/components/graph/live-room-presence";
 import { PulseRadar } from "@/components/pulse/pulse-radar";
 import { PageHeader } from "@/components/shell/page-header";
+import { SignalMedia } from "@/components/signals/signal-media";
 import { getIntelligenceGraph } from "@/lib/intelligence";
+import { getPulseSnapshot } from "@/lib/data/pulse";
 import { formatRelativeTime } from "@/lib/format";
 import { captureException } from "@/lib/observability";
 import type { IntelligenceGraph as IntelligenceGraphData } from "@/lib/intelligence";
 
 export default async function GraphPage() {
-  const graph = await getIntelligenceGraph().catch((error): IntelligenceGraphData => {
-    captureException(error, { route: "/graph", surface: "intelligence_graph" });
+  const [graph, pulse] = await Promise.all([
+    getIntelligenceGraph().catch((error): IntelligenceGraphData => {
+      captureException(error, { route: "/graph", surface: "intelligence_graph" });
 
-    return {
-      nodes: [],
-      edges: [],
-      radar: [],
-      narratives: [],
-      collaborationRooms: [],
-      updatedAt: new Date().toISOString(),
-    };
-  });
+      return {
+        nodes: [],
+        edges: [],
+        radar: [],
+        narratives: [],
+        collaborationRooms: [],
+        updatedAt: new Date().toISOString(),
+      };
+    }),
+    getPulseSnapshot(12).catch(() => ({ signals: [], clusters: [], events: [], updatedAt: new Date().toISOString() })),
+  ]);
 
   return (
     <>
@@ -69,6 +74,25 @@ export default async function GraphPage() {
                 </article>
               ))}
             </div>
+          </div>
+        </div>
+        <div className="surface-card rounded-xl p-5">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-rook-cyan">
+                Graph Signal Media
+              </p>
+              <h2 className="mt-2 text-xl font-black text-white">Embedded evidence layer</h2>
+            </div>
+            <span className="text-xs font-semibold text-rook-muted">{formatRelativeTime(pulse.updatedAt)}</span>
+          </div>
+          <div className="mt-5 grid gap-4 lg:grid-cols-3">
+            {pulse.signals.slice(0, 3).map((signal) => (
+              <article key={signal.id} className="min-w-0 rounded-lg border border-white/10 bg-white/[0.035] p-3">
+                <h3 className="mobile-readable text-sm font-black leading-5 text-white">{signal.title}</h3>
+                <SignalMedia signal={signal} compact fallback />
+              </article>
+            ))}
           </div>
         </div>
         <div className="surface-card rounded-xl p-5">

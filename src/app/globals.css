@@ -16,6 +16,7 @@ html {
   min-height: 100%;
   background: var(--background);
   overflow-x: clip;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -76,10 +77,278 @@ textarea {
 
 .rook-live-card {
   animation: rook-card-arrival 360ms ease-out both;
+  border-color: rgba(255, 255, 255, 0.075);
 }
 
 .rook-live-card:hover {
   box-shadow: 0 0 34px rgba(53, 216, 255, 0.08), 0 18px 60px rgba(0, 0, 0, 0.24);
+}
+
+.intelligence-packet {
+  overflow: visible;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(53, 216, 255, 0.25) transparent;
+}
+
+.intelligence-packet:hover {
+  transform: translateY(-2px);
+}
+
+.media-frame-safe {
+  max-width: 100%;
+  max-height: min(56vh, 34rem);
+}
+
+.media-link-card {
+  min-width: 0;
+  max-width: 100%;
+  max-height: 13rem;
+}
+
+.media-link-chip {
+  min-width: 0;
+}
+
+.media-link-title,
+.media-link-desc {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.media-link-title {
+  -webkit-line-clamp: 2;
+}
+
+.media-link-desc {
+  -webkit-line-clamp: 2;
+}
+
+.mobile-compose-fab {
+  animation: mobile-fab-arrival 420ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+.mobile-swipe-card {
+  will-change: transform;
+}
+
+.mobile-native-post {
+  contain: layout paint;
+  transition: background-color 180ms ease, transform 180ms ease;
+}
+
+.mobile-native-post:active {
+  background: rgba(255, 255, 255, 0.025);
+  transform: scale(0.995);
+}
+
+.mobile-post-media {
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.22), 0 0 22px rgba(53, 216, 255, 0.055);
+}
+
+.mobile-post-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 20%, rgba(255, 255, 255, 0.08) 38%, transparent 56%);
+  transform: translateX(-120%);
+  animation: mobile-media-shimmer 4.8s ease-in-out infinite;
+}
+
+.mobile-feed-visual-policy {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.12) 8%, transparent 8% 16%, rgba(255, 255, 255, 0.1) 16% 24%, transparent 24%),
+    radial-gradient(circle at 24% 28%, rgba(138, 92, 255, 0.26), transparent 34%),
+    linear-gradient(135deg, rgba(47, 140, 255, 0.22), rgba(5, 6, 10, 0.96));
+}
+
+.mobile-feed-visual-market {
+  background:
+    linear-gradient(135deg, transparent 42%, rgba(46, 232, 159, 0.28) 42% 46%, transparent 46%),
+    linear-gradient(30deg, transparent 54%, rgba(53, 216, 255, 0.22) 54% 57%, transparent 57%),
+    radial-gradient(circle at 80% 22%, rgba(46, 232, 159, 0.22), transparent 32%),
+    rgba(8, 10, 18, 0.98);
+}
+
+.mobile-feed-visual-technology {
+  background:
+    radial-gradient(circle at 34% 44%, rgba(53, 216, 255, 0.3), transparent 17%),
+    radial-gradient(circle at 62% 38%, rgba(138, 92, 255, 0.24), transparent 18%),
+    linear-gradient(135deg, rgba(47, 140, 255, 0.2), rgba(5, 6, 10, 0.98));
+}
+
+.mobile-feed-visual-risk {
+  background:
+    repeating-radial-gradient(circle at 50% 50%, rgba(255, 191, 71, 0.24) 0 2px, transparent 2px 28px),
+    radial-gradient(circle at 50% 50%, rgba(255, 191, 71, 0.22), transparent 34%),
+    rgba(8, 10, 18, 0.98);
+}
+
+.mobile-swipe-card .surface-card {
+  border-radius: 1rem;
+  background: rgba(10, 13, 23, 0.88);
+  box-shadow: 0 18px 70px rgba(0, 0, 0, 0.34);
+}
+
+.signal-size-xs {
+  min-height: 16rem;
+}
+
+.signal-size-sm {
+  min-height: 20rem;
+}
+
+.signal-size-md {
+  min-height: 22rem;
+}
+
+.signal-size-lg {
+  min-height: 27rem;
+}
+
+.signal-size-featured {
+  min-height: 30rem;
+}
+
+.signal-rhythm-visual {
+  background:
+    linear-gradient(180deg, rgba(53, 216, 255, 0.055), rgba(255, 255, 255, 0.035)),
+    rgba(255, 255, 255, 0.045);
+}
+
+.signal-rhythm-pulse {
+  box-shadow: 0 0 38px rgba(255, 191, 71, 0.08), 0 24px 80px rgba(0, 0, 0, 0.34);
+}
+
+.network-event-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.network-event-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 2px;
+  background: linear-gradient(180deg, rgba(53, 216, 255, 0.9), rgba(46, 232, 159, 0.25));
+  opacity: 0.7;
+}
+
+.network-mini-bar {
+  min-height: 18%;
+  animation: network-mini-bar 1.8s ease-in-out infinite;
+}
+
+.chart-trend-strip {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    radial-gradient(circle at 18% 22%, rgba(46, 232, 159, 0.18), transparent 38%),
+    rgba(5, 6, 10, 0.94);
+  background-size: 24px 24px, 24px 24px, auto, auto;
+}
+
+.chart-trend-bar {
+  min-height: 18%;
+  animation: chart-trend-pulse 2.2s ease-in-out infinite;
+  transform-origin: bottom;
+}
+
+.mobile-rich-visual {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(8, 10, 18, 0.92);
+  box-shadow: 0 0 24px rgba(53, 216, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.mobile-rich-visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 42%, rgba(5, 6, 10, 0.48));
+  pointer-events: none;
+}
+
+.mobile-visual-grid,
+.mobile-visual-core,
+.mobile-visual-line {
+  position: absolute;
+  display: block;
+}
+
+.mobile-visual-grid {
+  inset: 0;
+  opacity: 0.32;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.mobile-visual-core {
+  left: 50%;
+  top: 50%;
+  width: 38%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 9999px;
+  border: 1px solid rgba(53, 216, 255, 0.42);
+  box-shadow: 0 0 48px rgba(53, 216, 255, 0.2);
+}
+
+.mobile-visual-line {
+  height: 2px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, transparent, rgba(53, 216, 255, 0.8), transparent);
+}
+
+.mobile-visual-line-a {
+  left: 12%;
+  right: 16%;
+  top: 36%;
+  transform: rotate(-8deg);
+}
+
+.mobile-visual-line-b {
+  left: 20%;
+  right: 12%;
+  bottom: 30%;
+  transform: rotate(10deg);
+}
+
+.mobile-visual-policy {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 8%, transparent 8% 16%, rgba(255, 255, 255, 0.1) 16% 24%, transparent 24%),
+    radial-gradient(circle at 20% 20%, rgba(138, 92, 255, 0.28), transparent 34%),
+    linear-gradient(135deg, rgba(47, 140, 255, 0.2), rgba(5, 6, 10, 0.95));
+}
+
+.mobile-visual-markets {
+  background:
+    linear-gradient(135deg, transparent 42%, rgba(46, 232, 159, 0.28) 42% 46%, transparent 46%),
+    linear-gradient(30deg, transparent 55%, rgba(53, 216, 255, 0.22) 55% 58%, transparent 58%),
+    radial-gradient(circle at 80% 20%, rgba(46, 232, 159, 0.24), transparent 32%),
+    rgba(8, 10, 18, 0.98);
+}
+
+.mobile-visual-technology {
+  background:
+    radial-gradient(circle at 34% 44%, rgba(53, 216, 255, 0.3), transparent 17%),
+    radial-gradient(circle at 62% 38%, rgba(138, 92, 255, 0.24), transparent 18%),
+    linear-gradient(135deg, rgba(47, 140, 255, 0.2), rgba(5, 6, 10, 0.98));
+}
+
+.mobile-visual-risk {
+  background:
+    repeating-radial-gradient(circle at 50% 50%, rgba(255, 191, 71, 0.28) 0 2px, transparent 2px 28px),
+    radial-gradient(circle at 50% 50%, rgba(255, 191, 71, 0.22), transparent 34%),
+    rgba(8, 10, 18, 0.98);
 }
 
 .intelligence-packet {
@@ -146,6 +415,34 @@ textarea {
   animation: rook-media-pulse 3.4s ease-in-out infinite;
 }
 
+.rook-visual-intel {
+  --rook-media-accent: rgba(53, 216, 255, 0.24);
+}
+
+.rook-visual-financial {
+  --rook-media-accent: rgba(46, 232, 159, 0.24);
+}
+
+.rook-visual-cyber {
+  --rook-media-accent: rgba(138, 255, 106, 0.22);
+}
+
+.rook-visual-geopolitics {
+  --rook-media-accent: rgba(255, 184, 77, 0.24);
+}
+
+.rook-visual-science {
+  --rook-media-accent: rgba(138, 92, 255, 0.25);
+}
+
+.rook-media-frame:hover {
+  box-shadow: 0 0 42px var(--rook-media-accent, rgba(53, 216, 255, 0.12)), 0 18px 70px rgba(0, 0, 0, 0.28);
+}
+
+.rook-media-frame img {
+  animation: media-soft-shimmer 9s ease-in-out infinite;
+}
+
 .graph-relation-active {
   stroke-dasharray: 7 7;
   animation: graph-path-flow 7s linear infinite;
@@ -185,7 +482,7 @@ textarea {
 }
 
 .mobile-safe-main {
-  padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+  padding-bottom: calc(4.6rem + env(safe-area-inset-bottom));
 }
 
 .rook-hero-image {
@@ -242,6 +539,53 @@ textarea {
   }
 }
 
+@media (max-width: 767px) {
+  .compact-mobile {
+    padding: 0.65rem;
+    border-radius: 0;
+    box-shadow: none;
+    max-height: none;
+    overflow: hidden;
+  }
+
+  .compact-mobile .mobile-clamp-title,
+  .compact-mobile .mobile-clamp-body {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .compact-mobile .mobile-clamp-title {
+    -webkit-line-clamp: 2;
+    font-size: 1rem;
+    line-height: 1.3rem;
+  }
+
+  .compact-mobile .mobile-clamp-body {
+    -webkit-line-clamp: 2;
+    font-size: 0.82rem;
+    line-height: 1.28rem;
+  }
+
+  .compact-mobile .rounded-full {
+    padding-top: 0.16rem;
+    padding-bottom: 0.16rem;
+  }
+
+  .signal-size-xs,
+  .signal-size-sm,
+  .signal-size-md,
+  .signal-size-lg,
+  .signal-size-featured {
+    min-height: 0;
+  }
+
+  .mobile-swipe-card .surface-card {
+    border-left: 0;
+    border-right: 0;
+  }
+}
+
 @keyframes rook-hero-drift {
   0%, 100% {
     transform: translate3d(0, 0, 0) scale(1.02);
@@ -285,12 +629,46 @@ textarea {
   }
 }
 
+@keyframes mobile-fab-arrival {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes mobile-media-shimmer {
+  0%, 55%, 100% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  70% {
+    opacity: 0.55;
+  }
+  88% {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+
 @keyframes rook-media-pulse {
   0%, 100% {
     box-shadow: 0 0 28px rgba(53, 216, 255, 0.08), inset 0 0 0 1px rgba(53, 216, 255, 0.08);
   }
   50% {
     box-shadow: 0 0 44px rgba(53, 216, 255, 0.18), inset 0 0 0 1px rgba(53, 216, 255, 0.18);
+  }
+}
+
+@keyframes media-soft-shimmer {
+  0%, 100% {
+    filter: saturate(1) brightness(1);
+  }
+  50% {
+    filter: saturate(1.08) brightness(1.04);
   }
 }
 
@@ -311,6 +689,29 @@ textarea {
   }
   50% {
     background-position: 100% 50%;
+  }
+}
+
+@keyframes network-mini-bar {
+  0%, 100% {
+    opacity: 0.42;
+    transform: scaleY(0.76);
+    transform-origin: bottom;
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@keyframes chart-trend-pulse {
+  0%, 100% {
+    opacity: 0.56;
+    transform: scaleY(0.88);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1);
   }
 }
 
@@ -390,7 +791,12 @@ textarea {
   .pulse-core-ring,
   .pulse-node,
   .pulse-volatility-ring,
-  .ambient-scanline {
+  .ambient-scanline,
+  .mobile-compose-fab,
+  .mobile-post-media::after,
+  .network-mini-bar,
+  .chart-trend-bar,
+  .rook-media-frame img {
     animation: none;
   }
 }

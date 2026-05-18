@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { AlertTriangle, Bot, BrainCircuit, Clock3, Gauge, GitBranch, Link2, Network, Radar, ShieldCheck, Sparkles, TrendingUp } from "lucide-react";
+import Image from "next/image";
+import { AlertTriangle, BarChart3, Bot, BrainCircuit, Clock3, Gauge, GitBranch, ImageIcon, Link2, Network, Route, ShieldAlert, ShieldCheck, Sparkles, TrendingUp } from "lucide-react";
 import { OperatorAvatar } from "@/components/operator-avatar";
 import { SignalActions } from "@/components/signals/signal-actions";
 import { SignalEvidenceSection } from "@/components/signals/signal-evidence-section";
@@ -9,17 +10,31 @@ import { SignalIntelligencePanel } from "@/components/signals/signal-intelligenc
 import { SignalMedia } from "@/components/signals/signal-media";
 import { MediaBoundary } from "@/components/signals/signal-error-boundary";
 import { formatRelativeTime } from "@/lib/format";
+import { getSignalMedia } from "@/lib/media";
 import { scorePulseSignal } from "@/lib/pulse";
 import { getOperatorStyle } from "@/lib/operator-style";
 import { buildSignalEvidencePacket } from "@/lib/signal-evidence";
 import { deriveSignalContinuity } from "@/lib/signal-continuity";
+import { getSignalType, type SignalSize, type SignalType } from "@/lib/feed-ranking";
 import type { SignalWithAuthor } from "@/lib/supabase/types";
 
 type SignalCardProps = {
   signal: SignalWithAuthor;
+  variant?: "featured" | "standard" | "compact";
+  size?: SignalSize;
+  signalType?: SignalType;
+  rhythm?: "visual" | "brief" | "dense" | "scan" | "pulse";
+  imageFirst?: boolean;
 };
 
-export function SignalCard({ signal }: SignalCardProps) {
+export function SignalCard({
+  signal,
+  variant = "standard",
+  size,
+  signalType,
+  rhythm = "dense",
+  imageFirst = false,
+}: SignalCardProps) {
   const safeSignal = normalizeRenderableSignal(signal);
   const authorName = safeSignal.author?.display_name ?? "Unknown Operator";
   const username = safeSignal.author?.username ?? "unknown";
@@ -29,6 +44,8 @@ export function SignalCard({ signal }: SignalCardProps) {
   const authorIsAi = safeSignal.author?.operator_type === "ai_agent" || safeSignal.author?.operator_type === "autonomous";
   const specialization = safeArray(safeSignal.author?.expertise_domains)[0] ?? safeSignal.author?.autonomous_status ?? null;
   const evidenceCount = [
+    safeSignal.cover_image,
+    safeSignal.thumbnail,
     safeSignal.reference_url,
     safeSignal.image_url,
     safeSignal.video_url,
@@ -36,6 +53,7 @@ export function SignalCard({ signal }: SignalCardProps) {
     safeSignal.embed_url,
     safeSignal.media_url,
     ...safeArray(safeSignal.media_urls),
+    ...safeArray(safeSignal.media),
     ...safeArray(safeSignal.attachments),
   ].filter(Boolean).length;
   const briefSnippet = buildBriefSnippet(safeSignal.body);
@@ -52,9 +70,40 @@ export function SignalCard({ signal }: SignalCardProps) {
   });
   const ringValue = Math.min(100, Math.max(8, safeSignal.confidence_score ?? Math.round(55 + pulse.pulse_score / 3)));
 
+  const resolvedSize: SignalSize = size ?? (variant === "featured" ? "FEATURED" : variant === "compact" ? "SM" : "MD");
+  const resolvedType = signalType ?? getSignalType(safeSignal);
+  const compact = resolvedSize === "XS" || resolvedSize === "SM" || variant === "compact";
+  const featured = resolvedSize === "FEATURED" || variant === "featured";
+  const showIntel = resolvedSize === "MD" || resolvedSize === "LG" || featured;
+  const showDeepIntel = resolvedSize === "LG" || featured;
+  const showMedia = imageFirst || resolvedSize !== "XS";
+  const sizeConfig = getSizeConfig(resolvedSize);
+  const articleClass = `surface-card rook-live-card intelligence-packet compact-mobile signal-size-${resolvedSize.toLowerCase()} signal-rhythm-${rhythm} w-full min-w-0 overflow-hidden rounded-xl ${sizeConfig.padding} transition duration-200 hover:border-rook-blue/40 ${operatorStyle.aura}`;
+  const bodyLimit = sizeConfig.bodyLimit;
+  const visualUrl = getSignalVisualUrl(safeSignal);
+  const sourceRows = buildMobileAccordionRows({
+    signal: safeSignal,
+    whatChanged: briefSnippet,
+    whyItMatters,
+    evidencePacket,
+  });
+
+  const media = (
+    <MediaBoundary>
+      <SignalMedia signal={safeSignal} compact={compact} fallback />
+    </MediaBoundary>
+  );
+
   return (
-    <article className={`surface-card rook-live-card intelligence-packet w-full min-w-0 overflow-hidden rounded-xl p-3 transition duration-200 hover:border-rook-blue/40 sm:p-5 ${operatorStyle.aura}`}>
+    <article className={articleClass}>
       <div className={`mb-3 h-1 rounded-full bg-gradient-to-r ${operatorStyle.accent}`} />
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <SignalTypePill type={resolvedType} />
+        <span className="rounded-full border border-white/10 bg-white/[0.035] px-2 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-muted">
+          {resolvedSize}
+        </span>
+      </div>
+      {imageFirst && showMedia && <div className="hidden md:block">{media}</div>}
       <div className="flex min-w-0 gap-3">
         <Link href={`/profile/${username}`} className="focus-ring shrink-0 rounded-lg">
           <OperatorAvatar
@@ -92,46 +141,71 @@ export function SignalCard({ signal }: SignalCardProps) {
         </div>
       </div>
 
-      <MediaBoundary>
-        <SignalMedia signal={safeSignal} />
-      </MediaBoundary>
+      {!imageFirst && showMedia && <div className="hidden md:block">{media}</div>}
 
       <Link href={`/signals/${safeSignal.id}`} className="focus-ring mt-4 block rounded-md">
-        <h2 className="mobile-readable text-xl font-black leading-7 text-white hover:text-rook-cyan sm:text-2xl sm:leading-8">
+        <h2 className={`mobile-clamp-title mobile-readable font-black text-white hover:text-rook-cyan ${sizeConfig.titleClass}`}>
           {safeSignal.title}
         </h2>
       </Link>
-      <p className="mobile-readable mt-2 text-sm leading-6 text-rook-muted sm:text-base sm:leading-7">{truncateText(safeSignal.body, 360)}</p>
+      <p className={`mobile-clamp-body mobile-readable mt-2 text-sm leading-6 text-rook-muted ${compact ? "" : "sm:text-base sm:leading-7"}`}>{truncateText(safeSignal.body, bodyLimit)}</p>
 
-      <div className="mt-4 rounded-lg border border-rook-cyan/15 bg-rook-cyan/[0.045] p-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className={escalationLevel === "critical" ? "rounded-full border border-rook-amber/30 bg-rook-amber/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-amber" : escalationLevel === "rising" ? "rounded-full border border-rook-cyan/25 bg-rook-cyan/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-cyan" : "rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-muted"}>
-            {escalationLevel === "critical" ? "Critical escalation" : escalationLevel === "rising" ? "Narrative accelerating" : "Watch state"}
-          </span>
-          <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-muted">
-            <Gauge className="h-3.5 w-3.5 text-rook-green" />
-            v{pulse.velocity}/h
-          </span>
-          {(safeSignal.contradiction_score ?? 0) > 28 && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-rook-amber/25 bg-rook-amber/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-amber">
-              <AlertTriangle className="h-3.5 w-3.5" />
-              contradiction {safeSignal.contradiction_score}%
+      <MobileSignalVisual signal={safeSignal} type={resolvedType} src={visualUrl} />
+
+      {sourceRows.length > 0 && (
+        <div className="mobile-intel-accordion mt-3 grid gap-1 md:hidden">
+          {sourceRows.map((row) => (
+            <details key={row.label} className="group overflow-hidden rounded-lg border border-white/10 bg-white/[0.035]">
+              <summary className="flex min-h-9 cursor-pointer list-none items-center justify-between gap-3 px-3 text-[11px] font-black uppercase tracking-[0.12em] text-rook-muted">
+                {row.label}
+                <span className="text-rook-cyan transition group-open:rotate-90">›</span>
+              </summary>
+              <div className="border-t border-white/10 px-3 py-2 text-xs leading-5 text-rook-muted">
+                {row.href ? (
+                  <Link href={row.href} target={row.href.startsWith("http") ? "_blank" : undefined} rel={row.href.startsWith("http") ? "noreferrer" : undefined} className="text-rook-cyan">
+                    {row.value}
+                  </Link>
+                ) : row.value}
+              </div>
+            </details>
+          ))}
+        </div>
+      )}
+
+      {showIntel && (
+        <div className="mt-3 hidden md:block">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className={escalationLevel === "critical" ? "rounded-full bg-rook-amber/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-amber" : escalationLevel === "rising" ? "rounded-full bg-rook-cyan/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-cyan" : "rounded-full bg-white/[0.04] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-muted"}>
+              {escalationLevel === "critical" ? "Critical" : escalationLevel === "rising" ? "Accelerating" : "Watch"}
             </span>
-          )}
+            <span className="inline-flex items-center gap-1 rounded-full bg-white/[0.04] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-muted">
+              <Gauge className="h-3.5 w-3.5 text-rook-green" />
+              v{pulse.velocity}/h
+            </span>
+            {(safeSignal.contradiction_score ?? 0) > 28 && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-rook-amber/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-amber">
+                <AlertTriangle className="h-3.5 w-3.5" />
+                contradiction {safeSignal.contradiction_score}%
+              </span>
+            )}
+          </div>
+          <DesktopIntelRows
+            rows={[
+              { label: "What changed", value: briefSnippet },
+              { label: "Why it matters", value: whyItMatters },
+              { label: "Source", value: `${evidencePacket.sourceTitle} · ${evidencePacket.sourceDomain}` },
+            ]}
+          />
         </div>
-        <div className="mt-3 grid gap-3 md:grid-cols-2">
-          <IntelAnswer icon={Radar} label="What changed" value={briefSnippet} />
-          <IntelAnswer icon={BrainCircuit} label="Why it matters" value={whyItMatters} />
-        </div>
-      </div>
+      )}
 
-      <div className="mt-4 grid gap-2 sm:grid-cols-3">
+      <div className={`mt-4 hidden gap-2 md:grid ${compact ? "grid-cols-2" : "sm:grid-cols-3"}`}>
         <EvidenceMetric icon={Link2} label="Evidence" value={evidenceCount > 0 ? `${evidenceCount} source${evidenceCount === 1 ? "" : "s"}` : "internal graph"} />
         <EvidenceMetric icon={TrendingUp} label="Pulse acceleration" value={pulse.acceleration > 0 ? `+${pulse.acceleration}` : "stable"} />
-        <EvidenceMetric icon={ShieldCheck} label="Source credibility" value={`${evidencePacket.credibility}%`} />
+        {showIntel && <EvidenceMetric icon={ShieldCheck} label="Source credibility" value={`${evidencePacket.credibility}%`} />}
       </div>
-      <ContinuityStrip continuity={{ ...continuity, deltas: continuityDeltas }} />
-      <div className="mt-3 grid min-w-0 gap-2 sm:grid-cols-[auto_1fr]">
+      {showDeepIntel && <ContinuityStrip continuity={{ ...continuity, deltas: continuityDeltas }} />}
+      {showDeepIntel && <div className="mt-3 grid min-w-0 gap-2 sm:grid-cols-[auto_1fr]">
         <div
           className="grid h-14 w-14 place-items-center rounded-full border border-white/10 bg-white/[0.035] text-xs font-black text-white"
           style={{ background: `conic-gradient(rgba(46,232,159,0.85) ${ringValue * 3.6}deg, rgba(255,255,255,0.08) 0deg)` }}
@@ -149,9 +223,9 @@ export function SignalCard({ signal }: SignalCardProps) {
             ))}
           </div>
         </div>
-      </div>
-      <SignalEvidenceSection signal={safeSignal} />
-      <div className="mt-4 flex min-w-0 flex-wrap gap-2">
+      </div>}
+      {showDeepIntel && <SignalEvidenceSection signal={safeSignal} />}
+      <div className="mt-4 hidden min-w-0 flex-wrap gap-2 md:flex">
         {safeSignal.flock && (
           <span className="rounded-full border border-rook-blue/30 bg-rook-blue/10 px-3 py-1 text-xs font-bold text-rook-cyan">
             {safeSignal.flock.name}
@@ -190,17 +264,151 @@ export function SignalCard({ signal }: SignalCardProps) {
           </Link>
         ))}
       </div>
-      <SignalIntelligencePanel signal={safeSignal} />
-      <SignalActions
-        signalId={safeSignal.id}
-        likes={safeSignal.likes_count}
-        amplifies={safeSignal.amplifies_count}
-        comments={safeSignal.comments_count}
-        liked={Boolean(safeSignal.viewer_has_liked)}
-        amplified={Boolean(safeSignal.viewer_has_amplified)}
-      />
+      {showDeepIntel && <SignalIntelligencePanel signal={safeSignal} />}
+      <div className="hidden md:block">
+        <SignalActions
+          signalId={safeSignal.id}
+          likes={safeSignal.likes_count}
+          amplifies={safeSignal.amplifies_count}
+          comments={safeSignal.comments_count}
+          liked={Boolean(safeSignal.viewer_has_liked)}
+          amplified={Boolean(safeSignal.viewer_has_amplified)}
+        />
+      </div>
     </article>
   );
+}
+
+function SignalTypePill({ type }: { type: SignalType }) {
+  const Icon = type === "alert"
+    ? ShieldAlert
+    : type === "chart"
+      ? BarChart3
+      : type === "graph"
+        ? Route
+        : type === "narrative"
+          ? GitBranch
+          : type === "intelligence brief"
+            ? BrainCircuit
+            : ImageIcon;
+
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-rook-cyan/20 bg-rook-cyan/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-cyan">
+      <Icon className="h-3.5 w-3.5" />
+      {type}
+    </span>
+  );
+}
+
+function getSizeConfig(size: SignalSize) {
+  switch (size) {
+    case "XS":
+      return { padding: "p-3", titleClass: "text-base leading-6", bodyLimit: 120 };
+    case "SM":
+      return { padding: "p-3 sm:p-4", titleClass: "text-lg leading-6", bodyLimit: 180 };
+    case "LG":
+      return { padding: "p-3 sm:p-5", titleClass: "text-xl leading-7 sm:text-2xl sm:leading-8", bodyLimit: 360 };
+    case "FEATURED":
+      return { padding: "p-3 sm:p-5 lg:p-6", titleClass: "text-2xl leading-8 sm:text-3xl sm:leading-9", bodyLimit: 460 };
+    case "MD":
+    default:
+      return { padding: "p-3 sm:p-5", titleClass: "text-xl leading-7", bodyLimit: 260 };
+  }
+}
+
+function DesktopIntelRows({ rows }: { rows: Array<{ label: string; value: string }> }) {
+  const visibleRows = rows.filter((row) => row.value.trim().length > 0);
+  if (visibleRows.length === 0) return null;
+
+  return (
+    <div className="mt-3 grid gap-1.5">
+      {visibleRows.map((row, index) => (
+        <details key={row.label} open={index === 0} className="group rounded-lg bg-white/[0.028] transition hover:bg-white/[0.045]">
+          <summary className="flex min-h-9 cursor-pointer list-none items-center justify-between gap-3 px-3 text-[10px] font-black uppercase tracking-[0.14em] text-rook-muted">
+            {row.label}
+            <span className="text-rook-cyan transition group-open:rotate-90">›</span>
+          </summary>
+          <p className="border-t border-white/[0.06] px-3 py-2 text-xs leading-5 text-rook-muted">
+            {row.value}
+          </p>
+        </details>
+      ))}
+    </div>
+  );
+}
+
+function MobileSignalVisual({
+  signal,
+  src,
+  type,
+}: {
+  signal: SignalWithAuthor;
+  src: string | null;
+  type: SignalType;
+}) {
+  const category = getVisualCategory(signal, type);
+
+  if (src) {
+    return (
+      <div className="mobile-rich-visual mt-3 md:hidden">
+        <Image src={src} alt="" fill sizes="100vw" className="object-cover" unoptimized />
+      </div>
+    );
+  }
+
+  return (
+    <div className={`mobile-rich-visual mobile-visual-${category} mt-3 md:hidden`} aria-hidden="true">
+      <span className="mobile-visual-grid" />
+      <span className="mobile-visual-core" />
+      <span className="mobile-visual-line mobile-visual-line-a" />
+      <span className="mobile-visual-line mobile-visual-line-b" />
+    </div>
+  );
+}
+
+function buildMobileAccordionRows({
+  evidencePacket,
+  signal,
+  whatChanged,
+  whyItMatters,
+}: {
+  evidencePacket: ReturnType<typeof buildSignalEvidencePacket>;
+  signal: SignalWithAuthor;
+  whatChanged: string;
+  whyItMatters: string;
+}) {
+  const rows: Array<{ label: string; value: string; href?: string | null }> = [];
+  const referenceUrl = readString(signal.reference_url) ?? readString(signal.embed_url);
+  const chartUrl = readString(signal.chart_url);
+  const sourceHref = evidencePacket.items.find((item) => item.href)?.href ?? referenceUrl ?? chartUrl;
+
+  if (whatChanged) rows.push({ label: "What changed", value: whatChanged });
+  if (whyItMatters) rows.push({ label: "Why it matters", value: whyItMatters });
+  if (sourceHref && evidencePacket.sourceDomain) {
+    rows.push({
+      label: "Source",
+      value: `${evidencePacket.sourceTitle} · ${evidencePacket.sourceDomain}`,
+      href: sourceHref,
+    });
+  }
+  if (referenceUrl) rows.push({ label: "Reference", value: referenceUrl, href: referenceUrl });
+  if (chartUrl) rows.push({ label: "Chart", value: chartUrl, href: chartUrl });
+
+  return rows;
+}
+
+function getSignalVisualUrl(signal: SignalWithAuthor) {
+  const visual = getSignalMedia(signal).find((media) => media.type === "image" || media.type === "ai_generated" || media.type === "chart");
+  return visual?.thumbnailUrl ?? visual?.url ?? null;
+}
+
+function getVisualCategory(signal: SignalWithAuthor, type: SignalType) {
+  const text = `${signal.title} ${signal.body} ${(signal.ai_narrative_tags ?? []).join(" ")}`.toLowerCase();
+  if (type === "chart" || /\b(markets?|stocks?|revenue|pricing|yield|inflation|chart)\b/.test(text)) return "markets";
+  if (type === "alert" || /\b(security|risk|threat|breach|attack|incident|outage)\b/.test(text)) return "risk";
+  if (/\b(policy|governance|regulation|regulatory|parliament|senate|law)\b/.test(text)) return "policy";
+  if (/\b(ai|compute|chip|model|network|technology|infrastructure)\b/.test(text)) return "technology";
+  return type === "graph" ? "technology" : "markets";
 }
 
 function ContinuityStrip({
@@ -234,26 +442,6 @@ function ContinuityStrip({
         ))}
       </div>
       <p className="mt-2 text-xs leading-5 text-rook-muted">{reference}</p>
-    </div>
-  );
-}
-
-function IntelAnswer({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="rounded-lg border border-white/10 bg-white/[0.035] p-3">
-      <div className="flex items-center gap-2">
-        <Icon className="h-4 w-4 text-rook-cyan" />
-        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-rook-cyan">{label}</p>
-      </div>
-      <p className="mt-2 text-xs leading-5 text-rook-muted">{value}</p>
     </div>
   );
 }
@@ -300,6 +488,10 @@ function safeArray<T>(value: T[] | null | undefined): T[] {
   return Array.isArray(value) ? value : [];
 }
 
+function readString(value: unknown) {
+  return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
+}
+
 function normalizeRenderableSignal(signal: SignalWithAuthor): SignalWithAuthor {
   return {
     ...signal,
@@ -311,6 +503,7 @@ function normalizeRenderableSignal(signal: SignalWithAuthor): SignalWithAuthor {
     likes_count: typeof signal.likes_count === "number" ? signal.likes_count : 0,
     amplifies_count: typeof signal.amplifies_count === "number" ? signal.amplifies_count : 0,
     comments_count: typeof signal.comments_count === "number" ? signal.comments_count : 0,
+    media: safeArray(signal.media).filter((item): item is Record<string, unknown> => typeof item === "object" && item !== null),
     media_urls: safeArray(signal.media_urls).filter((item): item is string => typeof item === "string" && item.trim().length > 0),
     attachments: safeArray(signal.attachments).filter((item): item is Record<string, unknown> => typeof item === "object" && item !== null),
     ai_narrative_tags: safeArray(signal.ai_narrative_tags).filter((item): item is string => typeof item === "string"),

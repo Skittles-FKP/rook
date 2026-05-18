@@ -14,6 +14,9 @@ type SupabaseEnvDiagnostics = {
   keyPrefix?: string;
   keyLength?: number;
   keyTrimmed: boolean;
+  serviceRoleKeyPrefix?: string;
+  serviceRoleKeyLength?: number;
+  serviceRoleKeyTrimmed?: boolean;
 };
 
 export function getSupabaseEnv(): SupabaseEnv | null {
@@ -46,6 +49,8 @@ export function getSupabaseEnvDiagnostics(): SupabaseEnvDiagnostics {
   const rawKey = keyName ? process.env[keyName] : undefined;
   const url = rawUrl?.trim();
   const key = rawKey?.trim();
+  const rawServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const serviceRoleKey = rawServiceRoleKey?.trim();
 
   let hostname: string | undefined;
   let projectRef: string | undefined;
@@ -70,5 +75,8 @@ export function getSupabaseEnvDiagnostics(): SupabaseEnvDiagnostics {
     keyPrefix: key?.slice(0, 14),
     keyLength: key?.length,
     keyTrimmed: rawKey !== key,
+    serviceRoleKeyPrefix: serviceRoleKey?.slice(0, 14),
+    serviceRoleKeyLength: serviceRoleKey?.length,
+    serviceRoleKeyTrimmed: rawServiceRoleKey !== serviceRoleKey,
   };
 }

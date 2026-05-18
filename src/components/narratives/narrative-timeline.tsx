@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
+import { SignalMedia } from "@/components/signals/signal-media";
 import { formatRelativeTime } from "@/lib/format";
 import type { NarrativeRecord } from "@/lib/narratives";
 
@@ -63,6 +64,7 @@ export function NarrativeTimeline({ narrative }: { narrative: NarrativeRecord })
           <span className="text-xs font-bold text-rook-muted">{formatRelativeTime(current.timestamp)}</span>
         </div>
         <p className="mt-2 text-sm leading-6 text-rook-muted">{current.detail}</p>
+        {current.media_signal && <SignalMedia signal={current.media_signal} />}
         <div className="mt-4 grid grid-cols-3 gap-2">
           <Metric label="Pulse" value={current.pulse_score} />
           <Metric label="Acceleration" value={Math.round(current.acceleration)} />

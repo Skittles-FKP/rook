@@ -121,6 +121,7 @@ export async function diagnosticFetch(
       const extracted = parsed ? normalizeSupabaseError(parsed) : null;
 
       console.error("[supabase:fetch] error response", {
+        operation: init?.method ?? (typeof input === "object" && "method" in input ? input.method : "GET"),
         status: response.status,
         statusText: response.statusText,
         hostname: target.hostname,
@@ -139,6 +140,8 @@ export async function diagnosticFetch(
         errorColumn: extracted?.column,
         errorRelation: extracted?.relation,
         body,
+        parsedBody: parsed,
+        authState: describeAuthHeaders(init?.headers),
       });
     }
 
@@ -165,4 +168,22 @@ export async function diagnosticFetch(
 
     throw error;
   }
+}
+
+function describeAuthHeaders(headers: HeadersInit | undefined) {
+  if (!headers) {
+    return { hasAuthorizationHeader: false, hasApiKeyHeader: false };
+  }
+
+  const normalized = new Headers(headers);
+  const authorization = normalized.get("authorization");
+  const apiKey = normalized.get("apikey");
+
+  return {
+    hasAuthorizationHeader: Boolean(authorization),
+    hasApiKeyHeader: Boolean(apiKey),
+    authorizationPrefix: authorization?.slice(0, 14),
+    apiKeyPrefix: apiKey?.slice(0, 14),
+    apiKeyLength: apiKey?.length,
+  };
 }

@@ -3,6 +3,9 @@ type SupabaseErrorLike = {
   details?: string | null;
   hint?: string | null;
   code?: string | null;
+  status?: number;
+  statusText?: string;
+  name?: string;
 };
 
 export type SupabaseErrorExtraction = {
@@ -62,11 +65,12 @@ export function normalizeSupabaseError(error: unknown): SupabaseErrorExtraction 
   }
 
   const value = error as SupabaseErrorLike;
-  const joined = [value.message, value.details, value.hint, value.code].filter(Boolean).join(" ");
+  const rawDescription = describeUnknownError(error);
+  const joined = [value.message, value.details, value.hint, value.code, rawDescription].filter(Boolean).join(" ");
   const columnRef = extractColumnRef(joined);
 
   return {
-    message: value.message,
+    message: value.message ?? value.statusText ?? value.name ?? rawDescription,
     details: value.details,
     hint: value.hint,
     code: value.code,
@@ -75,6 +79,24 @@ export function normalizeSupabaseError(error: unknown): SupabaseErrorExtraction 
     relation: extractNamedMatch(joined, /relationship between '([^']+)'/i) ?? extractNamedMatch(joined, /relation\s+"?([a-zA-Z0-9_.]+)"?/i),
     raw: error,
   };
+}
+
+function describeUnknownError(error: unknown) {
+  if (error instanceof Error) return error.message;
+
+  try {
+    const serialized = JSON.stringify(error);
+    if (serialized && serialized !== "{}") return serialized;
+  } catch {
+    return String(error);
+  }
+
+  if (error && typeof error === "object") {
+    const keys = Object.keys(error);
+    return keys.length > 0 ? `Object with keys: ${keys.join(", ")}` : "Empty error object";
+  }
+
+  return String(error);
 }
 
 function extractNamedMatch(value: string, pattern: RegExp) {

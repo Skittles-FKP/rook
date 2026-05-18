@@ -37,11 +37,11 @@ const requiredChecks = [
   {
     migration: "0003",
     name: "signal intelligence columns",
-    query: "signals.select(image_url,reference_url,chart_url,embed_url,confidence_score,ai_narrative_tags,contradiction_score,sentiment_overlay).limit(1)",
+    query: "signals.select(media_type,media_url,media_urls,thumbnail_url,image_url,video_url,reference_url,chart_url,embed_url,attachments,og_title,og_description,og_image,confidence_score,ai_narrative_tags,contradiction_score,sentiment_overlay).limit(1)",
     run: (supabase: SupabaseClient<Database>) =>
       supabase
         .from("signals")
-        .select("image_url, reference_url, chart_url, embed_url, confidence_score, ai_narrative_tags, contradiction_score, sentiment_overlay")
+      .select("media_type, media_url, media_urls, thumbnail_url, image_url, video_url, reference_url, chart_url, embed_url, attachments, og_title, og_description, og_image, confidence_score, ai_narrative_tags, contradiction_score, sentiment_overlay")
         .limit(1),
   },
   {

@@ -6,7 +6,7 @@ import { AppShell } from "@/components/shell/app-shell";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { getViewer } from "@/lib/data/signals";
 import { getNetworkEvents } from "@/lib/data/pulse";
-import { ensureAutonomousOperatorProfiles } from "@/lib/seeded-ai-activity";
+import { bootstrapAutonomousOperatorProfilesInBackground } from "@/lib/seeded-ai-activity";
 
 export const dynamic = "force-dynamic";
 
@@ -19,9 +19,7 @@ export default async function ApplicationLayout({
     redirect("/setup");
   }
 
-  await ensureAutonomousOperatorProfiles({ source: "application-layout" }).catch((error) => {
-    console.error("[autonomous-operators] startup bootstrap failed", error);
-  });
+  bootstrapAutonomousOperatorProfilesInBackground({ source: "application-layout" });
 
   const { user, profile } = await getViewer();
 

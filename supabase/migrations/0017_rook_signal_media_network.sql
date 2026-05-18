@@ -3,7 +3,10 @@ create extension if not exists pgcrypto;
 alter table public.signals
   add column if not exists media_type text,
   add column if not exists media_url text,
+  add column if not exists media_urls text[] not null default '{}',
   add column if not exists thumbnail_url text,
+  add column if not exists video_url text,
+  add column if not exists attachments jsonb not null default '[]'::jsonb,
   add column if not exists og_title text,
   add column if not exists og_description text,
   add column if not exists og_image text,
@@ -31,20 +34,27 @@ update public.signals
 set media_type = case
     when media_type is not null then media_type
     when image_url is not null then 'image'
+    when video_url is not null then 'video'
     when chart_url is not null then 'chart'
     when embed_url ilike '%youtu.be/%' or embed_url ilike '%youtube.com/%' then 'youtube'
     when embed_url is not null then 'link'
     when reference_url is not null then 'link'
     else null
   end,
-  media_url = coalesce(media_url, image_url, chart_url, embed_url, reference_url),
+  media_url = coalesce(media_url, image_url, video_url, chart_url, embed_url, reference_url),
+  media_urls = case
+    when coalesce(array_length(media_urls, 1), 0) > 0 then media_urls
+    else array_remove(array[image_url, video_url, chart_url, embed_url, reference_url], null)
+  end,
   thumbnail_url = coalesce(thumbnail_url, image_url, chart_url),
+  attachments = coalesce(attachments, '[]'::jsonb),
   media_metadata = coalesce(media_metadata, '{}'::jsonb)
 where media_type is null
-  and (image_url is not null or chart_url is not null or embed_url is not null or reference_url is not null);
+  and (image_url is not null or video_url is not null or chart_url is not null or embed_url is not null or reference_url is not null);
 
 create index if not exists signals_media_type_created_at_idx on public.signals(media_type, created_at desc);
 create index if not exists signals_media_metadata_idx on public.signals using gin(media_metadata);
+create index if not exists signals_attachments_idx on public.signals using gin(attachments);
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values

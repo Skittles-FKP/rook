@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { slugify } from "@/lib/format";
 import { createInteractionAlert, shouldEmitPulseInteraction } from "@/lib/interactions";
-import { detectMediaUrl, uploadMediaFile, type SignalMediaType } from "@/lib/media";
+import { detectMediaUrl, inferSignalVisualMode, uploadMediaFile, type SignalMediaType } from "@/lib/media";
 import { fetchOgMetadata } from "@/lib/og";
 import { checkActionRateLimit, scoreSignalAbuseRisk } from "@/lib/security";
 import type { ActionState } from "@/app/actions/auth";
@@ -36,7 +36,7 @@ export async function createSignalAction(
   const embedUrl = String(formData.get("embedUrl") ?? "").trim();
   const mediaUrlInput = String(formData.get("mediaUrl") ?? "").trim();
   const aiGenerated = String(formData.get("aiGenerated") ?? "") === "on";
-  const mediaFile = formData.get("mediaFile");
+  const mediaFiles = formData.getAll("mediaFile").filter((value): value is File => value instanceof File && value.size > 0);
   const { supabase, userId } = await getUserId();
 
   if (!userId) {
@@ -65,49 +65,127 @@ export async function createSignalAction(
   let uploadedMediaUrl: string | null = null;
   let uploadedMediaType = mediaDetection.mediaType;
   let mediaMetadata: Record<string, unknown> = { ...mediaDetection.metadata };
+  const mediaUrls = new Set<string>();
+  const attachments: Array<Record<string, unknown>> = [];
 
-  if (mediaFile instanceof File && mediaFile.size > 0) {
+  for (const mediaFile of mediaFiles.slice(0, 6)) {
     const upload = await uploadMediaFile(supabase, userId, mediaFile);
     if (!upload.ok) {
       return { ok: false, message: upload.message };
     }
 
-    uploadedMediaUrl = upload.publicUrl;
+    uploadedMediaUrl ??= upload.publicUrl;
     const validatedMediaType = upload.mediaType as SignalMediaType;
-    uploadedMediaType = aiGenerated && validatedMediaType === "image" ? "ai_generated" : validatedMediaType;
-    mediaMetadata = {
-      ...mediaMetadata,
+    if (attachments.length === 0) {
+      uploadedMediaType = aiGenerated && validatedMediaType === "image" ? "ai_generated" : validatedMediaType;
+    }
+    const attachment = {
+      type: aiGenerated && validatedMediaType === "image" ? "ai_generated" : validatedMediaType,
+      url: upload.publicUrl,
+      width: null,
+      height: null,
+      name: mediaFile.name,
+      media_url: upload.publicUrl,
+      thumbnail_url: upload.thumbnailUrl,
       storagePath: upload.path,
+      bucket: upload.bucket,
       contentType: mediaFile.type,
       size: mediaFile.size,
       originalName: mediaFile.name,
       aiGenerated,
     };
+    attachments.push(attachment);
+    mediaUrls.add(upload.publicUrl);
+    mediaMetadata = {
+      ...mediaMetadata,
+      primaryStoragePath: attachments[0]?.storagePath,
+      uploadCount: attachments.length,
+    };
+  }
+
+  if (uploadedMediaUrl) {
     mediaDetection = {
       mediaType: uploadedMediaType,
       mediaUrl: uploadedMediaUrl,
       embedUrl: null,
-      thumbnailUrl: upload.thumbnailUrl,
+      thumbnailUrl: typeof attachments[0]?.thumbnail_url === "string" ? attachments[0].thumbnail_url : null,
       metadata: mediaMetadata,
     };
   }
 
   const finalMediaUrl = (uploadedMediaUrl ?? mediaDetection.mediaUrl) || null;
-  const shouldFetchOg = finalMediaUrl && ["link", "youtube", "x_post"].includes(mediaDetection.mediaType ?? "");
-  const og = shouldFetchOg ? await fetchOgMetadata(finalMediaUrl) : { ogTitle: null, ogDescription: null, ogImage: null };
+  if (finalMediaUrl) mediaUrls.add(finalMediaUrl);
+  if (imageUrl) mediaUrls.add(imageUrl);
+  if (chartUrl) mediaUrls.add(chartUrl);
+  if (embedUrl) mediaUrls.add(embedUrl);
+  if (referenceUrl) mediaUrls.add(referenceUrl);
+
+  const ogTarget = finalMediaUrl && ["link", "youtube", "x_post"].includes(mediaDetection.mediaType ?? "")
+    ? finalMediaUrl
+    : referenceUrl || null;
+  const og = ogTarget ? await fetchOgMetadata(ogTarget) : { ogTitle: null, ogDescription: null, ogImage: null };
+
+  if (mediaUrlInput && finalMediaUrl && attachments.length === 0) {
+    attachments.push({
+      type: mediaDetection.mediaType,
+      url: finalMediaUrl,
+      width: null,
+      height: null,
+      name: og.ogTitle ?? getFilenameFromUrl(finalMediaUrl) ?? "Signal media",
+      media_url: finalMediaUrl,
+      thumbnail_url: mediaDetection.thumbnailUrl ?? og.ogImage,
+      embed_url: mediaDetection.embedUrl,
+      title: og.ogTitle,
+      description: og.ogDescription,
+      metadata: mediaDetection.metadata,
+    });
+  }
+
+  const coverImage = imageUrl || (mediaDetection.mediaType === "image" || mediaDetection.mediaType === "ai_generated" ? finalMediaUrl : null) || og.ogImage;
+  const thumbnail = mediaDetection.thumbnailUrl ?? og.ogImage ?? coverImage;
+  const visualMode = inferSignalVisualMode({
+    title,
+    body,
+    ai_narrative_tags: [],
+  });
+  const media = attachments.length > 0
+    ? attachments
+    : [...mediaUrls].map((url) => {
+      const detected = detectMediaUrl(url, aiGenerated);
+      return {
+        type: detected.mediaType,
+        url,
+        width: null,
+        height: null,
+        name: url === ogTarget ? og.ogTitle ?? getFilenameFromUrl(url) : getFilenameFromUrl(url),
+        media_url: url,
+        thumbnail_url: detected.thumbnailUrl ?? (url === ogTarget ? og.ogImage : null),
+        embed_url: detected.embedUrl,
+        title: url === ogTarget ? og.ogTitle : null,
+        description: url === ogTarget ? og.ogDescription : null,
+        metadata: detected.metadata,
+      };
+    });
 
   const payload = {
     author_id: userId,
     title,
     body,
     flock_id: flockId || null,
+    cover_image: coverImage,
+    thumbnail,
+    media,
+    visual_mode: visualMode,
     image_url: imageUrl || (mediaDetection.mediaType === "image" || mediaDetection.mediaType === "ai_generated" ? finalMediaUrl : null),
+    video_url: mediaDetection.mediaType === "video" ? finalMediaUrl : null,
     reference_url: referenceUrl || (mediaDetection.mediaType === "link" ? finalMediaUrl : null),
     chart_url: chartUrl || (mediaDetection.mediaType === "chart" ? finalMediaUrl : null),
     embed_url: embedUrl || mediaDetection.embedUrl || (mediaDetection.mediaType === "youtube" || mediaDetection.mediaType === "x_post" ? finalMediaUrl : null),
     media_type: mediaDetection.mediaType,
     media_url: finalMediaUrl,
-    thumbnail_url: mediaDetection.thumbnailUrl ?? og.ogImage,
+    media_urls: [...mediaUrls],
+    attachments,
+    thumbnail_url: thumbnail,
     og_title: og.ogTitle,
     og_description: og.ogDescription,
     og_image: og.ogImage,
@@ -117,15 +195,46 @@ export async function createSignalAction(
   const { error } = await supabase.from("signals").insert(payload);
 
   if (error) {
-    const fallback = await supabase.from("signals").insert({
-      author_id: userId,
-      title,
-      body,
-      flock_id: flockId || null,
+    console.error("[signals:create] rich insert failed", {
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+      hasUpload: mediaFiles.length > 0,
+      mediaUrl: finalMediaUrl,
+      mediaType: mediaDetection.mediaType,
     });
 
-    if (fallback.error) {
-      return { ok: false, message: fallback.error.message };
+    const compatibility = await insertSignalCompatibilityFallback({
+      supabase,
+      payload,
+      userId,
+      title,
+      body,
+      flockId: flockId || null,
+      finalMediaUrl,
+      mediaType: mediaDetection.mediaType,
+      thumbnail,
+      coverImage,
+      imageUrl: payload.image_url,
+      referenceUrl: payload.reference_url,
+      chartUrl: payload.chart_url,
+      embedUrl: payload.embed_url,
+      videoUrl: payload.video_url,
+      og,
+      originalError: error,
+    });
+
+    if (!compatibility.ok) {
+      return { ok: false, message: compatibility.message };
+    }
+
+    if (compatibility.degraded) {
+      console.warn("[signals:create] published with compatibility media payload", {
+        omittedColumns: compatibility.omittedColumns,
+        originalError: error.message,
+        mediaUrl: finalMediaUrl,
+      });
     }
   }
 
@@ -133,6 +242,117 @@ export async function createSignalAction(
   revalidatePath("/graph");
   revalidatePath("/pulse");
   return { ok: true, message: "Signal published." };
+}
+
+async function insertSignalCompatibilityFallback({
+  body,
+  chartUrl,
+  coverImage,
+  embedUrl,
+  finalMediaUrl,
+  flockId,
+  imageUrl,
+  mediaType,
+  og,
+  originalError,
+  payload,
+  referenceUrl,
+  supabase,
+  thumbnail,
+  title,
+  userId,
+  videoUrl,
+}: {
+  supabase: Awaited<ReturnType<typeof createClient>>;
+  payload: Record<string, unknown>;
+  userId: string;
+  title: string;
+  body: string;
+  flockId: string | null;
+  finalMediaUrl: string | null;
+  mediaType: SignalMediaType | null;
+  thumbnail: string | null;
+  coverImage: string | null;
+  imageUrl: string | null;
+  referenceUrl: string | null;
+  chartUrl: string | null;
+  embedUrl: string | null;
+  videoUrl: string | null;
+  og: { ogTitle: string | null; ogDescription: string | null; ogImage: string | null };
+  originalError: { message: string };
+}) {
+  const compatibilityPayload = {
+    author_id: userId,
+    title,
+    body,
+    flock_id: flockId,
+    cover_image: coverImage,
+    thumbnail,
+    image_url: imageUrl,
+    video_url: videoUrl,
+    reference_url: referenceUrl,
+    chart_url: chartUrl,
+    embed_url: embedUrl,
+    media_type: mediaType,
+    media_url: finalMediaUrl,
+    thumbnail_url: thumbnail,
+    og_title: og.ogTitle,
+    og_description: og.ogDescription,
+    og_image: og.ogImage,
+  };
+
+  const compatibility = await supabase.from("signals").insert(compatibilityPayload);
+  if (!compatibility.error) {
+    return {
+      ok: true as const,
+      degraded: true,
+      omittedColumns: ["attachments", "media", "media_urls", "media_metadata"],
+    };
+  }
+
+  console.error("[signals:create] compatibility insert failed", {
+    message: compatibility.error.message,
+    code: compatibility.error.code,
+    details: compatibility.error.details,
+    hint: compatibility.error.hint,
+    hadMedia: Boolean(finalMediaUrl),
+  });
+
+  const legacyPayload = {
+    author_id: userId,
+    title,
+    body,
+    flock_id: flockId,
+    image_url: imageUrl ?? (mediaType === "image" || mediaType === "ai_generated" ? finalMediaUrl : null),
+    reference_url: referenceUrl ?? (mediaType === "link" ? finalMediaUrl : null),
+  };
+  const legacy = await supabase.from("signals").insert(legacyPayload);
+
+  if (!legacy.error) {
+    return {
+      ok: true as const,
+      degraded: true,
+      omittedColumns: Object.keys(payload).filter((key) => !(key in legacyPayload)),
+    };
+  }
+
+  if (finalMediaUrl) {
+    return {
+      ok: false as const,
+      message: `Media uploaded but the Signal could not be saved. First error: ${originalError.message}. Fallback error: ${compatibility.error.message}.`,
+    };
+  }
+
+  return { ok: false as const, message: legacy.error.message };
+}
+
+function getFilenameFromUrl(value: string) {
+  try {
+    const name = new URL(value).pathname.split("/").filter(Boolean).pop();
+    return name ? decodeURIComponent(name) : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function toggleLikeAction(signalId: string) {

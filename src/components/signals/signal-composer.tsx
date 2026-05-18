@@ -1,10 +1,10 @@
 "use client";
 
-import { useMemo, useState, useActionState } from "react";
+import { useEffect, useMemo, useState, useActionState } from "react";
 import { Bot, FileText, ImageIcon, Link2, Radio, Sparkles, Upload, Video } from "lucide-react";
 import { createSignalAction } from "@/app/actions/signals";
 import { SubmitButton } from "@/components/form/submit-button";
-import { detectMediaUrl } from "@/lib/media";
+import { detectMediaUrl, validateMediaFile } from "@/lib/media";
 import type { ActionState } from "@/app/actions/auth";
 import type { Flock } from "@/lib/supabase/types";
 
@@ -14,8 +14,25 @@ export function SignalComposer({ flocks }: { flocks: Pick<Flock, "id" | "name">[
   const [state, action] = useActionState(createSignalAction, initialState);
   const [mediaUrl, setMediaUrl] = useState("");
   const [fileLabel, setFileLabel] = useState("");
+  const [fileError, setFileError] = useState("");
+  const [previews, setPreviews] = useState<Array<{ url: string; type: string; name: string }>>([]);
   const [aiGenerated, setAiGenerated] = useState(false);
   const detected = useMemo(() => detectMediaUrl(mediaUrl, aiGenerated), [mediaUrl, aiGenerated]);
+
+  useEffect(() => {
+    if (!state.ok) return;
+    setMediaUrl("");
+    setFileLabel("");
+    setFileError("");
+    setPreviews([]);
+    setAiGenerated(false);
+  }, [state.ok]);
+
+  useEffect(() => {
+    return () => {
+      previews.forEach((preview) => URL.revokeObjectURL(preview.url));
+    };
+  }, [previews]);
 
   return (
     <form action={action} className="surface-card rook-live-card rounded-xl p-4 sm:p-5">
@@ -75,20 +92,68 @@ export function SignalComposer({ flocks }: { flocks: Pick<Flock, "id" | "name">[
                 className="h-11 w-full rounded-lg border border-white/10 bg-white/[0.05] pl-10 pr-3 text-sm text-white outline-none transition focus:border-rook-blue"
               />
             </label>
-            <label className="group grid min-h-11 cursor-pointer place-items-center rounded-lg border border-dashed border-white/15 bg-rook-void/35 px-3 text-sm font-bold text-rook-muted transition hover:border-rook-cyan/45 hover:text-white">
+            <label className="group relative grid min-h-11 touch-manipulation cursor-pointer place-items-center overflow-hidden rounded-lg border border-dashed border-white/15 bg-rook-void/35 px-3 text-sm font-bold text-rook-muted transition hover:border-rook-cyan/45 hover:text-white active:scale-[0.99]">
               <input
                 name="mediaFile"
                 type="file"
+                multiple
                 accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime,application/pdf"
-                className="sr-only"
-                onChange={(event) => setFileLabel(event.target.files?.[0]?.name ?? "")}
+                className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
+                onChange={(event) => {
+                  const files = [...(event.target.files ?? [])];
+                  previews.forEach((preview) => URL.revokeObjectURL(preview.url));
+                  const invalid = files.map(validateMediaFile).find((result) => !result.ok);
+                  if (invalid && !invalid.ok) {
+                    setFileError(invalid.message);
+                    setFileLabel("");
+                    setPreviews([]);
+                    event.target.value = "";
+                    return;
+                  }
+                  setFileError("");
+                  setFileLabel(files.length > 1 ? `${files.length} files queued` : files[0]?.name ?? "");
+                  setPreviews(files.slice(0, 4).map((file) => ({
+                    url: URL.createObjectURL(file),
+                    type: file.type,
+                    name: file.name,
+                  })));
+                }}
               />
-              <span className="inline-flex min-w-0 items-center gap-2">
+              <span className="pointer-events-none inline-flex min-w-0 items-center gap-2">
                 <Upload className="h-4 w-4 text-rook-cyan" />
                 <span className="truncate">{fileLabel || "Upload image, video, or PDF"}</span>
               </span>
             </label>
           </div>
+          {fileError && (
+            <p className="mt-3 rounded-lg border border-red-400/30 bg-red-500/10 px-3 py-2 text-xs font-bold text-red-200">
+              {fileError}
+            </p>
+          )}
+          {previews.length > 0 && (
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              {previews.map((preview) => (
+                <div key={preview.url} className="relative aspect-video overflow-hidden rounded-xl border border-white/10 bg-rook-void">
+                  {preview.type.startsWith("image/") ? (
+                    <div
+                      className="h-full w-full bg-cover bg-center"
+                      style={{ backgroundImage: `url(${preview.url})` }}
+                      aria-label={preview.name}
+                    />
+                  ) : preview.type.startsWith("video/") ? (
+                    <video src={preview.url} muted playsInline preload="metadata" className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="grid h-full place-items-center bg-white/[0.035]">
+                      <FileText className="h-8 w-8 text-rook-cyan" />
+                    </div>
+                  )}
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-rook-void/90 to-transparent p-2">
+                    <p className="truncate text-xs font-black text-white">{preview.name}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
           {(detected.mediaType || fileLabel) && (
             <div className="mt-3 flex flex-wrap gap-2">
               <MediaChip icon={detected.mediaType === "video" ? Video : detected.mediaType === "pdf" ? FileText : detected.mediaType === "ai_generated" ? Bot : ImageIcon} label={fileLabel ? "upload queued" : detected.mediaType ?? "media"} />

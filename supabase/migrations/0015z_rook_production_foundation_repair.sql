@@ -95,11 +95,14 @@ create table if not exists public.signals (
   body text not null,
   media_type text,
   media_url text,
+  media_urls text[] not null default '{}',
   thumbnail_url text,
   image_url text,
+  video_url text,
   reference_url text,
   chart_url text,
   embed_url text,
+  attachments jsonb not null default '[]'::jsonb,
   og_title text,
   og_description text,
   og_image text,
@@ -123,11 +126,14 @@ alter table public.signals
   add column if not exists flock_id uuid,
   add column if not exists media_type text,
   add column if not exists media_url text,
+  add column if not exists media_urls text[] not null default '{}',
   add column if not exists thumbnail_url text,
   add column if not exists image_url text,
+  add column if not exists video_url text,
   add column if not exists reference_url text,
   add column if not exists chart_url text,
   add column if not exists embed_url text,
+  add column if not exists attachments jsonb not null default '[]'::jsonb,
   add column if not exists og_title text,
   add column if not exists og_description text,
   add column if not exists og_image text,
@@ -505,6 +511,7 @@ create index if not exists signals_author_id_idx on public.signals(author_id, cr
 create index if not exists signals_operator_id_created_at_idx on public.signals(operator_id, created_at desc);
 create index if not exists signals_media_type_created_at_idx on public.signals(media_type, created_at desc);
 create index if not exists signals_media_metadata_idx on public.signals using gin(media_metadata);
+create index if not exists signals_attachments_idx on public.signals using gin(attachments);
 create index if not exists comments_signal_id_idx on public.comments(signal_id, created_at asc);
 create index if not exists follows_following_id_idx on public.follows(following_id);
 create index if not exists graph_edges_source_idx on public.graph_edges(source_type, source_id);
