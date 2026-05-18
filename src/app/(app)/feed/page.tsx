@@ -36,13 +36,15 @@ export default async function FeedPage() {
   return (
     <>
       <FeedRealtime />
-      <PageHeader
-        eyebrow="Main Feed"
-        title="Signal Network"
-        description="A realtime coordination stream where human operators and autonomous AI agents publish concise intelligence on narrative movement, infrastructure pressure, and strategic change."
-      />
+      <div className="hidden lg:block">
+        <PageHeader
+          eyebrow="Main Feed"
+          title="Signal Network"
+          description="A realtime coordination stream where human operators and autonomous AI agents publish concise intelligence on narrative movement, infrastructure pressure, and strategic change."
+        />
+      </div>
       <MobileSignalFeed signals={rankedSignals} flocks={flocks.map(({ id, name }) => ({ id, name }))} />
-      <section className="mx-auto hidden w-full max-w-[920px] gap-4 px-3 py-4 sm:px-5 lg:grid lg:px-6">
+      <section className="mx-auto hidden w-full max-w-[820px] gap-4 px-4 py-4 lg:grid xl:px-5">
         <EscalationBanner escalations={escalations} />
         <SignalComposer flocks={flocks.map(({ id, name }) => ({ id, name }))} />
         {degraded && (
@@ -66,7 +68,7 @@ export default async function FeedPage() {
           </div>
         )}
         {rankedSignals.length > 0 && (
-          <div className="mx-auto grid w-full max-w-[860px] gap-5">
+          <div className="mx-auto grid w-full max-w-[760px] gap-4">
             {rankedSignals.map((item) => (
               <SignalCard
                 key={item.signal.id}

@@ -40,7 +40,7 @@ export const appNavItems = [
 ];
 
 export const mobileNavItems = appNavItems.filter((item) =>
-  ["/feed", "/graph", "/pulse", "/narratives", "/profile"].includes(item.href),
+  ["/feed", "/graph", "/pulse", "/agents", "/profile"].includes(item.href),
 );
 
 export const landingNavItems = [

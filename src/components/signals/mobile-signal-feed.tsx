@@ -79,8 +79,8 @@ export function MobileSignalFeed({
 
   return (
     <>
-      <section className="mx-auto grid w-full max-w-2xl gap-2 px-0 pb-3 pt-1 lg:hidden">
-        <div className="px-3">
+      <section className="mx-auto grid w-full max-w-[48rem] gap-1 px-0 pb-3 pt-0 lg:hidden">
+        <div className="px-2 sm:px-3">
           <div className="rounded-xl border border-white/10 bg-white/[0.045] px-3 py-2 backdrop-blur-xl">
             <div className="flex items-center justify-between gap-3">
               <div>
@@ -98,17 +98,17 @@ export function MobileSignalFeed({
           </div>
         </div>
 
-        <details id="compose" className="group mx-3 rounded-xl border border-white/10 bg-white/[0.04]">
+        <details id="compose" className="group mx-2 rounded-xl border border-white/10 bg-white/[0.04] sm:mx-3">
           <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between px-4 text-sm font-black text-white">
             Compose Signal
             <ChevronDown className="h-4 w-4 text-rook-cyan transition group-open:rotate-180" />
           </summary>
-          <div className="border-t border-white/10 p-3">
+          <div className="border-t border-white/10 p-2 sm:p-3">
             <SignalComposer flocks={flocks} />
           </div>
         </details>
 
-        <div className="grid gap-2">
+        <div className="grid gap-1 sm:gap-2">
           {visibleSignals.map((item, index) => (
             <MobileSignalCard
               key={item.signal.id}
@@ -198,7 +198,7 @@ function MobileSignalCard({
   }
 
   return (
-    <div className="relative overflow-hidden border-b border-white/10 bg-rook-void/40">
+    <div className="relative min-w-0 overflow-hidden border-b border-white/10 bg-rook-void/40">
       <div
         className={clsx(
           "absolute inset-y-4 flex items-center rounded-xl px-4 text-xs font-black uppercase tracking-[0.16em] transition-opacity",
@@ -210,7 +210,7 @@ function MobileSignalCard({
         {gesture === "save" ? "Save" : gesture === "amplify" ? "Amplify" : "Dismiss"}
       </div>
       <div
-        className="mobile-swipe-card touch-pan-y px-2.5 py-1.5 transition-transform duration-200 ease-out"
+        className="mobile-swipe-card touch-pan-y px-0 py-0 transition-transform duration-200 ease-out sm:px-2 sm:py-1.5"
         style={{ transform: `translateX(${dragX}px) rotate(${dragX * 0.015}deg)` }}
         onPointerDown={(event) => {
           startX.current = event.clientX;
@@ -316,7 +316,7 @@ function MobileNativeSignalPost({
   ].filter((row) => row.value);
 
   return (
-    <article className="mobile-native-post overflow-hidden border-b border-white/10 bg-rook-void px-3 py-3 text-rook-text">
+    <article className="mobile-native-post min-w-0 overflow-hidden border-b border-white/10 bg-rook-void px-3 py-3 text-rook-text sm:rounded-xl sm:border sm:border-white/10">
       <div className="flex min-w-0 items-start gap-3">
         <Link href={`/profile/${username}`} className="focus-ring shrink-0 rounded-lg">
           <OperatorAvatar
@@ -328,11 +328,11 @@ function MobileNativeSignalPost({
           />
         </Link>
         <div className="min-w-0 flex-1">
-          <div className="flex min-w-0 items-center gap-1.5">
-            <Link href={`/profile/${username}`} className="focus-ring truncate text-sm font-black text-white">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5">
+            <Link href={`/profile/${username}`} className="focus-ring max-w-full truncate text-sm font-black text-white">
               {authorName}
             </Link>
-            <span className="truncate text-xs font-semibold text-rook-muted">@{username}</span>
+            <span className="max-w-[9rem] truncate text-xs font-semibold text-rook-muted sm:max-w-[14rem]">@{username}</span>
             <span className="h-1 w-1 shrink-0 rounded-full bg-rook-muted" />
             <span className="shrink-0 text-xs text-rook-muted">{formatRelativeTime(signal.created_at)}</span>
           </div>

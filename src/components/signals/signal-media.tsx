@@ -84,7 +84,7 @@ function MediaFrame({
   onOpenPreview: () => void;
 }) {
   const imageFit = media.mediaType === "chart" ? "object-contain" : "object-cover";
-  const imageAspect = compact ? "aspect-[4/3]" : "aspect-[16/9]";
+  const imageAspect = compact ? "aspect-[4/3] sm:aspect-video" : "aspect-video";
   const sparseLink = media.mediaType === "link" && !media.ogTitle && !media.ogDescription && !media.ogImage;
   const frameClass = media.aiGenerated
     ? `rook-media-frame rook-ai-media-frame rook-visual-${mode} rounded-xl border border-rook-cyan/35 bg-rook-cyan/5`
@@ -106,8 +106,8 @@ function MediaFrame({
   }
 
   return (
-    <div className={`${frameClass} media-frame-safe overflow-hidden`}>
-      <div className="flex items-center justify-between gap-3 border-b border-white/10 px-3 py-2">
+    <div className={`${frameClass} media-frame-safe min-w-0 overflow-hidden`}>
+      <div className="flex min-w-0 items-center justify-between gap-3 border-b border-white/10 px-3 py-2">
         <div className="flex min-w-0 items-center gap-2">
           {media.aiGenerated ? <Bot className="h-4 w-4 text-rook-cyan" /> : media.mediaType === "pdf" ? <FileText className="h-4 w-4 text-rook-cyan" /> : media.mediaType === "video" || media.mediaType === "youtube" ? <Play className="h-4 w-4 text-rook-cyan" /> : <ImageIcon className="h-4 w-4 text-rook-cyan" />}
           <p className="truncate text-xs font-black uppercase tracking-[0.16em] text-rook-cyan">
@@ -136,7 +136,7 @@ function MediaFrame({
       )}
 
       {isImageMedia(media.mediaType) && media.mediaType !== "chart" && (
-        <button type="button" onClick={onOpenPreview} className={`group relative block w-full overflow-hidden bg-rook-void ${imageAspect}`}>
+        <button type="button" onClick={onOpenPreview} className={`media-skeleton group relative block w-full overflow-hidden bg-rook-void ${imageAspect}`}>
           <FallbackImage
             src={media.mediaUrl}
             alt={media.ogTitle ?? "Signal visual evidence"}
@@ -165,7 +165,7 @@ function MediaFrame({
           loading="lazy"
           allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
-          className={`${compact ? "aspect-[4/3]" : "aspect-video"} w-full border-0 bg-rook-void`}
+          className={`${compact ? "aspect-[4/3] sm:aspect-video" : "aspect-video"} w-full border-0 bg-rook-void`}
         />
       )}
 
@@ -177,7 +177,7 @@ function MediaFrame({
           muted
           playsInline
           preload="metadata"
-          className={`${compact ? "aspect-[4/3]" : "aspect-video"} w-full bg-rook-void object-cover`}
+          className={`${compact ? "aspect-[4/3] sm:aspect-video" : "aspect-video"} w-full bg-rook-void object-cover`}
         />
       )}
 
@@ -188,7 +188,7 @@ function MediaFrame({
           loading="lazy"
           allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
-          className={media.mediaType === "youtube" ? `${compact ? "aspect-[4/3]" : "aspect-video"} w-full border-0 bg-rook-void` : "min-h-[360px] w-full border-0 bg-rook-void"}
+          className={media.mediaType === "youtube" ? `${compact ? "aspect-[4/3] sm:aspect-video" : "aspect-video"} w-full border-0 bg-rook-void` : "min-h-[260px] w-full border-0 bg-rook-void sm:min-h-[360px]"}
         />
       )}
 
@@ -215,8 +215,8 @@ function MediaFrame({
       )}
 
       {media.mediaType === "link" && (
-        <Link href={media.mediaUrl} target="_blank" rel="noreferrer" className="focus-ring media-link-card flex w-full min-w-0 max-w-full overflow-hidden transition hover:border-rook-cyan/40">
-          <div className="relative aspect-video w-32 shrink-0 bg-rook-void sm:w-40">
+        <Link href={media.mediaUrl} target="_blank" rel="noreferrer" className="focus-ring media-link-card flex w-full min-w-0 max-w-full flex-col overflow-hidden transition hover:border-rook-cyan/40 sm:flex-row">
+          <div className="relative aspect-video w-full shrink-0 bg-rook-void sm:w-40">
             {media.ogImage ? (
               <FallbackImage src={media.ogImage} alt="" fill sizes="(min-width: 768px) 240px, 100vw" className="object-cover" loading="lazy" fallbackSrc={fallbackSrc} />
             ) : (

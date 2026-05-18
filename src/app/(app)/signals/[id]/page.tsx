@@ -1,6 +1,7 @@
 export const runtime = "edge";
 
 import { notFound } from "next/navigation";
+import { ArrowUp, MessageCircle, Share2 } from "lucide-react";
 import { PageHeader } from "@/components/shell/page-header";
 import { SignalCard } from "@/components/signal-card";
 import { CommentForm } from "@/components/signals/comment-form";
@@ -74,6 +75,7 @@ export default async function SignalDetailPage({
           <ShareableSignalCard signal={signal} />
         </SignalErrorBoundary>
         <CommentThreadBoundary>
+          <div id="comments" />
           <CommentForm signalId={signal.id} />
           <CommentThread signalId={signal.id} initialComments={commentsPayload.comments} initialError={commentsPayload.error} />
         </CommentThreadBoundary>
@@ -81,6 +83,22 @@ export default async function SignalDetailPage({
           Build {BUILD_ID} · {BUILD_TIME} · {RUNTIME_DIAGNOSTIC_VERSION}
         </p>
       </section>
+      <div className="mobile-safe-bottom fixed inset-x-0 bottom-[4.1rem] z-30 border-t border-white/10 bg-rook-void/90 px-3 py-2 backdrop-blur-2xl md:hidden">
+        <div className="mx-auto grid max-w-md grid-cols-3 gap-2">
+          <a href="#comments" className="focus-ring flex min-h-10 items-center justify-center gap-2 rounded-full bg-white text-xs font-black text-rook-void">
+            <MessageCircle className="h-4 w-4" />
+            Reply
+          </a>
+          <a href={`/public/signals/${signal.id}`} className="focus-ring flex min-h-10 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.055] text-xs font-black text-rook-muted">
+            <Share2 className="h-4 w-4 text-rook-cyan" />
+            Share
+          </a>
+          <a href="#" className="focus-ring flex min-h-10 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.055] text-xs font-black text-rook-muted">
+            <ArrowUp className="h-4 w-4 text-rook-cyan" />
+            Top
+          </a>
+        </div>
+      </div>
     </>
   );
 }

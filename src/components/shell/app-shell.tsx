@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, Menu, Plus, Search, X } from "lucide-react";
+import { Bell, ChevronsLeft, ChevronsRight, Menu, PanelRightOpen, Plus, Search, X } from "lucide-react";
 import { clsx } from "clsx";
 import { OperatorSwitcher } from "@/components/auth/operator-switcher";
 import { SignOutButton } from "@/components/auth/sign-out-button";
@@ -26,6 +26,8 @@ export function AppShell({
   const pathname = usePathname();
   const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [rightRailOpen, setRightRailOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -42,23 +44,39 @@ export function AppShell({
   }, [router]);
 
   return (
-    <div className="min-h-screen overflow-x-clip bg-rook-void/75 text-rook-text">
+    <div className="min-h-screen w-full overflow-x-clip bg-rook-void/75 text-rook-text">
       <div className="pointer-events-none fixed inset-0 z-0 hidden opacity-60 lg:block">
         <span className="ambient-scanline absolute left-0 top-1/3 h-px w-full bg-rook-cyan/20" />
       </div>
-      <div className="mx-auto flex min-h-screen w-full max-w-[104rem]">
-        <aside className="sticky top-0 hidden h-screen w-16 shrink-0 overflow-y-auto border-r border-white/10 px-2 py-4 lg:block xl:w-40 xl:px-2.5">
-          <div className="grid place-items-center xl:block">
-            <span className="xl:hidden"><RookMark compact /></span>
-            <span className="hidden xl:block"><RookMark /></span>
+      <div className="mx-auto flex min-h-screen w-full max-w-[104rem] min-w-0">
+        <aside
+          className={clsx(
+            "sticky top-0 hidden h-screen shrink-0 overflow-y-auto border-r border-white/10 px-2 py-3 transition-[width] duration-300 md:block",
+            sidebarCollapsed ? "w-16" : "w-16 xl:w-44",
+          )}
+        >
+          <div className="flex items-center justify-center gap-2 xl:justify-between">
+            <span className={clsx(sidebarCollapsed ? "" : "xl:hidden")}><RookMark compact /></span>
+            <span className={clsx("hidden", !sidebarCollapsed && "xl:block")}><RookMark /></span>
+            <button
+              type="button"
+              aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+              onClick={() => setSidebarCollapsed((value) => !value)}
+              className="focus-ring hidden h-8 w-8 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-rook-muted transition hover:text-white xl:grid"
+            >
+              {sidebarCollapsed ? <ChevronsRight className="h-4 w-4" /> : <ChevronsLeft className="h-4 w-4" />}
+            </button>
           </div>
-          <nav className="mt-6 space-y-3">
+          <nav className="mt-5 space-y-3">
             {desktopNavGroups.map((group, groupIndex) => (
               <details key={group.label} open={groupIndex < 2} className="group">
-                <summary className="flex min-h-8 cursor-pointer list-none items-center justify-center rounded-lg px-2 text-[10px] font-black uppercase tracking-[0.16em] text-rook-muted transition hover:bg-white/[0.04] hover:text-white xl:justify-between">
-                  <span className="hidden xl:inline">{group.label}</span>
-                  <span className="h-1.5 w-1.5 rounded-full bg-rook-cyan/60 xl:hidden" />
-                  <span className="hidden text-rook-cyan transition group-open:rotate-90 xl:inline">›</span>
+                <summary className={clsx(
+                  "flex min-h-8 cursor-pointer list-none items-center justify-center rounded-lg px-2 text-[10px] font-black uppercase tracking-[0.16em] text-rook-muted transition hover:bg-white/[0.04] hover:text-white",
+                  !sidebarCollapsed && "xl:justify-between",
+                )}>
+                  <span className={clsx("hidden", !sidebarCollapsed && "xl:inline")}>{group.label}</span>
+                  <span className={clsx("h-1.5 w-1.5 rounded-full bg-rook-cyan/60", !sidebarCollapsed && "xl:hidden")} />
+                  <span className={clsx("hidden text-rook-cyan transition group-open:rotate-90", !sidebarCollapsed && "xl:inline")}>›</span>
                 </summary>
                 <div className="mt-1 grid gap-1">
                   {group.items.map((item) => {
@@ -70,14 +88,15 @@ export function AppShell({
                         href={item.href}
                         title={item.label}
                         className={clsx(
-                          "focus-ring flex min-h-11 items-center justify-center gap-3 rounded-lg px-2 text-sm font-semibold transition xl:justify-start xl:px-3",
+                          "focus-ring flex min-h-11 items-center justify-center gap-3 rounded-lg px-2 text-sm font-semibold transition",
+                          !sidebarCollapsed && "xl:justify-start xl:px-3",
                           active
                             ? "accent-border text-white shadow-glow"
                             : "text-rook-muted hover:bg-white/[0.06] hover:text-white",
                         )}
                       >
                         <Icon className="h-5 w-5 shrink-0" />
-                        <span className="hidden truncate xl:inline">{item.label}</span>
+                        <span className={clsx("hidden truncate", !sidebarCollapsed && "xl:inline")}>{item.label}</span>
                       </Link>
                     );
                   })}
@@ -88,12 +107,12 @@ export function AppShell({
           <Link
             href="/feed"
             title="Create Signal"
-            className="mt-5 flex min-h-11 items-center justify-center gap-2 rounded-lg bg-white text-sm font-black text-rook-void transition hover:bg-rook-cyan"
+            className="mt-4 flex min-h-11 items-center justify-center gap-2 rounded-lg bg-white text-sm font-black text-rook-void transition hover:bg-rook-cyan"
           >
             <Plus className="h-4 w-4" />
-            <span className="hidden xl:inline">Create Signal</span>
+            <span className={clsx("hidden", !sidebarCollapsed && "xl:inline")}>Create Signal</span>
           </Link>
-          <div className="surface-card mt-5 hidden rounded-xl p-3 xl:block">
+          <div className={clsx("surface-card mt-4 hidden rounded-xl p-3", !sidebarCollapsed && "xl:block")}>
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-rook-cyan">
               Signed in
             </p>
@@ -111,8 +130,8 @@ export function AppShell({
           </div>
         </aside>
 
-        <main className="mobile-safe-main min-w-0 flex-1 lg:pb-0">
-          <header className="sticky top-0 z-30 border-b border-white/10 bg-rook-void/86 px-3 py-2.5 backdrop-blur-2xl lg:hidden">
+        <main className="mobile-safe-main min-w-0 flex-1 overflow-x-clip lg:pb-0">
+          <header className="sticky top-0 z-30 border-b border-white/10 bg-rook-void/86 px-3 py-2.5 backdrop-blur-2xl md:hidden">
             <div className="flex items-center justify-between gap-3">
               <button
                 type="button"
@@ -133,6 +152,14 @@ export function AppShell({
                   <Bell className="h-4 w-4" />
                   {events.length > 0 && <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-rook-cyan shadow-glow" />}
                 </Link>
+                <button
+                  type="button"
+                  aria-label="Open intelligence rail"
+                  onClick={() => setRightRailOpen(true)}
+                  className="focus-ring grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.05] text-rook-muted"
+                >
+                  <PanelRightOpen className="h-4 w-4" />
+                </button>
               </div>
             </div>
             <div className="mt-2 flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-3 py-2">
@@ -142,69 +169,38 @@ export function AppShell({
               </Link>
             </div>
           </header>
+          <header className="sticky top-0 z-30 hidden border-b border-white/10 bg-rook-void/82 px-4 py-2.5 backdrop-blur-2xl md:block xl:hidden">
+            <div className="flex items-center justify-between gap-3">
+              <Link href="/feed" className="focus-ring rounded-lg">
+                <RookMark compact />
+              </Link>
+              <button
+                type="button"
+                onClick={() => setRightRailOpen(true)}
+                className="focus-ring inline-flex min-h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-3 text-xs font-black uppercase tracking-[0.12em] text-rook-muted"
+              >
+                <PanelRightOpen className="h-4 w-4 text-rook-cyan" />
+                Intelligence
+              </button>
+            </div>
+          </header>
           {children}
         </main>
 
-        <aside className="sticky top-0 hidden h-screen w-56 shrink-0 border-l border-white/10 px-3 py-5 opacity-90 2xl:block">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-rook-muted" />
-            <input
-              disabled
-              placeholder="Search Signals"
-              className="h-11 w-full rounded-lg border border-white/10 bg-white/[0.05] pl-10 pr-3 text-sm text-rook-muted outline-none"
-            />
-          </div>
-          <NetworkEventStream initialEvents={events} />
-          <div className="surface-card mt-4 rounded-xl border-white/[0.07] bg-white/[0.032] p-3">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-black text-white">Autonomous Sync</p>
-              <span className="network-pulse h-2 w-2 rounded-full bg-rook-cyan" />
-            </div>
-            <div className="mt-4 space-y-3">
-              {["Operators aligned", "Pulse drift sampled", "Narratives indexed"].map((item, index) => (
-                <div key={item}>
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-rook-muted">{item}</span>
-                    <span className="font-black text-white">{92 - index * 11}%</span>
-                  </div>
-                  <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10">
-                    <div className="pulse-shimmer h-full rounded-full bg-gradient-to-r from-rook-blue via-rook-cyan to-rook-green" style={{ width: `${92 - index * 11}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="surface-card mt-4 rounded-xl border-white/[0.07] bg-white/[0.032] p-3">
-            <p className="text-sm font-black text-white">Network Readiness</p>
-            <div className="mt-4 space-y-4">
-              {["Identity", "Signals", "Flocks", "AI Briefs"].map((item, index) => (
-                <div key={item}>
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-rook-muted">{item}</span>
-                    <span className="text-white">{index === 0 ? "Next" : "Queued"}</span>
-                  </div>
-                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-rook-blue to-rook-violet"
-                      style={{ width: `${72 - index * 14}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-l border-white/10 px-3 py-4 opacity-95 xl:block">
+          <RightRail events={events} />
         </aside>
       </div>
 
       <Link
         href="/feed#compose"
         aria-label="Create Signal"
-        className="mobile-compose-fab focus-ring fixed bottom-[calc(4.25rem+env(safe-area-inset-bottom))] right-4 z-40 grid h-12 w-12 place-items-center rounded-full bg-white text-rook-void shadow-glow transition active:scale-95 lg:hidden"
+        className="mobile-compose-fab focus-ring fixed bottom-[calc(4.25rem+env(safe-area-inset-bottom))] right-4 z-40 grid h-12 w-12 place-items-center rounded-full bg-white text-rook-void shadow-glow transition active:scale-95 md:hidden"
       >
         <Plus className="h-5 w-5" />
       </Link>
 
-      <nav className="mobile-safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-rook-void/92 px-2 pt-1 backdrop-blur-2xl lg:hidden">
+      <nav className="mobile-safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-rook-void/92 px-2 pt-1 backdrop-blur-2xl md:hidden">
         <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
           {mobileNavItems.map((item) => {
             const Icon = item.icon;
@@ -228,7 +224,38 @@ export function AppShell({
         </div>
       </nav>
 
-      <div className={clsx("fixed inset-0 z-50 lg:hidden", drawerOpen ? "pointer-events-auto" : "pointer-events-none")}>
+      <div className={clsx("fixed inset-0 z-50 xl:hidden", rightRailOpen ? "pointer-events-auto" : "pointer-events-none")}>
+        <button
+          type="button"
+          aria-label="Close intelligence rail"
+          onClick={() => setRightRailOpen(false)}
+          className={clsx(
+            "absolute inset-0 bg-rook-void/70 backdrop-blur-sm transition-opacity duration-300",
+            rightRailOpen ? "opacity-100" : "opacity-0",
+          )}
+        />
+        <aside
+          className={clsx(
+            "mobile-safe-bottom absolute bottom-0 right-0 top-0 flex w-[88vw] max-w-sm flex-col overflow-y-auto border-l border-white/10 bg-rook-ink/96 px-3 py-4 shadow-panel transition-transform duration-300 ease-out",
+            rightRailOpen ? "translate-x-0" : "translate-x-full",
+          )}
+        >
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <p className="text-sm font-black uppercase tracking-[0.16em] text-rook-cyan">Intelligence</p>
+            <button
+              type="button"
+              aria-label="Close intelligence rail"
+              onClick={() => setRightRailOpen(false)}
+              className="focus-ring grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.05] text-rook-muted"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          <RightRail events={events} />
+        </aside>
+      </div>
+
+      <div className={clsx("fixed inset-0 z-50 md:hidden", drawerOpen ? "pointer-events-auto" : "pointer-events-none")}>
         <button
           type="button"
           aria-label="Close operator menu"
@@ -309,3 +336,57 @@ const desktopNavGroups = [
     items: appNavItems.filter((item) => ["/search", "/ingest", "/workspaces", "/ops", "/admin", "/profile", "/settings"].includes(item.href)),
   },
 ];
+
+function RightRail({ events }: { events: NetworkEvent[] }) {
+  return (
+    <div className="min-w-0">
+      <div className="relative">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-rook-muted" />
+        <input
+          disabled
+          placeholder="Search Signals"
+          className="h-10 w-full rounded-lg border border-white/10 bg-white/[0.05] pl-10 pr-3 text-sm text-rook-muted outline-none"
+        />
+      </div>
+      <NetworkEventStream initialEvents={events} />
+      <div className="surface-card mt-4 rounded-xl border-white/[0.07] bg-white/[0.032] p-3">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-black text-white">Autonomous Sync</p>
+          <span className="network-pulse h-2 w-2 rounded-full bg-rook-cyan" />
+        </div>
+        <div className="mt-4 space-y-3">
+          {["Operators aligned", "Pulse drift sampled", "Narratives indexed"].map((item, index) => (
+            <div key={item}>
+              <div className="flex items-center justify-between gap-2 text-xs">
+                <span className="min-w-0 truncate font-semibold text-rook-muted">{item}</span>
+                <span className="font-black text-white">{92 - index * 11}%</span>
+              </div>
+              <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10">
+                <div className="pulse-shimmer h-full rounded-full bg-gradient-to-r from-rook-blue via-rook-cyan to-rook-green" style={{ width: `${92 - index * 11}%` }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="surface-card mt-4 rounded-xl border-white/[0.07] bg-white/[0.032] p-3">
+        <p className="text-sm font-black text-white">Network Readiness</p>
+        <div className="mt-4 space-y-4">
+          {["Identity", "Signals", "Flocks", "AI Briefs"].map((item, index) => (
+            <div key={item}>
+              <div className="flex items-center justify-between gap-2 text-xs">
+                <span className="min-w-0 truncate font-semibold text-rook-muted">{item}</span>
+                <span className="text-white">{index === 0 ? "Next" : "Queued"}</span>
+              </div>
+              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-rook-blue to-rook-violet"
+                  style={{ width: `${72 - index * 14}%` }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
