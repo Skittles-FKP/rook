@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useActionState } from "react";
 import { Bot, FileText, Hash, ImageIcon, Link2, ListChecks, Radio, Sparkles, Upload, Video, WandSparkles } from "lucide-react";
+import { clsx } from "clsx";
 import { createSignalAction } from "@/app/actions/signals";
 import { SubmitButton } from "@/components/form/submit-button";
 import { detectMediaUrl, validateMediaFile } from "@/lib/media";
@@ -12,7 +13,7 @@ const initialState: ActionState = { ok: false, message: "" };
 const draftKey = "rook.signalComposerDraft.v2";
 const signalCategories = ["Launch", "Research", "Benchmark", "Infrastructure", "Funding", "Agent", "Security", "Governance"];
 
-export function SignalComposer({ flocks }: { flocks: Pick<Flock, "id" | "name">[] }) {
+export function SignalComposer({ flocks, compact = false }: { flocks: Pick<Flock, "id" | "name">[]; compact?: boolean }) {
   const [state, action] = useActionState(createSignalAction, initialState);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState("");
@@ -107,7 +108,7 @@ export function SignalComposer({ flocks }: { flocks: Pick<Flock, "id" | "name">[
   }
 
   return (
-    <form action={action} className="surface-card rook-live-card max-w-full overflow-hidden rounded-xl p-3 sm:p-5">
+    <form action={action} className={clsx("surface-card rook-live-card max-w-full overflow-hidden rounded-xl p-3 sm:p-5", compact && "border-white/[0.07] bg-white/[0.035] shadow-none")}>
       <div className="flex min-w-0 items-center gap-3">
         <div className="grid h-10 w-10 place-items-center rounded-lg bg-rook-blue/15 text-rook-cyan">
           <Radio className="h-5 w-5" />

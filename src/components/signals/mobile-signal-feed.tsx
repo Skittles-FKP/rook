@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { memo, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { AlertTriangle, BarChart3, Bookmark, BrainCircuit, ChevronDown, Eye, Maximize2, MessageCircle, Radio, Repeat2, ShieldCheck, Sparkles, ThumbsUp, TrendingUp, X } from "lucide-react";
 import { clsx } from "clsx";
 import { toggleAmplifyAction, toggleLikeAction } from "@/app/actions/signals";
@@ -37,8 +37,11 @@ export function MobileSignalFeed({
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [saved, setSaved] = useState<Set<string>>(new Set());
   const [briefSignal, setBriefSignal] = useState<SignalWithAuthor | null>(null);
+  const [composeOpen, setComposeOpen] = useState(false);
   const [liveSignals, setLiveSignals] = useState<RankedSignal[]>(safeInitialSignals);
   const [liveInsertions, setLiveInsertions] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+  const pullStartY = useRef<number | null>(null);
 
   useEffect(() => {
     setLiveSignals(safeInitialSignals);
@@ -84,7 +87,27 @@ export function MobileSignalFeed({
 
   return (
     <SignalErrorBoundary label="Mobile feed">
-      <section className="mobile-feed-scroll mx-auto grid w-full max-w-full gap-1 overflow-x-hidden px-0 pb-2 pt-0 sm:max-w-[48rem] lg:hidden">
+      <section
+        className="mobile-feed-scroll mx-auto grid w-full max-w-full gap-0.5 overflow-x-hidden px-0 pb-2 pt-0 sm:max-w-[48rem] lg:hidden"
+        onTouchStart={(event) => {
+          if (typeof window !== "undefined" && window.scrollY <= 2) pullStartY.current = event.touches[0]?.clientY ?? null;
+        }}
+        onTouchMove={(event) => {
+          if (pullStartY.current === null || refreshing) return;
+          const distance = (event.touches[0]?.clientY ?? 0) - pullStartY.current;
+          if (distance > 82) {
+            setRefreshing(true);
+            if (typeof navigator !== "undefined" && "vibrate" in navigator) navigator.vibrate?.(8);
+            setLiveSignals((current) => normalizeRankedSignals(rankFeedSignals([newsFeedAgent.nextMockSignal(liveInsertions + 10), ...current.map((item) => item.signal)].slice(0, 44))));
+            setLiveInsertions((count) => count + 1);
+            window.setTimeout(() => setRefreshing(false), 720);
+            pullStartY.current = null;
+          }
+        }}
+        onTouchEnd={() => {
+          pullStartY.current = null;
+        }}
+      >
         <div className="px-2 pr-[max(16px,env(safe-area-inset-right))] sm:px-3 sm:pr-3">
           <div className="max-w-full overflow-hidden rounded-lg border border-white/10 bg-white/[0.045] px-2.5 py-2 pr-[max(16px,env(safe-area-inset-right))] backdrop-blur-xl sm:rounded-xl sm:px-3">
             <div className="flex min-w-0 items-center gap-2">
@@ -98,25 +121,41 @@ export function MobileSignalFeed({
               </span>
             </div>
             <p className="mt-1.5 text-[11px] leading-4 text-rook-muted">
-              NewsFeedAgent inserted {liveInsertions} autonomous signal{liveInsertions === 1 ? "" : "s"} this session.
+              {refreshing ? "Refreshing live graph..." : `NewsFeedAgent inserted ${liveInsertions} autonomous signal${liveInsertions === 1 ? "" : "s"} this session.`}
             </p>
           </div>
         </div>
 
-        <details id="compose" className="group mx-2 rounded-lg border border-white/10 bg-white/[0.04] sm:mx-3 sm:rounded-xl">
+        <details id="compose" open={composeOpen} onToggle={(event) => setComposeOpen(event.currentTarget.open)} className="group mx-2 rounded-lg border border-white/10 bg-white/[0.04] sm:mx-3 sm:rounded-xl">
           <summary className="flex min-h-10 cursor-pointer list-none items-center justify-between px-3 text-sm font-black text-white">
             Compose Signal
             <ChevronDown className="h-4 w-4 text-rook-cyan transition group-open:rotate-180" />
           </summary>
-          <div className="border-t border-white/10 p-1.5 sm:p-3">
-            <SignalComposer flocks={safeFlocks} />
+          <div className="hidden border-t border-white/10 p-1.5 sm:block sm:p-3">
+            <SignalComposer flocks={safeFlocks} compact />
           </div>
         </details>
+
+        {composeOpen && (
+          <div className="fixed inset-0 z-[58] grid items-end bg-rook-void/70 backdrop-blur-sm sm:hidden" role="dialog" aria-modal="true">
+            <button type="button" aria-label="Close composer" className="absolute inset-0" onClick={() => setComposeOpen(false)} />
+            <div className="mobile-safe-bottom relative max-h-[88svh] overflow-y-auto rounded-t-2xl border border-white/10 bg-rook-void p-2 shadow-panel">
+              <div className="mx-auto mb-2 h-1 w-12 rounded-full bg-white/20" />
+              <div className="mb-2 flex items-center justify-between px-2">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-rook-cyan">Compose Signal</p>
+                <button type="button" onClick={() => setComposeOpen(false)} className="focus-ring grid h-9 w-9 place-items-center rounded-full border border-white/10 bg-white/[0.05]">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <SignalComposer flocks={safeFlocks} compact />
+            </div>
+          </div>
+        )}
 
         <div className="grid gap-1 sm:gap-2">
           {visibleSignals.map((item, index) => (
             <SignalErrorBoundary key={item.signal.id} label="Signal card">
-              <MobileSignalCard
+              <MemoMobileSignalCard
                 item={item}
                 saved={saved.has(item.signal.id)}
                 featured={index === 0}
@@ -154,6 +193,8 @@ export function MobileSignalFeed({
     </SignalErrorBoundary>
   );
 }
+
+const MemoMobileSignalCard = memo(MobileSignalCard);
 
 function MobileSignalCard({
   item,
@@ -204,7 +245,7 @@ function MobileSignalCard({
   }
 
   return (
-    <div className="relative min-w-0 max-w-full overflow-hidden border-b border-white/10 bg-rook-void/40">
+    <div className={clsx("relative min-w-0 max-w-full overflow-hidden border-b border-white/10 bg-rook-void/40", featured && "rook-live-arrival")}>
       <div
         className={clsx(
           "absolute inset-y-4 flex items-center rounded-xl px-4 text-xs font-black uppercase tracking-[0.16em] transition-opacity",
@@ -244,7 +285,7 @@ function MobileSignalCard({
       >
         <div className="relative">
           <MobileNativeSignalPost item={item} featured={featured} saved={saved} onSave={onSave} onBrief={onBrief} />
-          <div className="mx-2 mt-1 grid grid-cols-4 gap-1 text-[9px] font-black text-rook-muted sm:mx-0 sm:gap-1.5 sm:text-[10px]">
+          <div className="mx-2 mt-0.5 grid grid-cols-4 gap-1 text-[9px] font-black text-rook-muted sm:mx-0 sm:gap-1.5 sm:text-[10px]">
             <button
               type="button"
               disabled={isPending}
@@ -321,7 +362,7 @@ function MobileNativeSignalPost({
   ].filter((row) => row.value);
 
   return (
-    <article className="mobile-native-post min-w-0 max-w-full overflow-hidden border-b border-white/10 bg-rook-void px-2.5 py-2.5 text-rook-text sm:rounded-xl sm:border sm:border-white/10 sm:px-3 sm:py-3">
+    <article className="mobile-native-post min-w-0 max-w-full overflow-hidden border-b border-white/10 bg-rook-void px-2.5 py-2 text-rook-text sm:rounded-xl sm:border sm:border-white/10 sm:px-3 sm:py-3">
       <div className="flex min-w-0 items-start gap-2.5 sm:gap-3">
         <Link href={`/profile/${username}`} className="focus-ring shrink-0 rounded-lg">
           <OperatorAvatar
@@ -356,8 +397,8 @@ function MobileNativeSignalPost({
         </div>
       </div>
 
-      <Link href={`/signals/${signal.id}`} className="focus-ring mt-2 block rounded-md">
-        <h2 className="line-clamp-2 text-[0.98rem] font-black leading-5 text-white sm:text-[1.08rem] sm:leading-6">
+      <Link href={`/signals/${signal.id}`} className="focus-ring mt-1.5 block rounded-md">
+        <h2 className="line-clamp-2 text-[0.95rem] font-black leading-5 text-white sm:text-[1.08rem] sm:leading-6">
           {signal.title}
         </h2>
       </Link>
@@ -366,18 +407,18 @@ function MobileNativeSignalPost({
         <MobilePostMedia visual={visual} type={signalType} title={signal.title} />
       </MediaBoundary>
 
-      <p className="mt-2 line-clamp-2 text-[13px] leading-5 text-rook-muted sm:line-clamp-3 sm:text-sm sm:leading-6">
+      <p className="mt-1.5 line-clamp-2 text-[12px] leading-5 text-rook-muted sm:line-clamp-3 sm:text-sm sm:leading-6">
         {summarizeSignal(signal)}
       </p>
 
-      <div className="mt-2 grid grid-cols-4 gap-1">
+      <div className="mt-1.5 grid grid-cols-4 gap-1">
         <MetricChip icon={TrendingUp} label={`${engagement.propagation}%`} tone="cyan" />
         <MetricChip icon={MessageCircle} label={`${engagement.replies}`} tone="muted" />
         <MetricChip icon={Repeat2} label={`${engagement.boosts}`} tone="green" />
         <MetricChip icon={Bookmark} label={`${engagement.bookmarks}`} tone="muted" />
       </div>
 
-      <div className="mt-1.5 flex min-w-0 items-center gap-1 overflow-hidden">
+      <div className="mt-1 flex min-w-0 items-center gap-1 overflow-hidden">
         <MetricChip icon={Radio} label={pulse.velocity > 2 ? "accelerating" : "watch"} tone="cyan" />
         <MetricChip icon={ShieldCheck} label={`${signal.confidence_score ?? evidence.credibility}%`} tone="green" />
         {(signal.contradiction_score ?? 0) > 24 ? (
@@ -442,10 +483,11 @@ function MobilePostMedia({
   visual: MobileVisual | null;
 }) {
   const [mediaFailed, setMediaFailed] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   if (visual?.kind === "video" && !mediaFailed) {
     return (
-      <div className="mobile-post-media media-skeleton group relative mt-2 max-h-[260px] overflow-hidden rounded-xl border border-white/10 bg-rook-ink sm:mt-3 sm:rounded-2xl">
+      <div className="mobile-post-media media-skeleton group relative mt-1.5 max-h-[250px] overflow-hidden rounded-xl border border-white/10 bg-rook-ink sm:mt-3 sm:rounded-2xl">
         <video
           src={visual.src}
           poster={visual.poster ?? undefined}
@@ -462,7 +504,7 @@ function MobilePostMedia({
 
   if (visual?.kind === "image" && !mediaFailed) {
     return (
-      <div className="mobile-post-media media-skeleton group relative mt-2 aspect-[4/3] max-h-[260px] overflow-hidden rounded-xl border border-white/10 bg-rook-ink sm:mt-3 sm:rounded-2xl md:aspect-video">
+      <button type="button" onClick={() => setExpanded(true)} className="mobile-post-media media-skeleton group relative mt-1.5 block aspect-[4/3] max-h-[250px] w-full overflow-hidden rounded-xl border border-white/10 bg-rook-ink text-left sm:mt-3 sm:rounded-2xl md:aspect-video">
         <Image
           src={visual.src}
           alt=""
@@ -474,12 +516,22 @@ function MobilePostMedia({
           onError={() => setMediaFailed(true)}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-rook-void/35 via-transparent to-transparent" />
-      </div>
+        {expanded && (
+          <span className="fixed inset-0 z-[70] grid place-items-center bg-rook-void/92 p-3 backdrop-blur-xl" onClick={(event) => {
+            event.stopPropagation();
+            setExpanded(false);
+          }}>
+            <span className="relative block aspect-[4/3] w-full max-w-3xl overflow-hidden rounded-2xl border border-rook-cyan/25 bg-rook-ink">
+              <Image src={visual.src} alt="" fill sizes="100vw" className="object-contain" unoptimized />
+            </span>
+          </span>
+        )}
+      </button>
     );
   }
 
   return (
-    <div className={`mobile-post-media mobile-feed-visual-${getPlaceholderCategory(type, title)} relative mt-2 aspect-[4/3] max-h-[260px] overflow-hidden rounded-xl border border-white/10 sm:mt-3 sm:rounded-2xl md:aspect-video`}>
+    <div className={`mobile-post-media mobile-feed-visual-${getPlaceholderCategory(type, title)} relative mt-1.5 aspect-[4/3] max-h-[250px] overflow-hidden rounded-xl border border-white/10 sm:mt-3 sm:rounded-2xl md:aspect-video`}>
       <span className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[length:26px_26px] opacity-40" />
       <span className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full border border-rook-cyan/35 shadow-[0_0_50px_rgba(53,216,255,0.18)]" />
       <span className="absolute bottom-2 left-2 inline-flex items-center gap-1.5 rounded-full bg-rook-void/70 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-rook-cyan backdrop-blur-md sm:bottom-3 sm:left-3 sm:text-[10px]">
@@ -508,7 +560,7 @@ function MetricChip({
         : "bg-white/[0.045] text-rook-muted";
 
   return (
-    <div className={`flex h-7 min-w-0 flex-1 items-center justify-center gap-1 rounded-full px-1.5 text-[9px] font-black uppercase tracking-[0.06em] sm:h-8 sm:gap-1.5 sm:text-[10px] ${className}`}>
+    <div className={`flex h-6 min-w-0 flex-1 items-center justify-center gap-1 rounded-full px-1.5 text-[8.5px] font-black uppercase tracking-[0.04em] sm:h-8 sm:gap-1.5 sm:text-[10px] ${className}`}>
       <Icon className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
       <span className="truncate">{label}</span>
     </div>

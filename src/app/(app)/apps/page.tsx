@@ -2,7 +2,7 @@ export const runtime = "edge";
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Bot, ExternalLink, Github, Rocket, Search, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowUpRight, Bot, ExternalLink, Github, ImageIcon, Rocket, Search, Sparkles, TrendingUp } from "lucide-react";
 import { AiAppSubmitForm } from "@/components/apps/ai-app-submit-form";
 import { PageHeader } from "@/components/shell/page-header";
 import { AI_APP_CATEGORIES, getAiApps } from "@/lib/data/ai-apps";
@@ -89,6 +89,19 @@ export default async function AppsPage() {
 function AppCard({ app, featured = false }: { app: Awaited<ReturnType<typeof getAiApps>>[number]; featured?: boolean }) {
   return (
     <article className="surface-card min-w-0 overflow-hidden rounded-xl p-3 transition hover:border-rook-cyan/35 sm:p-4">
+      <div className="relative mb-3 aspect-video overflow-hidden rounded-lg border border-white/10 bg-rook-void">
+        {app.screenshot_urls[0] ? (
+          <Image src={app.screenshot_urls[0]} alt="" fill sizes="(min-width: 1024px) 320px, 92vw" className="object-cover" unoptimized />
+        ) : (
+          <div className="grid h-full place-items-center bg-[radial-gradient(circle_at_28%_22%,rgba(53,216,255,0.2),transparent_34%),linear-gradient(135deg,rgba(47,140,255,0.18),rgba(5,6,10,0.96))]">
+            <ImageIcon className="h-8 w-8 text-rook-cyan" />
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-rook-void/70 via-transparent to-transparent" />
+        <span className="absolute bottom-2 left-2 rounded-full bg-rook-void/75 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-cyan backdrop-blur-md">
+          {app.category}
+        </span>
+      </div>
       <div className="flex min-w-0 items-start gap-3">
         <div className="relative grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-xl border border-white/10 bg-rook-cyan/10">
           {app.logo_url ? <Image src={app.logo_url} alt="" fill sizes="48px" className="object-cover" unoptimized /> : <Sparkles className="h-5 w-5 text-rook-cyan" />}
@@ -98,7 +111,7 @@ function AppCard({ app, featured = false }: { app: Awaited<ReturnType<typeof get
             <h3 className="truncate text-base font-black text-white">{app.name}</h3>
             {featured && <span className="shrink-0 rounded-full bg-rook-green/10 px-2 py-0.5 text-[9px] font-black uppercase text-rook-green">Featured</span>}
           </div>
-          <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-rook-cyan">{app.category}</p>
+          <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-rook-cyan">Launch signal</p>
         </div>
       </div>
       <p className="mt-3 line-clamp-2 text-sm leading-6 text-rook-muted">{app.tagline ?? app.description ?? "AI app launch signal"}</p>
@@ -109,7 +122,7 @@ function AppCard({ app, featured = false }: { app: Awaited<ReturnType<typeof get
         <span className="inline-flex items-center gap-1 text-xs font-black text-rook-green"><ArrowUpRight className="h-3.5 w-3.5" />{app.trend_score}</span>
         <div className="flex items-center gap-2">
           {app.github_url && <Link href={app.github_url} target="_blank" rel="noreferrer" className="focus-ring grid h-9 w-9 place-items-center rounded-full border border-white/10 text-rook-muted"><Github className="h-4 w-4" /></Link>}
-          {(app.demo_url || app.website_url) && <Link href={app.demo_url ?? app.website_url ?? "#"} target="_blank" rel="noreferrer" className="focus-ring grid h-9 w-9 place-items-center rounded-full border border-white/10 text-rook-muted"><ExternalLink className="h-4 w-4" /></Link>}
+          {(app.demo_url || app.website_url) && <Link href={app.demo_url ?? app.website_url ?? "#"} target="_blank" rel="noreferrer" className="focus-ring inline-flex h-9 items-center gap-1.5 rounded-full border border-white/10 px-3 text-xs font-black text-rook-muted"><ExternalLink className="h-4 w-4" />Demo</Link>}
         </div>
       </div>
     </article>

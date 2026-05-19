@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, ChevronsLeft, ChevronsRight, Menu, PanelRightOpen, Plus, Search, X } from "lucide-react";
+import { Bell, ChevronsLeft, ChevronsRight, Download, Menu, PanelRightOpen, Plus, Search, X } from "lucide-react";
 import { clsx } from "clsx";
 import { OperatorSwitcher } from "@/components/auth/operator-switcher";
 import { SignOutButton } from "@/components/auth/sign-out-button";
@@ -30,6 +30,8 @@ export function AppShell({
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [rightRailOpen, setRightRailOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -61,6 +63,25 @@ export function AppShell({
       console.warn("[pwa] service worker registration failed", error);
     });
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    function handleBeforeInstallPrompt(event: Event) {
+      event.preventDefault();
+      setInstallPrompt(event);
+    }
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    return () => window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+  }, []);
+
+  function routeBySwipe(deltaX: number) {
+    if (Math.abs(deltaX) < 86) return;
+    const flow = ["/feed", "/pulse", "/graph"];
+    const index = flow.indexOf(pathname ?? "");
+    if (index === -1) return;
+    const next = deltaX < 0 ? flow[Math.min(flow.length - 1, index + 1)] : flow[Math.max(0, index - 1)];
+    if (next !== pathname) router.push(next);
+  }
 
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -124,7 +145,18 @@ export function AppShell({
           setSidebarCollapsed={setSidebarCollapsed}
         />
 
-        <main className="mobile-safe-main min-w-0 flex-1 overflow-x-hidden lg:pb-0">
+        <main
+          className="mobile-safe-main min-w-0 flex-1 overflow-x-hidden lg:pb-0"
+          onTouchStart={(event) => setTouchStart({ x: event.touches[0]?.clientX ?? 0, y: event.touches[0]?.clientY ?? 0 })}
+          onTouchEnd={(event) => {
+            if (!touchStart || drawerOpen || rightRailOpen) return;
+            const touch = event.changedTouches[0];
+            const deltaX = (touch?.clientX ?? 0) - touchStart.x;
+            const deltaY = (touch?.clientY ?? 0) - touchStart.y;
+            if (Math.abs(deltaX) > Math.abs(deltaY) * 1.8) routeBySwipe(deltaX);
+            setTouchStart(null);
+          }}
+        >
           <TabletHeader setRightRailOpen={setRightRailOpen} />
           <FeedContentBoundary>{children}</FeedContentBoundary>
         </main>
@@ -143,6 +175,21 @@ export function AppShell({
       >
         <Plus className="h-5 w-5" />
       </Link>
+
+      {installPrompt && (
+        <button
+          type="button"
+          onClick={async () => {
+            const prompt = installPrompt as Event & { prompt?: () => Promise<void> };
+            await prompt.prompt?.();
+            setInstallPrompt(null);
+          }}
+          className="focus-ring fixed bottom-[calc(7.7rem+env(safe-area-inset-bottom))] right-4 z-40 inline-flex min-h-10 items-center gap-2 rounded-full border border-rook-cyan/25 bg-rook-void/92 px-3 text-xs font-black uppercase tracking-[0.12em] text-rook-cyan shadow-panel backdrop-blur-xl md:hidden"
+        >
+          <Download className="h-4 w-4" />
+          Install
+        </button>
+      )}
 
       <MobileNavigationBoundary>
         <nav className="mobile-safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-rook-void/92 px-2 pt-1 backdrop-blur-2xl md:hidden">
@@ -220,6 +267,13 @@ function MobileHeader({
           Search Signals, operators, narratives
         </Link>
       </div>
+      {events.length > 0 && (
+        <Link href="/alerts" className="mt-2 flex min-w-0 items-center gap-2 rounded-lg border border-rook-cyan/15 bg-rook-cyan/[0.055] px-3 py-2">
+          <span className="network-pulse h-2 w-2 shrink-0 rounded-full bg-rook-cyan" />
+          <span className="min-w-0 flex-1 truncate text-xs font-bold text-rook-muted">{events[0]?.label ?? "Network notification"}</span>
+          <span className="shrink-0 rounded-full bg-rook-cyan/15 px-2 py-0.5 text-[10px] font-black text-rook-cyan">{events.length}</span>
+        </Link>
+      )}
     </header>
   );
 }
@@ -393,6 +447,7 @@ function MobileOperatorDrawer({
   pathname: string | null;
   setDrawerOpen: (open: boolean) => void;
 }) {
+  const [startX, setStartX] = useState<number | null>(null);
   return (
     <div className={clsx("fixed inset-0 z-50 max-w-full overflow-hidden", drawerOpen ? "pointer-events-auto" : "pointer-events-none")}>
         <button
@@ -405,6 +460,13 @@ function MobileOperatorDrawer({
           )}
         />
         <aside
+          onTouchStart={(event) => setStartX(event.touches[0]?.clientX ?? null)}
+          onTouchEnd={(event) => {
+            if (startX === null) return;
+            const delta = (event.changedTouches[0]?.clientX ?? 0) - startX;
+            if (delta < -72) setDrawerOpen(false);
+            setStartX(null);
+          }}
           className={clsx(
             "mobile-safe-bottom absolute bottom-0 left-0 top-0 flex w-[min(86%,340px)] max-w-[calc(100%-0.75rem)] flex-col overflow-hidden border-r border-white/10 bg-rook-ink/96 px-3 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))] shadow-panel transition-[clip-path,opacity] duration-300 ease-out",
             drawerOpen ? "opacity-100 [clip-path:inset(0_0_0_0)]" : "opacity-0 [clip-path:inset(0_100%_0_0)]",
