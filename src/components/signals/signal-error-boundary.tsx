@@ -59,3 +59,39 @@ export function MediaBoundary({ children }: { children: ReactNode }) {
     </SignalErrorBoundary>
   );
 }
+
+export function FeedShellBoundary({ children }: { children: ReactNode }) {
+  return (
+    <SignalErrorBoundary
+      label="Feed shell"
+      fallback={
+        <div className="mx-auto w-full max-w-2xl p-4">
+          <div className="surface-card rounded-xl border-rook-amber/30 p-5">
+            <p className="text-sm font-black text-rook-amber">Feed shell recovered</p>
+            <p className="mt-2 text-sm leading-6 text-rook-muted">
+              Rook isolated a production rendering fault. Refresh to reconnect live navigation.
+            </p>
+          </div>
+        </div>
+      }
+    >
+      {children}
+    </SignalErrorBoundary>
+  );
+}
+
+export function FeedContentBoundary({ children }: { children: ReactNode }) {
+  return (
+    <SignalErrorBoundary label="Feed content">
+      {children}
+    </SignalErrorBoundary>
+  );
+}
+
+export function MobileNavigationBoundary({ children }: { children: ReactNode }) {
+  return (
+    <SignalErrorBoundary label="Mobile navigation">
+      {children}
+    </SignalErrorBoundary>
+  );
+}

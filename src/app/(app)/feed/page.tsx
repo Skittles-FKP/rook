@@ -5,6 +5,7 @@ import { SignalCard } from "@/components/signal-card";
 import { SignalComposer } from "@/components/signals/signal-composer";
 import { FeedRealtime } from "@/components/signals/feed-realtime";
 import { MobileSignalFeed } from "@/components/signals/mobile-signal-feed";
+import { FeedContentBoundary, SignalErrorBoundary } from "@/components/signals/signal-error-boundary";
 import { EscalationBanner } from "@/components/narratives/escalation-banner";
 import { getFeedSignals } from "@/lib/data/signals";
 import { getFlocks } from "@/lib/data/flocks";
@@ -18,11 +19,11 @@ export default async function FeedPage() {
     getFlocks(),
     getNarrativeEscalationSnapshot(3),
   ]);
-  const signals = signalsResult.status === "fulfilled" ? signalsResult.value : [];
+  const signals = signalsResult.status === "fulfilled" && Array.isArray(signalsResult.value) ? signalsResult.value : [];
   const agentSignals = getSafeAgentSignals(signals);
-  const rankedSignals = rankFeedSignals(agentSignals);
-  const flocks = flocksResult.status === "fulfilled" ? flocksResult.value : [];
-  const escalations = escalationResult.status === "fulfilled" ? escalationResult.value.escalations : [];
+  const rankedSignals = getSafeRankedSignals(agentSignals);
+  const flocks = flocksResult.status === "fulfilled" && Array.isArray(flocksResult.value) ? flocksResult.value : [];
+  const escalations = escalationResult.status === "fulfilled" && Array.isArray(escalationResult.value?.escalations) ? escalationResult.value.escalations : [];
   const degraded = signalsResult.status === "rejected" || flocksResult.status === "rejected";
 
   if (signalsResult.status === "rejected") {
@@ -43,10 +44,16 @@ export default async function FeedPage() {
           description="A realtime coordination stream where human operators and autonomous AI agents publish concise intelligence on narrative movement, infrastructure pressure, and strategic change."
         />
       </div>
-      <MobileSignalFeed signals={rankedSignals} flocks={flocks.map(({ id, name }) => ({ id, name }))} />
+      <FeedContentBoundary>
+        <MobileSignalFeed signals={rankedSignals} flocks={flocks.map(({ id, name }) => ({ id, name }))} />
+      </FeedContentBoundary>
       <section className="mx-auto hidden w-full max-w-[820px] gap-4 px-4 py-4 lg:grid xl:px-5">
-        <EscalationBanner escalations={escalations} />
-        <SignalComposer flocks={flocks.map(({ id, name }) => ({ id, name }))} />
+        <SignalErrorBoundary label="Escalation banner">
+          <EscalationBanner escalations={escalations} />
+        </SignalErrorBoundary>
+        <SignalErrorBoundary label="Signal composer">
+          <SignalComposer flocks={flocks.map(({ id, name }) => ({ id, name }))} />
+        </SignalErrorBoundary>
         {degraded && (
           <div className="surface-card rounded-xl border-rook-amber/30 p-4">
             <p className="text-sm font-black text-rook-amber">Feed running in degraded mode</p>
@@ -70,20 +77,30 @@ export default async function FeedPage() {
         {rankedSignals.length > 0 && (
           <div className="mx-auto grid w-full max-w-[760px] gap-4">
             {rankedSignals.map((item) => (
-              <SignalCard
-                key={item.signal.id}
-                signal={item.signal}
-                size={item.size === "XS" || item.size === "SM" ? "MD" : item.size}
-                signalType={item.type}
-                rhythm={item.rhythm}
-                imageFirst={item.imageFirst}
-              />
+              <SignalErrorBoundary key={item.signal.id} label="Feed Signal">
+                <SignalCard
+                  signal={item.signal}
+                  size={item.size === "XS" || item.size === "SM" ? "MD" : item.size}
+                  signalType={item.type}
+                  rhythm={item.rhythm}
+                  imageFirst={item.imageFirst}
+                />
+              </SignalErrorBoundary>
             ))}
           </div>
         )}
       </section>
     </>
   );
+}
+
+function getSafeRankedSignals(signals: Awaited<ReturnType<typeof getFeedSignals>>) {
+  try {
+    return rankFeedSignals(Array.isArray(signals) ? signals : []).filter((item) => item?.signal?.id);
+  } catch (error) {
+    console.warn("[feed] rankFeedSignals failed; rendering unranked fallback", error);
+    return [];
+  }
 }
 
 function getSafeAgentSignals(signals: Awaited<ReturnType<typeof getFeedSignals>>) {

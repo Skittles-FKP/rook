@@ -49,8 +49,8 @@ export function CommentForm({
         hasAccessToken: Boolean(sessionData.session?.access_token),
         userId,
         sessionError: sessionError?.message ?? null,
-        origin: window.location.origin,
-        supabaseHost: process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname : null,
+        origin: typeof window !== "undefined" ? window.location.origin : null,
+        supabaseHost: getSupabaseHost(),
       });
 
       if (sessionError || !userId) {
@@ -128,7 +128,9 @@ export function CommentForm({
 
       formRef.current?.reset();
       setState({ ok: true, message: targetParentId ? "Reply added." : "Comment added." });
-      window.dispatchEvent(new CustomEvent("rook:comment-created", { detail: { signalId: targetSignalId, comment: insertedComment } }));
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("rook:comment-created", { detail: { signalId: targetSignalId, comment: insertedComment } }));
+      }
       startTransition(() => router.refresh());
     } catch (error) {
       console.error("signal-comments:client-submit unexpected failure", {
@@ -166,6 +168,14 @@ export function CommentForm({
       </div>
     </form>
   );
+}
+
+function getSupabaseHost() {
+  try {
+    return process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname : null;
+  } catch {
+    return null;
+  }
 }
 
 function normalizeCommentError(message: string) {

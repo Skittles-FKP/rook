@@ -30,7 +30,10 @@ export default async function SignalDetailPage({
   ]);
   const signal = signalResult.status === "fulfilled" ? signalResult.value : null;
   const commentsPayload = commentsResult.status === "fulfilled"
-    ? commentsResult.value
+    ? {
+      comments: Array.isArray(commentsResult.value?.comments) ? commentsResult.value.comments : [],
+      error: commentsResult.value?.error ?? null,
+    }
     : { comments: [], error: commentsResult.reason instanceof Error ? commentsResult.reason.message : "Unable to load comments." };
 
   console.info("[signal-detail] route data", {
@@ -68,10 +71,10 @@ export default async function SignalDetailPage({
         description="Inspect the Signal, its amplification, and the conversation around it."
       />
       <section className="mx-auto grid w-full max-w-4xl min-w-0 gap-4 overflow-x-clip px-3 py-5 sm:px-6 lg:px-8">
-        <SignalErrorBoundary label="Signal card">
+        <SignalErrorBoundary label="Signal detail card">
           <SignalCard signal={signal} />
         </SignalErrorBoundary>
-        <SignalErrorBoundary label="Share card">
+        <SignalErrorBoundary label="Signal share card">
           <ShareableSignalCard signal={signal} />
         </SignalErrorBoundary>
         <CommentThreadBoundary>

@@ -17,14 +17,15 @@ export function SignalMedia({
   fallback?: boolean;
 }) {
   const [previewMedia, setPreviewMedia] = useState<NormalizedMedia | null>(null);
-  const mediaItems = useMemo(() => normalizeSignalMediaItems(signal, { fallback }), [signal, fallback]);
+  const safeSignal = useMemo(() => normalizeMediaSignal(signal), [signal]);
+  const mediaItems = useMemo(() => normalizeSignalMediaItems(safeSignal, { fallback }), [safeSignal, fallback]);
 
   if (mediaItems.length === 0) {
     return null;
   }
 
-  const mode = inferSignalVisualMode(signal);
-  const fallbackSrc = buildSignalFallbackImage(signal);
+  const mode = inferSignalVisualMode(safeSignal);
+  const fallbackSrc = buildSignalFallbackImage(safeSignal);
 
   return (
     <div className="mt-4 space-y-3">
@@ -309,26 +310,55 @@ function ImagePreviewModal({ media, onClose }: { media: NormalizedMedia; onClose
 }
 
 export function normalizeSignalMediaItems(signal: SignalWithAuthor, options: { fallback?: boolean } = {}): NormalizedMedia[] {
-  return getSignalMedia(signal, options).map((media) => ({
-    mediaType: media.type,
-    mediaUrl: media.url,
-    thumbnailUrl: media.thumbnailUrl,
-    embedUrl: media.embedUrl,
-    ogTitle: media.title,
-    ogDescription: media.description,
-    ogImage: signal.og_image ?? null,
-    domain: media.domain,
-    aiGenerated: media.aiGenerated,
-    synthetic: media.synthetic,
-  }));
+  try {
+    const safeSignal = normalizeMediaSignal(signal);
+    return getSignalMedia(safeSignal, options)
+      .filter((media) => typeof media.url === "string" && media.url.trim().length > 0)
+      .map((media) => ({
+        mediaType: media.type,
+        mediaUrl: media.url,
+        thumbnailUrl: media.thumbnailUrl,
+        embedUrl: media.embedUrl,
+        ogTitle: media.title,
+        ogDescription: media.description,
+        ogImage: safeSignal.og_image ?? null,
+        domain: media.domain,
+        aiGenerated: media.aiGenerated,
+        synthetic: media.synthetic,
+      }));
+  } catch (error) {
+    console.warn("[signal-media] failed to normalize media items", error);
+    return [];
+  }
 }
 
 export function normalizeSignalMediaRecords(signal: SignalWithAuthor, options: { fallback?: boolean } = {}): NormalizedSignalMedia[] {
-  return getSignalMedia(signal, options);
+  try {
+    return getSignalMedia(normalizeMediaSignal(signal), options);
+  } catch (error) {
+    console.warn("[signal-media] failed to normalize media records", error);
+    return [];
+  }
 }
 
 function isImageMedia(mediaType: SignalMediaType) {
   return mediaType === "image" || mediaType === "ai_generated" || mediaType === "chart";
+}
+
+function normalizeMediaSignal(signal: SignalWithAuthor): SignalWithAuthor {
+  const input = signal ?? ({} as SignalWithAuthor);
+  return {
+    ...input,
+    id: typeof input.id === "string" && input.id.trim() ? input.id : "unknown-signal",
+    title: typeof input.title === "string" && input.title.trim() ? input.title : "Untitled Signal",
+    body: typeof input.body === "string" ? input.body : "",
+    created_at: typeof input.created_at === "string" ? input.created_at : new Date(0).toISOString(),
+    updated_at: typeof input.updated_at === "string" ? input.updated_at : new Date(0).toISOString(),
+    media: Array.isArray(input.media) ? input.media : [],
+    media_urls: Array.isArray(input.media_urls) ? input.media_urls.filter((item): item is string => typeof item === "string") : [],
+    attachments: Array.isArray(input.attachments) ? input.attachments : [],
+    ai_narrative_tags: Array.isArray(input.ai_narrative_tags) ? input.ai_narrative_tags.filter((item): item is string => typeof item === "string") : [],
+  };
 }
 
 const BLUR_DATA_URL =

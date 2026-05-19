@@ -9,6 +9,7 @@ import { OperatorSwitcher } from "@/components/auth/operator-switcher";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { RookMark } from "@/components/brand";
 import { NetworkEventStream } from "@/components/shell/network-event-stream";
+import { FeedContentBoundary, FeedShellBoundary, MobileNavigationBoundary } from "@/components/signals/signal-error-boundary";
 import { createClient } from "@/lib/supabase/client";
 import { appNavItems, mobileNavItems } from "@/lib/navigation";
 import type { NetworkEvent } from "@/lib/data/pulse";
@@ -25,34 +26,42 @@ export function AppShell({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const safeEvents = Array.isArray(events) ? events : [];
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [rightRailOpen, setRightRailOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
-    const supabase = createClient();
-    const channel = supabase
-      .channel("rook-profile-identity-updates")
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "profiles" }, () => {
-        router.refresh();
-      })
-      .subscribe();
+    if (typeof window === "undefined") return;
+
+    let supabase: ReturnType<typeof createClient> | null = null;
+    let channel: ReturnType<ReturnType<typeof createClient>["channel"]> | null = null;
+
+    try {
+      supabase = createClient();
+      channel = supabase
+        .channel("rook-profile-identity-updates")
+        .on("postgres_changes", { event: "UPDATE", schema: "public", table: "profiles" }, () => {
+          router.refresh();
+        })
+        .subscribe();
+    } catch (error) {
+      console.warn("[app-shell] realtime identity channel disabled", error);
+    }
 
     return () => {
-      void supabase.removeChannel(channel);
+      if (supabase && channel) void supabase.removeChannel(channel);
     };
   }, [router]);
 
   return (
+    <FeedShellBoundary>
     <div className="min-h-screen w-full overflow-x-clip bg-rook-void/75 text-rook-text">
-      <div className="fixed left-2 top-2 z-[90] rounded-full border border-rook-cyan/30 bg-rook-void/95 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.16em] text-rook-cyan shadow-glow md:hidden">
-        MOBILE_LAYOUT_ACTIVE
-      </div>
       <div className="pointer-events-none fixed inset-0 z-0 hidden opacity-60 lg:block">
         <span className="ambient-scanline absolute left-0 top-1/3 h-px w-full bg-rook-cyan/20" />
       </div>
       <div className="md:hidden">
-        <MobileHeader events={events} setDrawerOpen={setDrawerOpen} />
+        <MobileHeader events={safeEvents} setDrawerOpen={setDrawerOpen} />
       </div>
 
       <div className="mx-auto flex min-h-screen w-full max-w-[104rem] min-w-0">
@@ -65,14 +74,14 @@ export function AppShell({
 
         <main className="mobile-safe-main min-w-0 flex-1 overflow-x-clip lg:pb-0">
           <TabletHeader setRightRailOpen={setRightRailOpen} />
-          {children}
+          <FeedContentBoundary>{children}</FeedContentBoundary>
         </main>
 
         <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-l border-white/10 px-3 py-4 opacity-95 xl:block">
-          <RightRail events={events} />
+          <RightRail events={safeEvents} />
         </aside>
 
-        <RightRailDrawer events={events} rightRailOpen={rightRailOpen} setRightRailOpen={setRightRailOpen} />
+        <RightRailDrawer events={safeEvents} rightRailOpen={rightRailOpen} setRightRailOpen={setRightRailOpen} />
       </div>
 
       <Link
@@ -83,29 +92,31 @@ export function AppShell({
         <Plus className="h-5 w-5" />
       </Link>
 
-      <nav className="mobile-safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-rook-void/92 px-2 pt-1 backdrop-blur-2xl md:hidden">
-        <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
-          {mobileNavItems.map((item) => {
-            const Icon = item.icon;
-            const active = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={clsx(
-                  "focus-ring flex min-h-11 touch-manipulation flex-col items-center justify-center gap-0.5 rounded-md px-1 text-[9px] font-bold transition sm:text-[10px]",
-                  active
-                    ? "bg-white text-rook-void"
-                    : "text-rook-muted hover:bg-white/[0.06] hover:text-white",
-                )}
-              >
-                <Icon className="h-4 w-4" />
-                {item.label}
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
+      <MobileNavigationBoundary>
+        <nav className="mobile-safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-rook-void/92 px-2 pt-1 backdrop-blur-2xl md:hidden">
+          <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
+            {safeNavItems(mobileNavItems).map((item) => {
+              const Icon = item.icon;
+              const active = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={clsx(
+                    "focus-ring flex min-h-11 touch-manipulation flex-col items-center justify-center gap-0.5 rounded-md px-1 text-[9px] font-bold transition sm:text-[10px]",
+                    active
+                      ? "bg-white text-rook-void"
+                      : "text-rook-muted hover:bg-white/[0.06] hover:text-white",
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                  {item.label}
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+      </MobileNavigationBoundary>
 
       <div className="md:hidden">
         <MobileOperatorDrawer
@@ -116,6 +127,7 @@ export function AppShell({
         />
       </div>
     </div>
+    </FeedShellBoundary>
   );
 }
 
@@ -211,7 +223,7 @@ function DesktopSidebar({
         </button>
       </div>
       <nav className="mt-5 space-y-3">
-        {desktopNavGroups.map((group, groupIndex) => (
+        {safeDesktopGroups(desktopNavGroups).map((group, groupIndex) => (
           <details key={group.label} open={groupIndex < 2} className="group">
             <summary className={clsx(
               "flex min-h-8 cursor-pointer list-none items-center justify-center rounded-lg px-2 text-[10px] font-black uppercase tracking-[0.16em] text-rook-muted transition hover:bg-white/[0.04] hover:text-white",
@@ -222,7 +234,7 @@ function DesktopSidebar({
               <span className={clsx("hidden text-rook-cyan transition group-open:rotate-90", !sidebarCollapsed && "xl:inline")}>›</span>
             </summary>
             <div className="mt-1 grid gap-1">
-              {group.items.map((item) => {
+              {safeNavItems(group.items).map((item) => {
                 const Icon = item.icon;
                 const active = pathname === item.href;
                 return (
@@ -366,7 +378,7 @@ function MobileOperatorDrawer({
             </p>
           </div>
           <nav className="mt-5 grid min-h-0 flex-1 gap-1.5 overflow-y-auto pb-4">
-            {appNavItems.map((item) => {
+            {safeNavItems(appNavItems).map((item) => {
               const Icon = item.icon;
               const active = pathname === item.href;
               return (
@@ -397,6 +409,7 @@ function MobileOperatorDrawer({
 }
 
 function RightRail({ events }: { events: NetworkEvent[] }) {
+  const safeEvents = Array.isArray(events) ? events : [];
   return (
     <div className="min-w-0">
       <div className="relative">
@@ -407,7 +420,7 @@ function RightRail({ events }: { events: NetworkEvent[] }) {
           className="h-10 w-full rounded-lg border border-white/10 bg-white/[0.05] pl-10 pr-3 text-sm text-rook-muted outline-none"
         />
       </div>
-      <NetworkEventStream initialEvents={events} />
+      <NetworkEventStream initialEvents={safeEvents} />
       <div className="surface-card mt-4 rounded-xl border-white/[0.07] bg-white/[0.032] p-3">
         <div className="flex items-center justify-between">
           <p className="text-sm font-black text-white">Autonomous Sync</p>
@@ -464,3 +477,19 @@ const desktopNavGroups = [
     items: appNavItems.filter((item) => ["/search", "/ingest", "/workspaces", "/ops", "/admin", "/profile", "/settings"].includes(item.href)),
   },
 ];
+
+type NavItem = (typeof appNavItems)[number];
+
+function safeNavItems(items: unknown): NavItem[] {
+  return Array.isArray(items)
+    ? items.filter((item): item is NavItem => Boolean(item?.href && item?.label && item?.icon))
+    : [];
+}
+
+function safeDesktopGroups(groups: unknown): Array<{ label: string; items: NavItem[] }> {
+  return Array.isArray(groups)
+    ? groups
+      .filter((group): group is { label: string; items: NavItem[] } => typeof group?.label === "string")
+      .map((group) => ({ label: group.label, items: safeNavItems(group.items) }))
+    : [];
+}

@@ -31,6 +31,8 @@ export function CommentThread({
   }, [initialComments, initialError, signalId]);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     function handleCommentCreated(event: Event) {
       const detail = (event as CustomEvent<{ signalId?: string; comment?: ThreadComment }>).detail;
       if (detail?.signalId !== signalId || !detail.comment?.id) return;
@@ -189,13 +191,13 @@ function CommentBody({ comment, compact = false }: { comment: ThreadComment; com
 }
 
 function normalizeThreadComments(comments: ThreadComment[], signalId: string) {
-  return comments
+  return (Array.isArray(comments) ? comments : [])
     .filter((comment): comment is ThreadComment => Boolean(comment?.id))
     .map((comment) => ({
       ...comment,
       signal_id: comment.signal_id || signalId,
       body: typeof comment.body === "string" && comment.body.trim() ? comment.body : "[comment unavailable]",
-      created_at: Number.isFinite(new Date(comment.created_at).getTime()) ? comment.created_at : new Date().toISOString(),
+      created_at: Number.isFinite(new Date(comment.created_at).getTime()) ? comment.created_at : new Date(0).toISOString(),
       author: {
         id: comment.author?.id ?? comment.author_id ?? "unknown",
         username: comment.author?.username ?? "unknown",

@@ -19,16 +19,26 @@ const eventIcons = {
 };
 
 export function NetworkEventStream({ initialEvents }: { initialEvents: NetworkEvent[] }) {
-  const [events, setEvents] = useState(initialEvents);
+  const [events, setEvents] = useState(() => normalizeNetworkEvents(initialEvents));
+  const [mountedAt, setMountedAt] = useState<number | null>(null);
 
   useEffect(() => {
-    setEvents(initialEvents);
+    setEvents(normalizeNetworkEvents(initialEvents));
   }, [initialEvents]);
 
   useEffect(() => {
-    const supabase = createClient();
-    const channel = supabase
-      .channel("rook-network-events")
+    setMountedAt(Date.now());
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    let supabase: ReturnType<typeof createClient> | null = null;
+    let channel: ReturnType<ReturnType<typeof createClient>["channel"]> | null = null;
+
+    try {
+      supabase = createClient();
+      channel = supabase.channel("rook-network-events")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "signals" }, (payload) => {
         const row = payload.new as { id: string; title?: string; created_at?: string };
         console.info("[realtime:network] signal insert propagated", { row });
@@ -144,13 +154,16 @@ export function NetworkEventStream({ initialEvents }: { initialEvents: NetworkEv
       .subscribe((status, error) => {
         console.info("[realtime:network] subscription state", { status, error });
       });
+    } catch (error) {
+      console.warn("[realtime:network] subscription disabled", error);
+    }
 
     return () => {
-      void supabase.removeChannel(channel);
+      if (supabase && channel) void supabase.removeChannel(channel);
     };
   }, []);
 
-  const visibleEvents = useMemo(() => events.slice(0, 8), [events]);
+  const visibleEvents = useMemo(() => normalizeNetworkEvents(events).slice(0, 8), [events]);
 
   return (
     <div className="surface-card mt-4 rounded-xl border-white/[0.07] bg-white/[0.032] p-3">
@@ -169,9 +182,9 @@ export function NetworkEventStream({ initialEvents }: { initialEvents: NetworkEv
           <p className="text-sm leading-6 text-rook-muted">Awaiting live network activity.</p>
         )}
         {visibleEvents.map((event, index) => {
-          const Icon = eventIcons[event.type];
+          const Icon = eventIcons[event.type] ?? Activity;
           const bars = buildMiniBars(event, index);
-          const live = Date.now() - new Date(event.created_at).getTime() < 90_000;
+          const live = mountedAt !== null && mountedAt - new Date(event.created_at).getTime() < 90_000;
           return (
             <div key={event.id} className={clsx("rook-live-arrival network-event-card flex gap-2.5 rounded-lg border p-2.5", live ? "border-rook-cyan/20 bg-rook-cyan/[0.045]" : "border-white/[0.07] bg-white/[0.026]")}>
               <div className="relative grid h-7 w-7 shrink-0 place-items-center rounded-md bg-rook-blue/10 text-rook-cyan">
@@ -206,6 +219,35 @@ export function NetworkEventStream({ initialEvents }: { initialEvents: NetworkEv
       </div>
     </div>
   );
+}
+
+function normalizeNetworkEvents(events: unknown): NetworkEvent[] {
+  if (!Array.isArray(events)) return [];
+
+  return events
+    .filter((event): event is Partial<NetworkEvent> & { id: string } => typeof event?.id === "string")
+    .map((event) => ({
+      id: event.id,
+      type: isNetworkEventType(event.type) ? event.type : "alert",
+      label: typeof event.label === "string" && event.label.trim() ? event.label : "Network event",
+      detail: typeof event.detail === "string" && event.detail.trim() ? event.detail : "Propagation update",
+      created_at: isValidDateString(event.created_at) ? event.created_at : new Date(0).toISOString(),
+    }));
+}
+
+function isNetworkEventType(value: unknown): value is NetworkEvent["type"] {
+  return value === "signal" ||
+    value === "amplify" ||
+    value === "comment" ||
+    value === "pulse" ||
+    value === "brief" ||
+    value === "like" ||
+    value === "follow" ||
+    value === "alert";
+}
+
+function isValidDateString(value: unknown): value is string {
+  return typeof value === "string" && Number.isFinite(new Date(value).getTime());
 }
 
 function buildMiniBars(event: NetworkEvent, index: number) {

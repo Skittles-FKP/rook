@@ -27,10 +27,13 @@ export default async function ApplicationLayout({
     redirect("/login");
   }
 
-  const events = await getNetworkEvents();
+  const events = await getNetworkEvents().catch((error) => {
+    console.warn("[application-layout] getNetworkEvents failed; rendering shell without live rail", error);
+    return [];
+  });
 
   return (
-    <AppShell profile={profile} events={events}>
+    <AppShell profile={profile ?? null} events={Array.isArray(events) ? events : []}>
       {children}
     </AppShell>
   );

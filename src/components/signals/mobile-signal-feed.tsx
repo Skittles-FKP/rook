@@ -9,6 +9,7 @@ import { toggleAmplifyAction, toggleLikeAction } from "@/app/actions/signals";
 import { SignalCard } from "@/components/signal-card";
 import { OperatorAvatar } from "@/components/operator-avatar";
 import { SignalComposer } from "@/components/signals/signal-composer";
+import { MediaBoundary, SignalErrorBoundary } from "@/components/signals/signal-error-boundary";
 import { formatRelativeTime } from "@/lib/format";
 import { getSignalMedia } from "@/lib/media";
 import { getSignalType, rankFeedSignals, type RankedSignal } from "@/lib/feed-ranking";
@@ -31,17 +32,21 @@ export function MobileSignalFeed({
   signals: RankedSignal[];
   flocks: FlockOption[];
 }) {
+  const safeInitialSignals = useMemo(() => normalizeRankedSignals(signals), [signals]);
+  const safeFlocks = useMemo(() => normalizeFlocks(flocks), [flocks]);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [saved, setSaved] = useState<Set<string>>(new Set());
   const [briefSignal, setBriefSignal] = useState<SignalWithAuthor | null>(null);
-  const [liveSignals, setLiveSignals] = useState<RankedSignal[]>(signals);
+  const [liveSignals, setLiveSignals] = useState<RankedSignal[]>(safeInitialSignals);
   const [liveInsertions, setLiveInsertions] = useState(0);
 
   useEffect(() => {
-    setLiveSignals(signals);
-  }, [signals]);
+    setLiveSignals(safeInitialSignals);
+  }, [safeInitialSignals]);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     let active = true;
     let timeoutId: ReturnType<typeof setTimeout>;
 
@@ -51,14 +56,14 @@ export function MobileSignalFeed({
         if (!active) return;
         const next = newsFeedAgent.nextMockSignal(index);
         setLiveSignals((current) => {
-          const propagated = current.map((item, itemIndex) => ({
+          const propagated = normalizeRankedSignals(current).map((item, itemIndex) => ({
             ...item.signal,
-            likes_count: item.signal.likes_count + (itemIndex % 3 === 0 ? 1 : 0),
-            amplifies_count: item.signal.amplifies_count + (itemIndex % 4 === 0 ? 1 : 0),
-            comments_count: item.signal.comments_count + (itemIndex % 5 === 0 ? 1 : 0),
+            likes_count: (item.signal.likes_count ?? 0) + (itemIndex % 3 === 0 ? 1 : 0),
+            amplifies_count: (item.signal.amplifies_count ?? 0) + (itemIndex % 4 === 0 ? 1 : 0),
+            comments_count: (item.signal.comments_count ?? 0) + (itemIndex % 5 === 0 ? 1 : 0),
             updated_at: new Date().toISOString(),
           }));
-          return rankFeedSignals([next, ...propagated].slice(0, 44));
+          return normalizeRankedSignals(rankFeedSignals([next, ...propagated].slice(0, 44)));
         });
         setLiveInsertions((count) => count + 1);
         scheduleNext(index + 1);
@@ -73,12 +78,12 @@ export function MobileSignalFeed({
   }, []);
 
   const visibleSignals = useMemo(
-    () => liveSignals.filter((item) => !dismissed.has(item.signal.id)),
+    () => normalizeRankedSignals(liveSignals).filter((item) => !dismissed.has(item.signal.id)),
     [dismissed, liveSignals],
   );
 
   return (
-    <>
+    <SignalErrorBoundary label="Mobile feed">
       <section className="mx-auto grid w-full max-w-[48rem] gap-1 px-0 pb-3 pt-0 lg:hidden">
         <div className="px-2 sm:px-3">
           <div className="rounded-xl border border-white/10 bg-white/[0.045] px-3 py-2 backdrop-blur-xl">
@@ -104,28 +109,29 @@ export function MobileSignalFeed({
             <ChevronDown className="h-4 w-4 text-rook-cyan transition group-open:rotate-180" />
           </summary>
           <div className="border-t border-white/10 p-2 sm:p-3">
-            <SignalComposer flocks={flocks} />
+            <SignalComposer flocks={safeFlocks} />
           </div>
         </details>
 
         <div className="grid gap-1 sm:gap-2">
           {visibleSignals.map((item, index) => (
-            <MobileSignalCard
-              key={item.signal.id}
-              item={item}
-              saved={saved.has(item.signal.id)}
-              featured={index === 0}
-              onBrief={() => setBriefSignal(item.signal)}
-              onDismiss={() => setDismissed((current) => new Set(current).add(item.signal.id))}
-              onSave={() =>
-                setSaved((current) => {
-                  const next = new Set(current);
-                  if (next.has(item.signal.id)) next.delete(item.signal.id);
-                  else next.add(item.signal.id);
-                  return next;
-                })
-              }
-            />
+            <SignalErrorBoundary key={item.signal.id} label="Signal card">
+              <MobileSignalCard
+                item={item}
+                saved={saved.has(item.signal.id)}
+                featured={index === 0}
+                onBrief={() => setBriefSignal(item.signal)}
+                onDismiss={() => setDismissed((current) => new Set(current).add(item.signal.id))}
+                onSave={() =>
+                  setSaved((current) => {
+                    const next = new Set(current);
+                    if (next.has(item.signal.id)) next.delete(item.signal.id);
+                    else next.add(item.signal.id);
+                    return next;
+                  })
+                }
+              />
+            </SignalErrorBoundary>
           ))}
         </div>
       </section>
@@ -145,7 +151,7 @@ export function MobileSignalFeed({
           }
         />
       )}
-    </>
+    </SignalErrorBoundary>
   );
 }
 
@@ -164,7 +170,7 @@ function MobileSignalCard({
   onDismiss: () => void;
   onSave: () => void;
 }) {
-  const signal = item.signal;
+  const signal = normalizeSignal(item.signal);
   const [dragX, setDragX] = useState(0);
   const [gesture, setGesture] = useState<Gesture | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -300,7 +306,7 @@ function MobileNativeSignalPost({
   onBrief: () => void;
   onSave: () => void;
 }) {
-  const signal = item.signal;
+  const signal = normalizeSignal(item.signal);
   const pulse = scorePulseSignal(signal);
   const evidence = buildSignalEvidencePacket(signal);
   const engagement = getEngagement(signal);
@@ -357,7 +363,9 @@ function MobileNativeSignalPost({
         </h2>
       </Link>
 
-      <MobilePostMedia visual={visual} type={signalType} title={signal.title} />
+      <MediaBoundary>
+        <MobilePostMedia visual={visual} type={signalType} title={signal.title} />
+      </MediaBoundary>
 
       <p className="mt-3 line-clamp-3 text-sm leading-6 text-rook-muted">
         {summarizeSignal(signal)}
@@ -495,7 +503,7 @@ type MobileVisual = {
 };
 
 function getMobileVisual(signal: SignalWithAuthor): MobileVisual | null {
-  const media = getSignalMedia(signal);
+  const media = safeSignalMedia(signal);
   const video = media.find((item) => item.type === "video");
   if (video) return { kind: "video", src: video.url, poster: video.thumbnailUrl };
 
@@ -603,4 +611,62 @@ function BriefMetric({ label, value }: { label: string; value: string }) {
       <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.14em] text-rook-muted">{label}</p>
     </div>
   );
+}
+
+function normalizeRankedSignals(value: unknown): RankedSignal[] {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .filter((item): item is RankedSignal => Boolean(item && typeof item === "object" && "signal" in item && (item as RankedSignal).signal?.id))
+    .map((item) => ({ ...item, signal: normalizeSignal(item.signal) }));
+}
+
+function normalizeFlocks(value: unknown): FlockOption[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((item): item is FlockOption => Boolean(item && typeof item === "object" && typeof (item as FlockOption).id === "string"))
+    .map((item) => ({
+      id: item.id,
+      name: typeof item.name === "string" && item.name.trim() ? item.name : "Flock",
+    }));
+}
+
+function normalizeSignal(signal: SignalWithAuthor): SignalWithAuthor {
+  const input = signal ?? ({} as SignalWithAuthor);
+  return {
+    ...input,
+    id: typeof input.id === "string" && input.id.trim() ? input.id : "unknown-signal",
+    title: typeof input.title === "string" && input.title.trim() ? input.title : "Untitled Signal",
+    body: typeof input.body === "string" ? input.body : "",
+    created_at: isValidDateString(input.created_at) ? input.created_at : new Date(0).toISOString(),
+    updated_at: isValidDateString(input.updated_at) ? input.updated_at : new Date(0).toISOString(),
+    likes_count: typeof input.likes_count === "number" ? input.likes_count : 0,
+    amplifies_count: typeof input.amplifies_count === "number" ? input.amplifies_count : 0,
+    comments_count: typeof input.comments_count === "number" ? input.comments_count : 0,
+    media: Array.isArray(input.media) ? input.media : [],
+    media_urls: Array.isArray(input.media_urls) ? input.media_urls.filter((item): item is string => typeof item === "string") : [],
+    attachments: Array.isArray(input.attachments) ? input.attachments : [],
+    ai_narrative_tags: Array.isArray(input.ai_narrative_tags) ? input.ai_narrative_tags.filter((item): item is string => typeof item === "string") : [],
+    author: input.author ? {
+      ...input.author,
+      id: typeof input.author.id === "string" ? input.author.id : "unknown-author",
+      username: typeof input.author.username === "string" && input.author.username.trim() ? input.author.username : "unknown",
+      display_name: typeof input.author.display_name === "string" && input.author.display_name.trim() ? input.author.display_name : "Unknown Operator",
+      avatar_url: typeof input.author.avatar_url === "string" ? input.author.avatar_url : null,
+      operator_type: input.author.operator_type ?? "human",
+    } : null,
+  };
+}
+
+function safeSignalMedia(signal: SignalWithAuthor) {
+  try {
+    return getSignalMedia(signal);
+  } catch (error) {
+    console.warn("[mobile-feed] media normalization failed", error);
+    return [];
+  }
+}
+
+function isValidDateString(value: unknown): value is string {
+  return typeof value === "string" && Number.isFinite(new Date(value).getTime());
 }
