@@ -53,15 +53,15 @@ export default function LandingPage() {
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,6,10,0.96)_0%,rgba(5,6,10,0.82)_31%,rgba(5,6,10,0.46)_57%,rgba(5,6,10,0.68)_100%)]" />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,6,10,0.45)_0%,rgba(5,6,10,0.12)_44%,rgba(5,6,10,0.9)_100%)]" />
           <div className="absolute inset-0 opacity-[0.16] [background-image:linear-gradient(rgba(255,255,255,0.18)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.18)_1px,transparent_1px)] [background-size:56px_56px]" />
-          <div className="absolute left-[-12rem] top-[-10rem] h-[34rem] w-[34rem] rounded-full bg-rook-blue/15 blur-3xl" />
+          <div className="absolute left-0 top-0 h-72 w-72 rounded-full bg-rook-blue/15 blur-3xl sm:h-[34rem] sm:w-[34rem]" />
           <div className="absolute right-[8%] top-[8%] h-64 w-64 rounded-full bg-white/10 blur-3xl" />
           <div className="absolute inset-x-8 top-12 h-px bg-gradient-to-r from-transparent via-rook-cyan/30 to-transparent" />
-          <div className="hero-fog absolute inset-x-0 bottom-[-7rem] h-64" />
+          <div className="hero-fog absolute inset-x-0 bottom-0 h-64" />
           <div className="pulse-particle left-[18%] top-[18%]" />
           <div className="pulse-particle left-[54%] top-[26%] [animation-delay:1.4s]" />
           <div className="pulse-particle left-[82%] top-[68%] [animation-delay:2.2s]" />
         </div>
-        <div className="relative z-10 mx-auto grid min-h-[calc(100vh-88px)] w-full max-w-7xl items-end gap-10 px-4 pb-10 pt-10 sm:px-6 sm:pb-14 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
+        <div className="relative z-10 mx-auto grid min-h-[calc(100vh-88px)] w-full max-w-7xl min-w-0 items-end gap-10 px-4 pb-10 pt-10 sm:px-6 sm:pb-14 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
           <div className="max-w-3xl pb-4 lg:pb-12">
             <div className="inline-flex items-center gap-2 rounded-full border border-rook-blue/30 bg-rook-void/55 px-3 py-1.5 text-xs font-black uppercase tracking-[0.22em] text-rook-cyan backdrop-blur-md">
               <Sparkles className="h-3.5 w-3.5" />
@@ -126,7 +126,7 @@ export default function LandingPage() {
       </section>
 
       <section id="pulse" className="border-y border-white/10 bg-rook-void/55 px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="mx-auto grid max-w-7xl min-w-0 gap-6 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <RadioTower className="h-8 w-8 text-rook-cyan" />
             <h2 className="mt-5 text-3xl font-black text-white sm:text-4xl">Pulse catches narrative motion before it becomes obvious.</h2>
@@ -168,7 +168,7 @@ export default function LandingPage() {
       </section>
 
       <section id="briefs" className="border-y border-white/10 bg-rook-void/55 px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+        <div className="mx-auto grid max-w-7xl min-w-0 gap-6 lg:grid-cols-[0.85fr_1.15fr]">
           <div>
             <BrainCircuit className="h-8 w-8 text-rook-violet" />
             <h2 className="mt-5 text-3xl font-black text-white sm:text-4xl">AI Briefs turn movement into decisions.</h2>

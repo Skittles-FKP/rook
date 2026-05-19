@@ -12,6 +12,10 @@
   box-sizing: border-box;
 }
 
+:where(main, section, article, header, footer, nav, aside, div, form) {
+  min-width: 0;
+}
+
 html {
   min-height: 100%;
   width: 100%;
@@ -42,7 +46,9 @@ body {
 }
 
 body > * {
+  width: 100%;
   max-width: 100%;
+  overflow-x: hidden;
 }
 
 img,
@@ -51,6 +57,7 @@ iframe,
 canvas,
 svg {
   max-width: 100%;
+  height: auto;
 }
 
 a {
@@ -583,8 +590,28 @@ textarea {
 }
 
 @media (max-width: 767px) {
+  *,
+  *::before,
+  *::after {
+    max-width: 100%;
+  }
+
   html,
   body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
+    touch-action: pan-y;
+  }
+
+  main,
+  section,
+  article,
+  header,
+  footer,
+  nav,
+  aside {
     max-width: 100%;
     overflow-x: hidden;
   }
@@ -649,6 +676,15 @@ textarea {
   .mobile-native-post,
   .mobile-native-post * {
     min-width: 0;
+  }
+
+  .mobile-post-media,
+  .mobile-rich-visual,
+  .rook-media-frame,
+  .media-link-card,
+  .media-frame-safe {
+    max-width: 100%;
+    overflow: hidden;
   }
 
   .mobile-post-media {

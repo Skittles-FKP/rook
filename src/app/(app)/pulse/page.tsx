@@ -57,7 +57,7 @@ export default async function PulsePage() {
               Pulse ticker
             </p>
           </div>
-          <div className="mobile-scrollbar flex gap-3 overflow-x-auto px-4 py-3">
+          <div className="grid min-w-0 gap-2 overflow-hidden px-3 py-3 sm:flex sm:gap-3 sm:overflow-x-auto sm:px-4">
             {topSignals.length === 0 ? (
               <span className="text-sm text-rook-muted">Awaiting velocity data.</span>
             ) : (
@@ -65,7 +65,7 @@ export default async function PulsePage() {
                 <Link
                   key={signal.id}
                   href={`/signals/${signal.id}`}
-                  className="focus-ring inline-flex min-w-[14rem] max-w-[18rem] items-center justify-between gap-4 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 transition hover:border-rook-cyan/40 sm:min-w-64"
+                  className="focus-ring inline-flex w-full min-w-0 max-w-full items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 transition hover:border-rook-cyan/40 sm:min-w-64 sm:max-w-[18rem]"
                 >
                   <span className="truncate text-sm font-bold text-white">{signal.title}</span>
                   <span className="shrink-0 text-xs font-black text-rook-green">+{signal.pulse_score}</span>

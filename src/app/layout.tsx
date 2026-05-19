@@ -33,12 +33,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="w-full max-w-full overflow-x-hidden">
       <head>
         {/* eslint-disable-next-line @next/next/no-css-tags -- Stable fallback for Next dev CSS chunk invalidation. */}
         <link rel="stylesheet" href="/rook.css" />
       </head>
-      <body>{children}</body>
+      <body className="w-full max-w-full overflow-x-hidden">{children}</body>
     </html>
   );
 }
