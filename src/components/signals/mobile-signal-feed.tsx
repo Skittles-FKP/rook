@@ -85,16 +85,16 @@ export function MobileSignalFeed({
   return (
     <SignalErrorBoundary label="Mobile feed">
       <section className="mobile-feed-scroll mx-auto grid w-full max-w-full gap-1 overflow-x-hidden px-0 pb-2 pt-0 sm:max-w-[48rem] lg:hidden">
-        <div className="px-2 sm:px-3">
-          <div className="rounded-lg border border-white/10 bg-white/[0.045] px-2.5 py-2 backdrop-blur-xl sm:rounded-xl sm:px-3">
-            <div className="flex items-center justify-between gap-3">
-              <div className="min-w-0">
+        <div className="px-2 pr-[max(16px,env(safe-area-inset-right))] sm:px-3 sm:pr-3">
+          <div className="max-w-full overflow-hidden rounded-lg border border-white/10 bg-white/[0.045] px-2.5 py-2 pr-[max(16px,env(safe-area-inset-right))] backdrop-blur-xl sm:rounded-xl sm:px-3">
+            <div className="flex min-w-0 items-center gap-2">
+              <div className="min-w-0 flex-1">
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-rook-cyan">Live Signal Feed</p>
                 <h1 className="mt-0.5 truncate text-base font-black text-white sm:text-lg">Network intelligence</h1>
               </div>
-              <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-rook-green/25 bg-rook-green/10 px-2.5 py-1 text-[11px] font-black text-rook-green">
+              <span className="ml-auto inline-flex max-w-[45%] flex-shrink-0 items-center gap-1.5 overflow-hidden whitespace-nowrap rounded-full border border-rook-green/25 bg-rook-green/10 px-2.5 py-1 text-[11px] font-black text-rook-green">
                 <span className="network-pulse h-2 w-2 rounded-full bg-rook-green" />
-                {visibleSignals.length} live
+                <span className="min-w-0 truncate">{visibleSignals.length} live</span>
               </span>
             </div>
             <p className="mt-1.5 text-[11px] leading-4 text-rook-muted">
