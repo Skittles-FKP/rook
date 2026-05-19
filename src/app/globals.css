@@ -14,13 +14,17 @@
 
 html {
   min-height: 100%;
+  width: 100%;
+  max-width: 100vw;
   background: var(--background);
-  overflow-x: clip;
+  overflow-x: hidden;
   scroll-behavior: smooth;
 }
 
 body {
   min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
   margin: 0;
   background:
     linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
@@ -33,7 +37,12 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  overflow-x: clip;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+}
+
+body > * {
+  max-width: 100vw;
 }
 
 img,
@@ -140,10 +149,13 @@ textarea {
 
 .mobile-swipe-card {
   will-change: transform;
+  max-width: 100vw;
+  contain: layout paint;
 }
 
 .mobile-native-post {
   contain: layout paint;
+  max-width: 100vw;
   transition: background-color 180ms ease, transform 180ms ease;
 }
 
@@ -153,7 +165,22 @@ textarea {
 }
 
 .mobile-post-media {
+  max-height: 260px;
+  max-width: 100%;
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.22), 0 0 22px rgba(53, 216, 255, 0.055);
+}
+
+.mobile-post-media img,
+.mobile-post-media video {
+  max-height: 260px;
+  object-fit: cover;
+}
+
+.mobile-feed-scroll {
+  content-visibility: auto;
+  contain-intrinsic-size: 1000px;
+  overscroll-behavior-x: none;
+  scroll-behavior: smooth;
 }
 
 .media-skeleton {
@@ -556,6 +583,12 @@ textarea {
 }
 
 @media (max-width: 767px) {
+  html,
+  body {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
   body {
     background:
       linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
@@ -616,6 +649,16 @@ textarea {
   .mobile-native-post,
   .mobile-native-post * {
     min-width: 0;
+  }
+
+  .mobile-post-media {
+    aspect-ratio: 4 / 3;
+    border-radius: 0.75rem;
+  }
+
+  .mobile-rich-visual {
+    aspect-ratio: 4 / 3;
+    max-height: 260px;
   }
 }
 

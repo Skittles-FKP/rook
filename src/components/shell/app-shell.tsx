@@ -54,9 +54,25 @@ export function AppShell({
     };
   }, [router]);
 
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const previousOverflow = document.body.style.overflow;
+    const previousTouchAction = document.body.style.touchAction;
+
+    if (drawerOpen || rightRailOpen) {
+      document.body.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
+    }
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.body.style.touchAction = previousTouchAction;
+    };
+  }, [drawerOpen, rightRailOpen]);
+
   return (
     <FeedShellBoundary>
-    <div className="min-h-screen w-full overflow-x-clip bg-rook-void/75 text-rook-text">
+    <div className="min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-rook-void/75 text-rook-text">
       <div className="pointer-events-none fixed inset-0 z-0 hidden opacity-60 lg:block">
         <span className="ambient-scanline absolute left-0 top-1/3 h-px w-full bg-rook-cyan/20" />
       </div>
@@ -64,7 +80,7 @@ export function AppShell({
         <MobileHeader events={safeEvents} setDrawerOpen={setDrawerOpen} />
       </div>
 
-      <div className="mx-auto flex min-h-screen w-full max-w-[104rem] min-w-0">
+      <div className="mx-auto flex min-h-screen w-full max-w-[100vw] min-w-0 overflow-x-hidden xl:max-w-[104rem]">
         <DesktopSidebar
           pathname={pathname}
           profile={profile}
@@ -72,7 +88,7 @@ export function AppShell({
           setSidebarCollapsed={setSidebarCollapsed}
         />
 
-        <main className="mobile-safe-main min-w-0 flex-1 overflow-x-clip lg:pb-0">
+        <main className="mobile-safe-main min-w-0 flex-1 overflow-x-hidden lg:pb-0">
           <TabletHeader setRightRailOpen={setRightRailOpen} />
           <FeedContentBoundary>{children}</FeedContentBoundary>
         </main>
@@ -139,7 +155,7 @@ function MobileHeader({
   setDrawerOpen: (open: boolean) => void;
 }) {
   return (
-    <header className="sticky top-0 z-30 border-b border-white/10 bg-rook-void/86 px-3 py-2.5 backdrop-blur-2xl">
+    <header className="sticky top-0 z-30 max-w-[100vw] overflow-hidden border-b border-white/10 bg-rook-void/86 px-3 py-2.5 pt-[calc(0.625rem+env(safe-area-inset-top))] backdrop-blur-2xl">
       <div className="flex items-center justify-between gap-3">
         <button
           type="button"
@@ -297,19 +313,19 @@ function RightRailDrawer({
   setRightRailOpen: (open: boolean) => void;
 }) {
   return (
-    <div className={clsx("fixed inset-0 z-50 hidden md:block xl:hidden", rightRailOpen ? "pointer-events-auto" : "pointer-events-none")}>
+    <div className={clsx("fixed inset-0 z-50 hidden max-w-[100vw] overflow-hidden md:block xl:hidden", rightRailOpen ? "pointer-events-auto" : "pointer-events-none")}>
         <button
           type="button"
           aria-label="Close intelligence rail"
           onClick={() => setRightRailOpen(false)}
           className={clsx(
-            "absolute inset-0 bg-rook-void/70 backdrop-blur-sm transition-opacity duration-300",
+            "absolute inset-0 bg-rook-void/70 backdrop-blur-sm transition-opacity duration-300 ease-out",
             rightRailOpen ? "opacity-100" : "opacity-0",
           )}
         />
         <aside
           className={clsx(
-            "mobile-safe-bottom absolute bottom-0 right-0 top-0 flex w-[88vw] max-w-sm flex-col overflow-y-auto border-l border-white/10 bg-rook-ink/96 px-3 py-4 shadow-panel transition-transform duration-300 ease-out",
+            "mobile-safe-bottom absolute bottom-0 right-0 top-0 flex w-[min(86vw,340px)] max-w-[calc(100vw-0.75rem)] flex-col overflow-y-auto overflow-x-hidden border-l border-white/10 bg-rook-ink/96 px-3 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))] shadow-panel transition-transform duration-300 ease-out",
             rightRailOpen ? "translate-x-0" : "translate-x-full",
           )}
         >
@@ -342,42 +358,44 @@ function MobileOperatorDrawer({
   setDrawerOpen: (open: boolean) => void;
 }) {
   return (
-    <div className={clsx("fixed inset-0 z-50", drawerOpen ? "pointer-events-auto" : "pointer-events-none")}>
+    <div className={clsx("fixed inset-0 z-50 max-w-[100vw] overflow-hidden", drawerOpen ? "pointer-events-auto" : "pointer-events-none")}>
         <button
           type="button"
           aria-label="Close operator menu"
           onClick={() => setDrawerOpen(false)}
           className={clsx(
-            "absolute inset-0 bg-rook-void/70 backdrop-blur-sm transition-opacity duration-300",
+            "absolute inset-0 bg-rook-void/70 backdrop-blur-sm transition-opacity duration-300 ease-out",
             drawerOpen ? "opacity-100" : "opacity-0",
           )}
         />
         <aside
           className={clsx(
-            "mobile-safe-bottom absolute bottom-0 left-0 top-0 flex w-[86vw] max-w-sm flex-col border-r border-white/10 bg-rook-ink/96 px-4 py-5 shadow-panel transition-transform duration-300 ease-out",
+            "mobile-safe-bottom absolute bottom-0 left-0 top-0 flex w-[min(86vw,340px)] max-w-[calc(100vw-0.75rem)] flex-col overflow-hidden border-r border-white/10 bg-rook-ink/96 px-3 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))] shadow-panel transition-transform duration-300 ease-out",
             drawerOpen ? "translate-x-0" : "-translate-x-full",
           )}
         >
-          <div className="flex items-center justify-between gap-3">
-            <RookMark />
+          <div className="flex min-w-0 items-center justify-between gap-2">
+            <div className="min-w-0 overflow-hidden">
+              <RookMark />
+            </div>
             <button
               type="button"
               aria-label="Close operator menu"
               onClick={() => setDrawerOpen(false)}
-              className="focus-ring grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.05] text-rook-muted"
+              className="focus-ring grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/10 bg-white/[0.05] text-rook-muted"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
-          <div className="mt-5 rounded-xl border border-rook-cyan/20 bg-rook-cyan/[0.055] p-4">
+          <div className="mt-3 min-w-0 rounded-lg border border-rook-cyan/20 bg-rook-cyan/[0.055] p-3">
             <p className="text-xs font-black uppercase tracking-[0.2em] text-rook-cyan">Operator</p>
-            <p className="mt-2 text-sm leading-6 text-rook-muted">
+            <p className="mt-2 break-words text-sm leading-5 text-rook-muted">
               {profile
                 ? `${profile.display_name} is operating as @${profile.username}.`
                 : "Complete onboarding to activate your operator profile."}
             </p>
           </div>
-          <nav className="mt-5 grid min-h-0 flex-1 gap-1.5 overflow-y-auto pb-4">
+          <nav className="mt-3 grid min-h-0 flex-1 gap-1 overflow-y-auto overflow-x-hidden pb-3">
             {safeNavItems(appNavItems).map((item) => {
               const Icon = item.icon;
               const active = pathname === item.href;
@@ -387,17 +405,17 @@ function MobileOperatorDrawer({
                   href={item.href}
                   onClick={() => setDrawerOpen(false)}
                   className={clsx(
-                    "focus-ring flex min-h-12 items-center gap-3 rounded-lg px-3 text-sm font-bold transition",
+                    "focus-ring flex min-h-11 min-w-0 items-center gap-2.5 rounded-lg px-2.5 text-sm font-bold transition",
                     active ? "bg-white text-rook-void" : "text-rook-muted hover:bg-white/[0.06] hover:text-white",
                   )}
                 >
-                  <Icon className="h-5 w-5" />
-                  {item.label}
+                  <Icon className="h-5 w-5 shrink-0" />
+                  <span className="min-w-0 break-words">{item.label}</span>
                 </Link>
               );
             })}
           </nav>
-          <div className="mt-auto border-t border-white/10 pt-4">
+          <div className="mt-auto min-w-0 border-t border-white/10 pt-3">
             <OperatorSwitcher profile={profile} />
             <div className="mt-3">
               <SignOutButton className="w-full" />
