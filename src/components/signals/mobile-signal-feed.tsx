@@ -84,7 +84,7 @@ export function MobileSignalFeed({
 
   return (
     <SignalErrorBoundary label="Mobile feed">
-      <section className="mobile-feed-scroll mx-auto grid w-full max-w-[100vw] gap-1 overflow-x-hidden px-0 pb-2 pt-0 sm:max-w-[48rem] lg:hidden">
+      <section className="mobile-feed-scroll mx-auto grid w-full max-w-full gap-1 overflow-x-hidden px-0 pb-2 pt-0 sm:max-w-[48rem] lg:hidden">
         <div className="px-2 sm:px-3">
           <div className="rounded-lg border border-white/10 bg-white/[0.045] px-2.5 py-2 backdrop-blur-xl sm:rounded-xl sm:px-3">
             <div className="flex items-center justify-between gap-3">
@@ -204,7 +204,7 @@ function MobileSignalCard({
   }
 
   return (
-    <div className="relative min-w-0 max-w-[100vw] overflow-hidden border-b border-white/10 bg-rook-void/40">
+    <div className="relative min-w-0 max-w-full overflow-hidden border-b border-white/10 bg-rook-void/40">
       <div
         className={clsx(
           "absolute inset-y-4 flex items-center rounded-xl px-4 text-xs font-black uppercase tracking-[0.16em] transition-opacity",
@@ -216,17 +216,16 @@ function MobileSignalCard({
         {gesture === "save" ? "Save" : gesture === "amplify" ? "Amplify" : "Dismiss"}
       </div>
       <div
-        className="mobile-swipe-card touch-pan-y max-w-[100vw] px-0 py-0 transition-transform duration-200 ease-out sm:px-2 sm:py-1.5"
-        style={{ transform: `translateX(${dragX}px) rotate(${dragX * 0.015}deg)` }}
+        className="mobile-swipe-card touch-pan-y max-w-full px-0 py-0 transition-transform duration-200 ease-out sm:px-2 sm:py-1.5"
         onPointerDown={(event) => {
           startX.current = event.clientX;
           event.currentTarget.setPointerCapture(event.pointerId);
         }}
         onPointerMove={(event) => {
           if (startX.current === null) return;
-          const distance = Math.max(-190, Math.min(210, event.clientX - startX.current));
-          dragXRef.current = distance;
-          setDragX(distance);
+          const distance = Math.max(-90, Math.min(90, event.clientX - startX.current));
+          dragXRef.current = 0;
+          setDragX(0);
           updateGesture(distance);
         }}
         onPointerUp={() => {
@@ -322,7 +321,7 @@ function MobileNativeSignalPost({
   ].filter((row) => row.value);
 
   return (
-    <article className="mobile-native-post min-w-0 max-w-[100vw] overflow-hidden border-b border-white/10 bg-rook-void px-2.5 py-2.5 text-rook-text sm:rounded-xl sm:border sm:border-white/10 sm:px-3 sm:py-3">
+    <article className="mobile-native-post min-w-0 max-w-full overflow-hidden border-b border-white/10 bg-rook-void px-2.5 py-2.5 text-rook-text sm:rounded-xl sm:border sm:border-white/10 sm:px-3 sm:py-3">
       <div className="flex min-w-0 items-start gap-2.5 sm:gap-3">
         <Link href={`/profile/${username}`} className="focus-ring shrink-0 rounded-lg">
           <OperatorAvatar

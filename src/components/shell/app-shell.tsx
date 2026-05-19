@@ -70,9 +70,37 @@ export function AppShell({
     };
   }, [drawerOpen, rightRailOpen]);
 
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production" || typeof window === "undefined" || typeof document === "undefined") return;
+
+    function markOverflowingElements() {
+      const width = document.documentElement.clientWidth;
+      document.querySelectorAll<HTMLElement>("[data-rook-overflow-debug]").forEach((element) => {
+        element.style.outline = "";
+        element.removeAttribute("data-rook-overflow-debug");
+      });
+      document.querySelectorAll<HTMLElement>("body *").forEach((element) => {
+        const rect = element.getBoundingClientRect();
+        if (rect.left < -1 || rect.right > width + 1) {
+          element.style.outline = "2px solid red";
+          element.style.outlineOffset = "-2px";
+          element.setAttribute("data-rook-overflow-debug", "true");
+        }
+      });
+    }
+
+    markOverflowingElements();
+    window.addEventListener("resize", markOverflowingElements);
+    window.addEventListener("scroll", markOverflowingElements, { passive: true });
+    return () => {
+      window.removeEventListener("resize", markOverflowingElements);
+      window.removeEventListener("scroll", markOverflowingElements);
+    };
+  }, []);
+
   return (
     <FeedShellBoundary>
-    <div className="min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-rook-void/75 text-rook-text">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-rook-void/75 text-rook-text">
       <div className="pointer-events-none fixed inset-0 z-0 hidden opacity-60 lg:block">
         <span className="ambient-scanline absolute left-0 top-1/3 h-px w-full bg-rook-cyan/20" />
       </div>
@@ -80,7 +108,7 @@ export function AppShell({
         <MobileHeader events={safeEvents} setDrawerOpen={setDrawerOpen} />
       </div>
 
-      <div className="mx-auto flex min-h-screen w-full max-w-[100vw] min-w-0 overflow-x-hidden xl:max-w-[104rem]">
+      <div className="mx-auto flex min-h-screen w-full max-w-full min-w-0 overflow-x-hidden xl:max-w-[104rem]">
         <DesktopSidebar
           pathname={pathname}
           profile={profile}
@@ -155,7 +183,7 @@ function MobileHeader({
   setDrawerOpen: (open: boolean) => void;
 }) {
   return (
-    <header className="sticky top-0 z-30 max-w-[100vw] overflow-hidden border-b border-white/10 bg-rook-void/86 px-3 py-2.5 pt-[calc(0.625rem+env(safe-area-inset-top))] backdrop-blur-2xl">
+    <header className="sticky top-0 z-30 max-w-full overflow-hidden border-b border-white/10 bg-rook-void/86 px-3 py-2.5 pt-[calc(0.625rem+env(safe-area-inset-top))] backdrop-blur-2xl">
       <div className="flex items-center justify-between gap-3">
         <button
           type="button"
@@ -313,7 +341,7 @@ function RightRailDrawer({
   setRightRailOpen: (open: boolean) => void;
 }) {
   return (
-    <div className={clsx("fixed inset-0 z-50 hidden max-w-[100vw] overflow-hidden md:block xl:hidden", rightRailOpen ? "pointer-events-auto" : "pointer-events-none")}>
+    <div className={clsx("fixed inset-0 z-50 hidden max-w-full overflow-hidden md:block xl:hidden", rightRailOpen ? "pointer-events-auto" : "pointer-events-none")}>
         <button
           type="button"
           aria-label="Close intelligence rail"
@@ -325,8 +353,8 @@ function RightRailDrawer({
         />
         <aside
           className={clsx(
-            "mobile-safe-bottom absolute bottom-0 right-0 top-0 flex w-[min(86vw,340px)] max-w-[calc(100vw-0.75rem)] flex-col overflow-y-auto overflow-x-hidden border-l border-white/10 bg-rook-ink/96 px-3 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))] shadow-panel transition-transform duration-300 ease-out",
-            rightRailOpen ? "translate-x-0" : "translate-x-full",
+            "mobile-safe-bottom absolute bottom-0 right-0 top-0 flex w-[min(86%,340px)] max-w-[calc(100%-0.75rem)] flex-col overflow-y-auto overflow-x-hidden border-l border-white/10 bg-rook-ink/96 px-3 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))] shadow-panel transition-[clip-path,opacity] duration-300 ease-out",
+            rightRailOpen ? "opacity-100 [clip-path:inset(0_0_0_0)]" : "opacity-0 [clip-path:inset(0_0_0_100%)]",
           )}
         >
           <div className="mb-3 flex items-center justify-between gap-3">
@@ -358,7 +386,7 @@ function MobileOperatorDrawer({
   setDrawerOpen: (open: boolean) => void;
 }) {
   return (
-    <div className={clsx("fixed inset-0 z-50 max-w-[100vw] overflow-hidden", drawerOpen ? "pointer-events-auto" : "pointer-events-none")}>
+    <div className={clsx("fixed inset-0 z-50 max-w-full overflow-hidden", drawerOpen ? "pointer-events-auto" : "pointer-events-none")}>
         <button
           type="button"
           aria-label="Close operator menu"
@@ -370,8 +398,8 @@ function MobileOperatorDrawer({
         />
         <aside
           className={clsx(
-            "mobile-safe-bottom absolute bottom-0 left-0 top-0 flex w-[min(86vw,340px)] max-w-[calc(100vw-0.75rem)] flex-col overflow-hidden border-r border-white/10 bg-rook-ink/96 px-3 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))] shadow-panel transition-transform duration-300 ease-out",
-            drawerOpen ? "translate-x-0" : "-translate-x-full",
+            "mobile-safe-bottom absolute bottom-0 left-0 top-0 flex w-[min(86%,340px)] max-w-[calc(100%-0.75rem)] flex-col overflow-hidden border-r border-white/10 bg-rook-ink/96 px-3 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))] shadow-panel transition-[clip-path,opacity] duration-300 ease-out",
+            drawerOpen ? "opacity-100 [clip-path:inset(0_0_0_0)]" : "opacity-0 [clip-path:inset(0_100%_0_0)]",
           )}
         >
           <div className="flex min-w-0 items-center justify-between gap-2">
