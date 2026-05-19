@@ -45,151 +45,34 @@ export function AppShell({
 
   return (
     <div className="min-h-screen w-full overflow-x-clip bg-rook-void/75 text-rook-text">
+      <div className="fixed left-2 top-2 z-[90] rounded-full border border-rook-cyan/30 bg-rook-void/95 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.16em] text-rook-cyan shadow-glow md:hidden">
+        MOBILE_LAYOUT_ACTIVE
+      </div>
       <div className="pointer-events-none fixed inset-0 z-0 hidden opacity-60 lg:block">
         <span className="ambient-scanline absolute left-0 top-1/3 h-px w-full bg-rook-cyan/20" />
       </div>
+      <div className="md:hidden">
+        <MobileHeader events={events} setDrawerOpen={setDrawerOpen} />
+      </div>
+
       <div className="mx-auto flex min-h-screen w-full max-w-[104rem] min-w-0">
-        <aside
-          className={clsx(
-            "sticky top-0 hidden h-screen shrink-0 overflow-y-auto border-r border-white/10 px-2 py-3 transition-[width] duration-300 md:block",
-            sidebarCollapsed ? "w-16" : "w-16 xl:w-44",
-          )}
-        >
-          <div className="flex items-center justify-center gap-2 xl:justify-between">
-            <span className={clsx(sidebarCollapsed ? "" : "xl:hidden")}><RookMark compact /></span>
-            <span className={clsx("hidden", !sidebarCollapsed && "xl:block")}><RookMark /></span>
-            <button
-              type="button"
-              aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              onClick={() => setSidebarCollapsed((value) => !value)}
-              className="focus-ring hidden h-8 w-8 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-rook-muted transition hover:text-white xl:grid"
-            >
-              {sidebarCollapsed ? <ChevronsRight className="h-4 w-4" /> : <ChevronsLeft className="h-4 w-4" />}
-            </button>
-          </div>
-          <nav className="mt-5 space-y-3">
-            {desktopNavGroups.map((group, groupIndex) => (
-              <details key={group.label} open={groupIndex < 2} className="group">
-                <summary className={clsx(
-                  "flex min-h-8 cursor-pointer list-none items-center justify-center rounded-lg px-2 text-[10px] font-black uppercase tracking-[0.16em] text-rook-muted transition hover:bg-white/[0.04] hover:text-white",
-                  !sidebarCollapsed && "xl:justify-between",
-                )}>
-                  <span className={clsx("hidden", !sidebarCollapsed && "xl:inline")}>{group.label}</span>
-                  <span className={clsx("h-1.5 w-1.5 rounded-full bg-rook-cyan/60", !sidebarCollapsed && "xl:hidden")} />
-                  <span className={clsx("hidden text-rook-cyan transition group-open:rotate-90", !sidebarCollapsed && "xl:inline")}>›</span>
-                </summary>
-                <div className="mt-1 grid gap-1">
-                  {group.items.map((item) => {
-                    const Icon = item.icon;
-                    const active = pathname === item.href;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        title={item.label}
-                        className={clsx(
-                          "focus-ring flex min-h-11 items-center justify-center gap-3 rounded-lg px-2 text-sm font-semibold transition",
-                          !sidebarCollapsed && "xl:justify-start xl:px-3",
-                          active
-                            ? "accent-border text-white shadow-glow"
-                            : "text-rook-muted hover:bg-white/[0.06] hover:text-white",
-                        )}
-                      >
-                        <Icon className="h-5 w-5 shrink-0" />
-                        <span className={clsx("hidden truncate", !sidebarCollapsed && "xl:inline")}>{item.label}</span>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </details>
-            ))}
-          </nav>
-          <Link
-            href="/feed"
-            title="Create Signal"
-            className="mt-4 flex min-h-11 items-center justify-center gap-2 rounded-lg bg-white text-sm font-black text-rook-void transition hover:bg-rook-cyan"
-          >
-            <Plus className="h-4 w-4" />
-            <span className={clsx("hidden", !sidebarCollapsed && "xl:inline")}>Create Signal</span>
-          </Link>
-          <div className={clsx("surface-card mt-4 hidden rounded-xl p-3", !sidebarCollapsed && "xl:block")}>
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-rook-cyan">
-              Signed in
-            </p>
-            <p className="mt-3 text-sm leading-6 text-rook-muted">
-              {profile
-                ? `${profile.display_name} is operating as @${profile.username}.`
-                : "Complete onboarding to activate your operator profile."}
-            </p>
-            <div className="mt-4">
-              <OperatorSwitcher profile={profile} />
-            </div>
-            <div className="mt-4 flex">
-              <SignOutButton className="w-full" />
-            </div>
-          </div>
-        </aside>
+        <DesktopSidebar
+          pathname={pathname}
+          profile={profile}
+          sidebarCollapsed={sidebarCollapsed}
+          setSidebarCollapsed={setSidebarCollapsed}
+        />
 
         <main className="mobile-safe-main min-w-0 flex-1 overflow-x-clip lg:pb-0">
-          <header className="sticky top-0 z-30 border-b border-white/10 bg-rook-void/86 px-3 py-2.5 backdrop-blur-2xl md:hidden">
-            <div className="flex items-center justify-between gap-3">
-              <button
-                type="button"
-                aria-label="Open operator menu"
-                onClick={() => setDrawerOpen(true)}
-                className="focus-ring grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.055] text-rook-muted"
-              >
-                <Menu className="h-5 w-5" />
-              </button>
-              <Link href="/feed" className="focus-ring rounded-lg">
-                <RookMark compact />
-              </Link>
-              <div className="flex items-center gap-1.5">
-                <Link href="/search" aria-label="Search" className="focus-ring grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.05] text-rook-muted">
-                  <Search className="h-4 w-4" />
-                </Link>
-                <Link href="/alerts" aria-label="Alerts" className="focus-ring relative grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.05] text-rook-muted">
-                  <Bell className="h-4 w-4" />
-                  {events.length > 0 && <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-rook-cyan shadow-glow" />}
-                </Link>
-                <button
-                  type="button"
-                  aria-label="Open intelligence rail"
-                  onClick={() => setRightRailOpen(true)}
-                  className="focus-ring grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.05] text-rook-muted"
-                >
-                  <PanelRightOpen className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-            <div className="mt-2 flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-3 py-2">
-              <Search className="h-4 w-4 shrink-0 text-rook-cyan" />
-              <Link href="/search" className="min-w-0 flex-1 text-sm font-semibold text-rook-muted">
-                Search Signals, operators, narratives
-              </Link>
-            </div>
-          </header>
-          <header className="sticky top-0 z-30 hidden border-b border-white/10 bg-rook-void/82 px-4 py-2.5 backdrop-blur-2xl md:block xl:hidden">
-            <div className="flex items-center justify-between gap-3">
-              <Link href="/feed" className="focus-ring rounded-lg">
-                <RookMark compact />
-              </Link>
-              <button
-                type="button"
-                onClick={() => setRightRailOpen(true)}
-                className="focus-ring inline-flex min-h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-3 text-xs font-black uppercase tracking-[0.12em] text-rook-muted"
-              >
-                <PanelRightOpen className="h-4 w-4 text-rook-cyan" />
-                Intelligence
-              </button>
-            </div>
-          </header>
+          <TabletHeader setRightRailOpen={setRightRailOpen} />
           {children}
         </main>
 
         <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-l border-white/10 px-3 py-4 opacity-95 xl:block">
           <RightRail events={events} />
         </aside>
+
+        <RightRailDrawer events={events} rightRailOpen={rightRailOpen} setRightRailOpen={setRightRailOpen} />
       </div>
 
       <Link
@@ -224,7 +107,185 @@ export function AppShell({
         </div>
       </nav>
 
-      <div className={clsx("fixed inset-0 z-50 xl:hidden", rightRailOpen ? "pointer-events-auto" : "pointer-events-none")}>
+      <div className="md:hidden">
+        <MobileOperatorDrawer
+          drawerOpen={drawerOpen}
+          profile={profile}
+          pathname={pathname}
+          setDrawerOpen={setDrawerOpen}
+        />
+      </div>
+    </div>
+  );
+}
+
+function MobileHeader({
+  events,
+  setDrawerOpen,
+}: {
+  events: NetworkEvent[];
+  setDrawerOpen: (open: boolean) => void;
+}) {
+  return (
+    <header className="sticky top-0 z-30 border-b border-white/10 bg-rook-void/86 px-3 py-2.5 backdrop-blur-2xl">
+      <div className="flex items-center justify-between gap-3">
+        <button
+          type="button"
+          aria-label="Open operator menu"
+          onClick={() => setDrawerOpen(true)}
+          className="focus-ring grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.055] text-rook-muted"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+        <Link href="/feed" className="focus-ring rounded-lg">
+          <RookMark compact />
+        </Link>
+        <div className="flex items-center gap-1.5">
+          <Link href="/search" aria-label="Search" className="focus-ring grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.05] text-rook-muted">
+            <Search className="h-4 w-4" />
+          </Link>
+          <Link href="/alerts" aria-label="Alerts" className="focus-ring relative grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.05] text-rook-muted">
+            <Bell className="h-4 w-4" />
+            {events.length > 0 && <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-rook-cyan shadow-glow" />}
+          </Link>
+        </div>
+      </div>
+      <div className="mt-2 flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-3 py-2">
+        <Search className="h-4 w-4 shrink-0 text-rook-cyan" />
+        <Link href="/search" className="min-w-0 flex-1 text-sm font-semibold text-rook-muted">
+          Search Signals, operators, narratives
+        </Link>
+      </div>
+    </header>
+  );
+}
+
+function TabletHeader({ setRightRailOpen }: { setRightRailOpen: (open: boolean) => void }) {
+  return (
+    <header className="sticky top-0 z-30 hidden border-b border-white/10 bg-rook-void/82 px-4 py-2.5 backdrop-blur-2xl md:block xl:hidden">
+      <div className="flex items-center justify-between gap-3">
+        <Link href="/feed" className="focus-ring rounded-lg">
+          <RookMark compact />
+        </Link>
+        <button
+          type="button"
+          onClick={() => setRightRailOpen(true)}
+          className="focus-ring inline-flex min-h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-3 text-xs font-black uppercase tracking-[0.12em] text-rook-muted"
+        >
+          <PanelRightOpen className="h-4 w-4 text-rook-cyan" />
+          Intelligence
+        </button>
+      </div>
+    </header>
+  );
+}
+
+function DesktopSidebar({
+  pathname,
+  profile,
+  sidebarCollapsed,
+  setSidebarCollapsed,
+}: {
+  pathname: string | null;
+  profile: Profile | null;
+  sidebarCollapsed: boolean;
+  setSidebarCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  return (
+    <aside
+      className={clsx(
+        "sticky top-0 hidden h-screen shrink-0 overflow-y-auto border-r border-white/10 px-2 py-3 transition-[width] duration-300 md:block",
+        sidebarCollapsed ? "w-16" : "w-16 xl:w-44",
+      )}
+    >
+      <div className="flex items-center justify-center gap-2 xl:justify-between">
+        <span className={clsx(sidebarCollapsed ? "" : "xl:hidden")}><RookMark compact /></span>
+        <span className={clsx("hidden", !sidebarCollapsed && "xl:block")}><RookMark /></span>
+        <button
+          type="button"
+          aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          onClick={() => setSidebarCollapsed((value) => !value)}
+          className="focus-ring hidden h-8 w-8 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-rook-muted transition hover:text-white xl:grid"
+        >
+          {sidebarCollapsed ? <ChevronsRight className="h-4 w-4" /> : <ChevronsLeft className="h-4 w-4" />}
+        </button>
+      </div>
+      <nav className="mt-5 space-y-3">
+        {desktopNavGroups.map((group, groupIndex) => (
+          <details key={group.label} open={groupIndex < 2} className="group">
+            <summary className={clsx(
+              "flex min-h-8 cursor-pointer list-none items-center justify-center rounded-lg px-2 text-[10px] font-black uppercase tracking-[0.16em] text-rook-muted transition hover:bg-white/[0.04] hover:text-white",
+              !sidebarCollapsed && "xl:justify-between",
+            )}>
+              <span className={clsx("hidden", !sidebarCollapsed && "xl:inline")}>{group.label}</span>
+              <span className={clsx("h-1.5 w-1.5 rounded-full bg-rook-cyan/60", !sidebarCollapsed && "xl:hidden")} />
+              <span className={clsx("hidden text-rook-cyan transition group-open:rotate-90", !sidebarCollapsed && "xl:inline")}>›</span>
+            </summary>
+            <div className="mt-1 grid gap-1">
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                const active = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    title={item.label}
+                    className={clsx(
+                      "focus-ring flex min-h-11 items-center justify-center gap-3 rounded-lg px-2 text-sm font-semibold transition",
+                      !sidebarCollapsed && "xl:justify-start xl:px-3",
+                      active
+                        ? "accent-border text-white shadow-glow"
+                        : "text-rook-muted hover:bg-white/[0.06] hover:text-white",
+                    )}
+                  >
+                    <Icon className="h-5 w-5 shrink-0" />
+                    <span className={clsx("hidden truncate", !sidebarCollapsed && "xl:inline")}>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </details>
+        ))}
+      </nav>
+      <Link
+        href="/feed"
+        title="Create Signal"
+        className="mt-4 flex min-h-11 items-center justify-center gap-2 rounded-lg bg-white text-sm font-black text-rook-void transition hover:bg-rook-cyan"
+      >
+        <Plus className="h-4 w-4" />
+        <span className={clsx("hidden", !sidebarCollapsed && "xl:inline")}>Create Signal</span>
+      </Link>
+      <div className={clsx("surface-card mt-4 hidden rounded-xl p-3", !sidebarCollapsed && "xl:block")}>
+        <p className="text-xs font-bold uppercase tracking-[0.22em] text-rook-cyan">
+          Signed in
+        </p>
+        <p className="mt-3 text-sm leading-6 text-rook-muted">
+          {profile
+            ? `${profile.display_name} is operating as @${profile.username}.`
+            : "Complete onboarding to activate your operator profile."}
+        </p>
+        <div className="mt-4">
+          <OperatorSwitcher profile={profile} />
+        </div>
+        <div className="mt-4 flex">
+          <SignOutButton className="w-full" />
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+function RightRailDrawer({
+  events,
+  rightRailOpen,
+  setRightRailOpen,
+}: {
+  events: NetworkEvent[];
+  rightRailOpen: boolean;
+  setRightRailOpen: (open: boolean) => void;
+}) {
+  return (
+    <div className={clsx("fixed inset-0 z-50 hidden md:block xl:hidden", rightRailOpen ? "pointer-events-auto" : "pointer-events-none")}>
         <button
           type="button"
           aria-label="Close intelligence rail"
@@ -254,8 +315,22 @@ export function AppShell({
           <RightRail events={events} />
         </aside>
       </div>
+  );
+}
 
-      <div className={clsx("fixed inset-0 z-50 md:hidden", drawerOpen ? "pointer-events-auto" : "pointer-events-none")}>
+function MobileOperatorDrawer({
+  drawerOpen,
+  profile,
+  pathname,
+  setDrawerOpen,
+}: {
+  drawerOpen: boolean;
+  profile: Profile | null;
+  pathname: string | null;
+  setDrawerOpen: (open: boolean) => void;
+}) {
+  return (
+    <div className={clsx("fixed inset-0 z-50", drawerOpen ? "pointer-events-auto" : "pointer-events-none")}>
         <button
           type="button"
           aria-label="Close operator menu"
@@ -318,24 +393,8 @@ export function AppShell({
           </div>
         </aside>
       </div>
-    </div>
   );
 }
-
-const desktopNavGroups = [
-  {
-    label: "Signal",
-    items: appNavItems.filter((item) => ["/feed", "/graph", "/pulse", "/narratives", "/briefs"].includes(item.href)),
-  },
-  {
-    label: "Network",
-    items: appNavItems.filter((item) => ["/agents", "/operators", "/flocks", "/rooms", "/alerts"].includes(item.href)),
-  },
-  {
-    label: "Operator",
-    items: appNavItems.filter((item) => ["/search", "/ingest", "/workspaces", "/ops", "/admin", "/profile", "/settings"].includes(item.href)),
-  },
-];
 
 function RightRail({ events }: { events: NetworkEvent[] }) {
   return (
@@ -390,3 +449,18 @@ function RightRail({ events }: { events: NetworkEvent[] }) {
     </div>
   );
 }
+
+const desktopNavGroups = [
+  {
+    label: "Signal",
+    items: appNavItems.filter((item) => ["/feed", "/graph", "/pulse", "/narratives", "/briefs"].includes(item.href)),
+  },
+  {
+    label: "Network",
+    items: appNavItems.filter((item) => ["/agents", "/operators", "/flocks", "/rooms", "/alerts"].includes(item.href)),
+  },
+  {
+    label: "Operator",
+    items: appNavItems.filter((item) => ["/search", "/ingest", "/workspaces", "/ops", "/admin", "/profile", "/settings"].includes(item.href)),
+  },
+];
