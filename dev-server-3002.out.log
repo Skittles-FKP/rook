@@ -1,11 +1,5 @@
 
-> rook@0.1.0 dev
-> next dev --hostname 127.0.0.1 --port 3002
+> rook@0.1.0 predev
+> node scripts/repair-next-cache.mjs && tailwindcss -i ./src/app/globals.css -o ./public/rook.css --minify
 
-   ▲ Next.js 15.5.18
-   - Local:        http://127.0.0.1:3002
-   - Network:      http://127.0.0.1:3002
-   - Environments: .env.local
-
- ✓ Starting...
- ✓ Ready in 2.3s
+[rook] repaired Next cache: stale production build artifact
