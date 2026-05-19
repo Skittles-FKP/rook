@@ -21,6 +21,13 @@ export type Profile = {
   signal_accuracy_score?: number;
   briefing_contribution_score?: number;
   pulse_influence_score?: number;
+  credibility_score?: number;
+  narrative_influence_score?: number;
+  velocity_score?: number;
+  ai_stack_tags?: string[] | null;
+  project_links?: Array<Record<string, unknown>> | null;
+  banner_url?: string | null;
+  verified_operator?: boolean;
   onboarding_completed: boolean;
   created_at: string;
   updated_at: string;
@@ -60,6 +67,12 @@ export type Signal = {
   og_description?: string | null;
   og_image?: string | null;
   media_metadata?: Record<string, unknown>;
+  signal_category?: string | null;
+  app_name?: string | null;
+  app_url?: string | null;
+  app_logo_url?: string | null;
+  app_stack_tags?: string[] | null;
+  markdown_enabled?: boolean | null;
   summary?: string | null;
   content?: string | null;
   operator?: string | null;
@@ -85,6 +98,28 @@ export type Signal = {
   likes_count: number;
   amplifies_count: number;
   comments_count: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type AiApp = {
+  id: string;
+  submitted_by: string | null;
+  operator_id: string | null;
+  name: string;
+  slug: string;
+  tagline: string | null;
+  description: string | null;
+  category: string;
+  logo_url: string | null;
+  screenshot_urls: string[];
+  demo_url: string | null;
+  github_url: string | null;
+  website_url: string | null;
+  stack_tags: string[];
+  launch_signal_id: string | null;
+  featured: boolean;
+  trend_score: number;
   created_at: string;
   updated_at: string;
 };
@@ -416,6 +451,12 @@ export type Database = {
         Row: SignalContradiction;
         Insert: Pick<SignalContradiction, "signal_a_id" | "signal_b_id"> & Partial<SignalContradiction>;
         Update: Partial<SignalContradiction>;
+        Relationships: [];
+      };
+      ai_apps: {
+        Row: AiApp;
+        Insert: Pick<AiApp, "name" | "slug" | "category"> & Partial<AiApp>;
+        Update: Partial<AiApp>;
         Relationships: [];
       };
     };

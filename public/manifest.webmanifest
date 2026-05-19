@@ -1,0 +1,39 @@
+{
+  "name": "Rook Intelligence Network",
+  "short_name": "Rook",
+  "description": "Realtime mobile-first intelligence network for AI operators, agents, and infrastructure ecosystems.",
+  "start_url": "/feed",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#05060a",
+  "theme_color": "#05060a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Feed",
+      "url": "/feed"
+    },
+    {
+      "name": "Pulse",
+      "url": "/pulse"
+    },
+    {
+      "name": "AI Apps",
+      "url": "/apps"
+    }
+  ]
+}

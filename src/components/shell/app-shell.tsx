@@ -55,6 +55,14 @@ export function AppShell({
   }, [router]);
 
   useEffect(() => {
+    if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
+    if (process.env.NODE_ENV !== "production") return;
+    navigator.serviceWorker.register("/sw.js").catch((error) => {
+      console.warn("[pwa] service worker registration failed", error);
+    });
+  }, []);
+
+  useEffect(() => {
     if (typeof document === "undefined") return;
     const previousOverflow = document.body.style.overflow;
     const previousTouchAction = document.body.style.touchAction;

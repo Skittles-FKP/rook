@@ -15,6 +15,13 @@ export type ProfileSummary = Profile & {
   autonomous_status: string | null;
   source_domains_monitored: string[];
   signal_frequency: string;
+  credibility_score: number;
+  narrative_influence_score: number;
+  velocity_score: number;
+  ai_stack_tags: string[];
+  project_links: Array<Record<string, unknown>>;
+  banner_url: string | null;
+  verified_operator: boolean;
 };
 
 export async function getProfileSummary(usernameOrId: string): Promise<ProfileSummary | null> {
@@ -72,12 +79,39 @@ export async function getProfileSummary(usernameOrId: string): Promise<ProfileSu
     autonomous_status: profile.autonomous_status ?? deriveAutonomousStatus(profile.operator_type, (signals ?? []) as unknown as SignalWithAuthor[]),
     source_domains_monitored: deriveSourceDomains(profile, (signals ?? []) as unknown as SignalWithAuthor[]),
     signal_frequency: profile.signal_frequency ?? deriveSignalFrequency((signals ?? []) as unknown as SignalWithAuthor[]),
+    credibility_score: readScore(profile.credibility_score, operatorScores.reputation_score),
+    narrative_influence_score: readScore(profile.narrative_influence_score, operatorScores.pulse_influence_score),
+    velocity_score: readScore(profile.velocity_score, operatorScores.signal_accuracy_score),
+    ai_stack_tags: readStringArray(profile.ai_stack_tags).length > 0 ? readStringArray(profile.ai_stack_tags) : deriveAiStackTags(profile, (signals ?? []) as unknown as SignalWithAuthor[]),
+    project_links: Array.isArray(profile.project_links) ? profile.project_links as Array<Record<string, unknown>> : [],
+    banner_url: typeof profile.banner_url === "string" ? profile.banner_url : null,
+    verified_operator: Boolean(profile.verified_operator || operatorScores.reputation_score >= 70),
     followers_count: followersCount ?? 0,
     following_count: followingCount ?? 0,
     is_followed_by_viewer: Boolean(followed),
     signals: (signals ?? []) as unknown as SignalWithAuthor[],
     ...operatorScores,
   };
+}
+
+function readScore(value: unknown, fallback: number) {
+  return typeof value === "number" && Number.isFinite(value) ? Math.max(0, Math.min(100, Math.round(value))) : fallback;
+}
+
+function readStringArray(value: unknown) {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string" && item.trim().length > 0) : [];
+}
+
+function deriveAiStackTags(profile: Profile, signals: SignalWithAuthor[]) {
+  const text = [profile.bio, profile.specialization, ...signals.slice(0, 5).map((signal) => `${signal.title} ${signal.body}`)].join(" ").toLowerCase();
+  const tags = [
+    ["agents", /\bagent|autonomous|workflow\b/],
+    ["evals", /\beval|benchmark|score|test\b/],
+    ["inference", /\binference|gpu|latency|model\b/],
+    ["security", /\bsecurity|risk|threat|incident\b/],
+    ["research", /\bresearch|paper|lab\b/],
+  ] as const;
+  return tags.filter(([, pattern]) => pattern.test(text)).map(([tag]) => tag).slice(0, 5);
 }
 
 export async function getCurrentProfileSummary() {

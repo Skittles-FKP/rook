@@ -36,7 +36,14 @@ export async function createSignalAction(
   const embedUrl = String(formData.get("embedUrl") ?? "").trim();
   const mediaUrlInput = String(formData.get("mediaUrl") ?? "").trim();
   const aiGenerated = String(formData.get("aiGenerated") ?? "") === "on";
+  const markdownEnabled = String(formData.get("markdownEnabled") ?? "") === "on";
+  const signalCategory = normalizeCategory(String(formData.get("signalCategory") ?? "").trim());
+  const tagInput = String(formData.get("tags") ?? "").trim();
+  const appName = String(formData.get("appName") ?? "").trim();
+  const appUrl = String(formData.get("appUrl") ?? "").trim();
+  const appStackInput = String(formData.get("appStackTags") ?? "").trim();
   const mediaFiles = formData.getAll("mediaFile").filter((value): value is File => value instanceof File && value.size > 0);
+  const appLogoFile = formData.get("appLogoFile");
   const { supabase, userId } = await getUserId();
 
   if (!userId) {
@@ -65,8 +72,27 @@ export async function createSignalAction(
   let uploadedMediaUrl: string | null = null;
   let uploadedMediaType = mediaDetection.mediaType;
   let mediaMetadata: Record<string, unknown> = { ...mediaDetection.metadata };
+  let appLogoUrl: string | null = null;
   const mediaUrls = new Set<string>();
   const attachments: Array<Record<string, unknown>> = [];
+  const tags = parseTagList(tagInput).slice(0, 10);
+  const appStackTags = parseTagList(appStackInput).slice(0, 10);
+
+  if (appLogoFile instanceof File && appLogoFile.size > 0) {
+    if (!appLogoFile.type.startsWith("image/")) {
+      return { ok: false, message: "AI app logos must be image files." };
+    }
+    const logoUpload = await uploadMediaFile(supabase, userId, appLogoFile);
+    if (!logoUpload.ok) {
+      return { ok: false, message: `App logo upload failed: ${logoUpload.message}` };
+    }
+    appLogoUrl = logoUpload.publicUrl;
+    mediaMetadata = {
+      ...mediaMetadata,
+      appLogoStoragePath: logoUpload.path,
+      appLogoBucket: logoUpload.bucket,
+    };
+  }
 
   for (const mediaFile of mediaFiles.slice(0, 6)) {
     const upload = await uploadMediaFile(supabase, userId, mediaFile);
@@ -190,6 +216,14 @@ export async function createSignalAction(
     og_description: og.ogDescription,
     og_image: og.ogImage,
     media_metadata: mediaMetadata,
+    signal_category: signalCategory,
+    tags,
+    categories: signalCategory ? [signalCategory] : [],
+    app_name: appName || null,
+    app_url: appUrl || null,
+    app_logo_url: appLogoUrl,
+    app_stack_tags: appStackTags,
+    markdown_enabled: markdownEnabled,
   };
 
   const { error } = await supabase.from("signals").insert(payload);
@@ -344,6 +378,20 @@ async function insertSignalCompatibilityFallback({
   }
 
   return { ok: false as const, message: legacy.error.message };
+}
+
+function parseTagList(value: string) {
+  return value
+    .split(/[,#\n]/)
+    .map((tag) => tag.trim().replace(/^#/, ""))
+    .filter((tag) => tag.length > 0 && tag.length <= 32)
+    .map((tag) => tag.toLowerCase())
+    .filter((tag, index, tags) => tags.indexOf(tag) === index);
+}
+
+function normalizeCategory(value: string) {
+  const allowed = new Set(["Launch", "Research", "Benchmark", "Infrastructure", "Funding", "Agent", "Security", "Governance"]);
+  return allowed.has(value) ? value : null;
 }
 
 function getFilenameFromUrl(value: string) {

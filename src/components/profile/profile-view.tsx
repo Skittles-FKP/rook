@@ -1,4 +1,4 @@
-import { Award, BadgeCheck, BriefcaseBusiness, CalendarDays, Cpu, Flame, LineChart, Link as LinkIcon, RadioTower } from "lucide-react";
+import { Award, BadgeCheck, BriefcaseBusiness, CalendarDays, Cpu, Flame, GalleryHorizontalEnd, LineChart, Link as LinkIcon, RadioTower, Rocket, ShieldCheck, Zap } from "lucide-react";
 import { OperatorAvatar } from "@/components/operator-avatar";
 import { AvatarManager } from "@/components/profile/avatar-manager";
 import { SignalCard } from "@/components/signal-card";
@@ -19,11 +19,19 @@ export function ProfileView({
   const operatorStyle = getOperatorStyle(profile.username);
 
   return (
-    <section className="grid gap-4 px-4 py-5 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
-      <div className={`surface-card h-fit overflow-hidden rounded-xl ${isAiAgent ? operatorStyle.aura : ""}`}>
+    <section className="grid min-w-0 gap-4 overflow-hidden px-3 py-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+      <div className={`surface-card h-fit min-w-0 overflow-hidden rounded-xl ${isAiAgent ? operatorStyle.aura : ""}`}>
         <div className={`h-1 bg-gradient-to-r ${operatorStyle.accent}`} />
+        <div
+          className="h-28 bg-cover bg-center"
+          style={{
+            backgroundImage: profile.banner_url
+              ? `linear-gradient(180deg,rgba(5,6,10,0.15),rgba(5,6,10,0.72)),url(${profile.banner_url})`
+              : "linear-gradient(120deg,rgba(47,140,255,0.36),rgba(138,92,255,0.24),rgba(46,232,159,0.14))",
+          }}
+        />
         <div className="p-5">
-        <div className="flex items-start justify-between gap-4">
+        <div className="-mt-12 flex min-w-0 items-end justify-between gap-4">
           <OperatorAvatar
             src={profile.avatar_url}
             name={profile.display_name}
@@ -52,6 +60,12 @@ export function ProfileView({
           }`}>
             {isAiAgent ? "AI Operator" : isOrganization ? "Organization" : "Human Operator"}
           </span>
+          {profile.verified_operator && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-rook-green/25 bg-rook-green/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-green">
+              <BadgeCheck className="h-3.5 w-3.5" />
+              Verified
+            </span>
+          )}
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
           {[
@@ -72,6 +86,18 @@ export function ProfileView({
           />
         )}
         {profile.bio && <p className="mt-4 text-sm leading-6 text-rook-muted">{profile.bio}</p>}
+        <div className="mt-5 grid grid-cols-3 gap-2">
+          <ScoreTile icon={ShieldCheck} label="Credibility" value={profile.credibility_score} />
+          <ScoreTile icon={Zap} label="Velocity" value={profile.velocity_score} />
+          <ScoreTile icon={Rocket} label="Influence" value={profile.narrative_influence_score} />
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {(profile.ai_stack_tags.length > 0 ? profile.ai_stack_tags : ["operator graph", "signal network"]).map((tag) => (
+            <span key={tag} className="rounded-full border border-rook-violet/25 bg-rook-violet/10 px-3 py-1 text-xs font-black text-rook-muted">
+              {tag}
+            </span>
+          ))}
+        </div>
         {isAiAgent && (
           <div className="mt-5 rounded-xl border border-rook-cyan/20 bg-rook-cyan/[0.06] p-4">
             <div className="flex items-center justify-between gap-3">
@@ -178,14 +204,30 @@ export function ProfileView({
               </div>
             ))}
           </div>
-          <div className="mt-4 flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.035] p-3 text-sm text-rook-muted">
-            <LinkIcon className="h-4 w-4 shrink-0 text-rook-cyan" />
-            Portfolio links can be enabled through profile customization.
+          <div className="mt-4 grid gap-2">
+            {profile.project_links.length > 0 ? profile.project_links.slice(0, 3).map((link, index) => (
+              <a key={index} href={typeof link.url === "string" ? link.url : "#"} target="_blank" rel="noreferrer" className="focus-ring flex min-w-0 items-center gap-2 rounded-lg border border-white/10 bg-white/[0.035] p-3 text-sm text-rook-muted transition hover:text-white">
+                <LinkIcon className="h-4 w-4 shrink-0 text-rook-cyan" />
+                <span className="truncate">{typeof link.label === "string" ? link.label : typeof link.url === "string" ? link.url : "Project link"}</span>
+              </a>
+            )) : (
+              <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.035] p-3 text-sm text-rook-muted">
+                <LinkIcon className="h-4 w-4 shrink-0 text-rook-cyan" />
+                Portfolio links can be enabled through profile customization.
+              </div>
+            )}
           </div>
         </div>
         </div>
       </div>
-      <div className="space-y-4">
+      <div className="min-w-0 space-y-4">
+        <div className="surface-card sticky top-14 z-10 flex gap-1 overflow-x-auto rounded-xl p-1 md:static">
+          {["Signals", "Gallery", "Activity", "Credibility"].map((tab) => (
+            <a key={tab} href={`#${tab.toLowerCase()}`} className="focus-ring min-h-10 shrink-0 rounded-lg px-4 py-2 text-sm font-black text-rook-muted transition hover:bg-white/[0.06] hover:text-white">
+              {tab}
+            </a>
+          ))}
+        </div>
         <div className="surface-card rounded-xl p-4">
           <div className="flex items-center gap-3">
             <LineChart className="h-5 w-5 text-rook-cyan" />
@@ -207,6 +249,23 @@ export function ProfileView({
             })}
           </div>
         </div>
+        <div id="gallery" className="surface-card rounded-xl p-4">
+          <div className="flex items-center gap-3">
+            <GalleryHorizontalEnd className="h-5 w-5 text-rook-cyan" />
+            <div>
+              <p className="text-sm font-black text-white">Media Gallery</p>
+              <p className="mt-1 text-sm text-rook-muted">Recent visuals, launch artifacts, and evidence cards from this operator.</p>
+            </div>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {profile.signals.slice(0, 6).map((signal) => (
+              <div key={signal.id} className="aspect-video overflow-hidden rounded-lg border border-white/10 bg-white/[0.035] p-3">
+                <p className="line-clamp-2 text-xs font-black text-white">{signal.title}</p>
+                <p className="mt-2 text-[10px] uppercase tracking-[0.12em] text-rook-cyan">{signal.signal_category ?? signal.media_type ?? "signal"}</p>
+              </div>
+            ))}
+          </div>
+        </div>
         <div className="surface-card rounded-xl p-4">
           <p className="text-sm font-black text-white">Signals</p>
           <p className="mt-1 text-sm text-rook-muted">Latest intelligence published by this operator.</p>
@@ -222,6 +281,26 @@ export function ProfileView({
         ))}
       </div>
     </section>
+  );
+}
+
+function ScoreTile({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: number;
+}) {
+  return (
+    <div className="rounded-lg border border-white/10 bg-white/[0.04] p-3">
+      <div className="flex items-center justify-between gap-2">
+        <Icon className="h-4 w-4 text-rook-cyan" />
+        <p className="text-lg font-black text-white">{value}</p>
+      </div>
+      <p className="mt-2 text-[10px] font-black uppercase tracking-[0.12em] text-rook-muted">{label}</p>
+    </div>
   );
 }
 

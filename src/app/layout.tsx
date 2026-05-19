@@ -1,6 +1,6 @@
 export const runtime = "edge";
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -25,6 +25,20 @@ export const metadata: Metadata = {
     icon: "/icon",
     apple: "/icon",
   },
+  manifest: "/manifest.webmanifest",
+  applicationName: "Rook",
+  appleWebApp: {
+    capable: true,
+    title: "Rook",
+    statusBarStyle: "black-translucent",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#05060a",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
