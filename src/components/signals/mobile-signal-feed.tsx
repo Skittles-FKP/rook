@@ -11,7 +11,7 @@ import { OperatorAvatar } from "@/components/operator-avatar";
 import { SignalComposer } from "@/components/signals/signal-composer";
 import { MediaBoundary, SignalErrorBoundary } from "@/components/signals/signal-error-boundary";
 import { formatRelativeTime } from "@/lib/format";
-import { getSignalMedia } from "@/lib/media";
+import { getSignalMedia, shouldUseSyntheticSignalMedia } from "@/lib/media";
 import { getSignalType, rankFeedSignals, type RankedSignal } from "@/lib/feed-ranking";
 import { newsFeedAgent } from "@/lib/agents/news/newsFeedAgent";
 import { scorePulseSignal } from "@/lib/pulse";
@@ -117,7 +117,7 @@ export function MobileSignalFeed({
   return (
     <SignalErrorBoundary label="Mobile feed">
       <section
-        className="mobile-feed-scroll mx-auto grid w-full max-w-full gap-0.5 overflow-x-hidden px-0 pb-2 pt-0 sm:max-w-[48rem] lg:hidden"
+        className="rook-rich-feed mobile-feed-scroll mx-auto grid w-full max-w-full gap-0.5 overflow-x-hidden px-0 pb-2 pt-0 sm:max-w-[48rem] lg:hidden"
         onTouchStart={(event) => {
           if (typeof window !== "undefined" && window.scrollY <= 2) pullStartY.current = event.touches[0]?.clientY ?? null;
         }}
@@ -398,8 +398,9 @@ function MobileNativeSignalPost({
   const evidence = buildSignalEvidencePacket(signal);
   const engagement = getEngagement(signal);
   const signalType = item.type ?? getSignalType(signal);
-  const visual = getMobileVisual(signal);
-  const visuals = getMobileVisuals(signal);
+  const syntheticMediaAllowed = shouldUseSyntheticSignalMedia(signal);
+  const visual = getMobileVisual(signal, syntheticMediaAllowed);
+  const visuals = getMobileVisuals(signal, syntheticMediaAllowed);
   const authorName = signal.author?.display_name ?? "Unknown Operator";
   const username = signal.author?.username ?? "unknown";
   const rows = [
@@ -449,6 +450,11 @@ function MobileNativeSignalPost({
                 Featured
               </span>
             )}
+            {pulse.pulse_score >= 58 && (
+              <span className="rook-pulse-hot inline-flex items-center gap-1 rounded-full border border-rook-amber/25 bg-rook-amber/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-rook-amber">
+                Pulse hot
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -460,7 +466,7 @@ function MobileNativeSignalPost({
       </Link>
 
       <MediaBoundary>
-        <MobilePostMedia visual={visual} visuals={visuals} type={signalType} title={signal.title} />
+        <MobilePostMedia visual={visual} visuals={visuals} type={signalType} title={signal.title} fallbackAllowed={syntheticMediaAllowed} />
       </MediaBoundary>
 
       <p className="mt-1 line-clamp-2 text-[11.5px] leading-[1.15rem] text-rook-muted sm:line-clamp-3 sm:text-sm sm:leading-6">
@@ -534,11 +540,13 @@ function MobilePostMedia({
   type,
   visual,
   visuals,
+  fallbackAllowed,
 }: {
   title: string;
   type: RankedSignal["type"];
   visual: MobileVisual | null;
   visuals: MobileVisual[];
+  fallbackAllowed: boolean;
 }) {
   const [mediaFailed, setMediaFailed] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -618,6 +626,8 @@ function MobilePostMedia({
     );
   }
 
+  if (!fallbackAllowed) return null;
+
   return (
     <div className={`mobile-post-media mobile-feed-visual-${getPlaceholderCategory(type, title)} relative mt-1.5 aspect-[4/3] max-h-[250px] overflow-hidden rounded-xl border border-white/10 sm:mt-3 sm:rounded-2xl md:aspect-video`}>
       <span className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[length:26px_26px] opacity-40" />
@@ -655,12 +665,12 @@ function MetricChip({
   );
 }
 
-function getMobileVisual(signal: SignalWithAuthor): MobileVisual | null {
-  return getMobileVisuals(signal)[0] ?? null;
+function getMobileVisual(signal: SignalWithAuthor, fallbackAllowed: boolean): MobileVisual | null {
+  return getMobileVisuals(signal, fallbackAllowed)[0] ?? null;
 }
 
-function getMobileVisuals(signal: SignalWithAuthor): MobileVisual[] {
-  const media = safeSignalMedia(signal);
+function getMobileVisuals(signal: SignalWithAuthor, fallbackAllowed: boolean): MobileVisual[] {
+  const media = safeSignalMedia(signal, { fallback: fallbackAllowed });
   const video = media.find((item) => item.type === "video");
   if (video) return [{ kind: "video", src: video.url, poster: video.thumbnailUrl }];
 
@@ -816,9 +826,9 @@ function normalizeSignal(signal: SignalWithAuthor): SignalWithAuthor {
   };
 }
 
-function safeSignalMedia(signal: SignalWithAuthor) {
+function safeSignalMedia(signal: SignalWithAuthor, options: { fallback?: boolean } = {}) {
   try {
-    return getSignalMedia(signal);
+    return getSignalMedia(signal, options);
   } catch (error) {
     console.warn("[mobile-feed] media normalization failed", error);
     return [];

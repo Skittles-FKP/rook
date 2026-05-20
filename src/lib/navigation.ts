@@ -43,10 +43,10 @@ export const appNavItems = [
 ];
 
 export const mobileNavItems = [
-  { href: "/feed", label: "Feed", icon: Radio },
+  { href: "/feed", label: "Home", icon: Radio },
   { href: "/pulse", label: "Pulse", icon: BarChart3 },
-  { href: "/feed#compose", label: "Compose", icon: PlusCircle },
-  { href: "/alerts", label: "Alerts", icon: Bell },
+  { href: "/feed#compose", label: "Create", icon: PlusCircle },
+  { href: "/flocks", label: "Flocks", icon: UsersRound },
   { href: "/profile", label: "Profile", icon: UserRound },
 ];
 

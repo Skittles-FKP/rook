@@ -188,6 +188,43 @@ textarea {
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.22), 0 0 22px rgba(53, 216, 255, 0.055);
 }
 
+.rook-rich-feed {
+  isolation: isolate;
+}
+
+.rook-signal-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.026)),
+    rgba(8, 10, 18, 0.92);
+}
+
+.rook-media-card {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.rook-topic-chip,
+.rook-pulse-hot {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.rook-pulse-hot {
+  box-shadow: 0 0 18px rgba(255, 191, 71, 0.08);
+}
+
+.rook-mobile-bottom-nav,
+.rook-compose-fab {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rook-ai-brief-card {
+  border: 1px solid rgba(138, 92, 255, 0.22);
+  background: linear-gradient(135deg, rgba(138, 92, 255, 0.11), rgba(53, 216, 255, 0.045));
+}
+
 .mobile-post-media img,
 .mobile-post-media video {
   max-height: 260px;

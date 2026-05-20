@@ -1,5 +1,6 @@
 import type { SignalWithAuthor } from "@/lib/supabase/types";
 import type { NewsCategory, RookNewsSignal } from "@/lib/agents/news/sourceIngestionAgent";
+import { shouldUseSyntheticSignalMedia } from "@/lib/media";
 
 export type NarrativeMedia = {
   media_type: "image" | "video" | "chart" | "ai_generated";
@@ -25,7 +26,11 @@ export class NarrativeMediaAgent {
 
   enrichSignal<T extends SignalWithAuthor>(signal: T): T {
     const existing = this.resolveExistingMedia(signal);
-    const media = existing ?? this.generateFallbackVisual(signal);
+    const media = existing ?? (shouldUseSyntheticSignalMedia(signal) ? this.generateFallbackVisual(signal) : null);
+
+    if (!media) {
+      return signal;
+    }
 
     return {
       ...signal,

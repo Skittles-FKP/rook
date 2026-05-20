@@ -47,7 +47,7 @@ export default async function FeedPage() {
       <FeedContentBoundary>
         <MobileSignalFeed signals={rankedSignals} flocks={flocks.map(({ id, name }) => ({ id, name }))} />
       </FeedContentBoundary>
-      <section className="mx-auto hidden w-full max-w-[820px] gap-4 px-4 py-4 lg:grid xl:px-5">
+      <section className="rook-rich-feed mx-auto hidden w-full max-w-[820px] gap-4 px-4 py-4 lg:grid xl:px-5">
         <SignalErrorBoundary label="Escalation banner">
           <EscalationBanner escalations={escalations} />
         </SignalErrorBoundary>

@@ -275,6 +275,49 @@ export function getSignalMedia(
   }];
 }
 
+export function shouldUseSyntheticSignalMedia(signal: {
+  id?: string | null;
+  title?: string | null;
+  body?: string | null;
+  author?: { operator_type?: string | null; username?: string | null } | null;
+  operator?: string | null;
+  operator_handle?: string | null;
+  media_metadata?: Record<string, unknown> | null;
+  ai_narrative_tags?: string[] | null;
+  categories?: string[] | null;
+  source_url?: string | null;
+  source_name?: string | null;
+  visual_mode?: string | null;
+} & Record<string, unknown>) {
+  const metadata = signal.media_metadata ?? {};
+  const authorType = signal.author?.operator_type;
+  const operatorHandle = signal.operator_handle ?? signal.author?.username ?? "";
+  const tags = Array.isArray(signal.ai_narrative_tags) ? signal.ai_narrative_tags : [];
+  const categories = Array.isArray(signal.categories) ? signal.categories : [];
+  const text = [
+    signal.id,
+    signal.title,
+    signal.body,
+    signal.operator,
+    operatorHandle,
+    signal.source_name,
+    ...tags,
+    ...categories,
+  ].filter(Boolean).join(" ").toLowerCase();
+
+  return Boolean(
+    authorType === "ai_agent" ||
+    authorType === "autonomous" ||
+    metadata.agent === "SourceIngestionAgent" ||
+    metadata.agent === "NarrativeMediaAgent" ||
+    metadata.sourceKind === "rss" ||
+    metadata.sourceKind === "mock" ||
+    signal.source_url ||
+    /^news-|^live-/.test(String(signal.id ?? "")) ||
+    /\b(news|wire|sentinel|radar|watch|narrative engine|ai|compute|market|policy|security|infrastructure)\b/.test(text),
+  );
+}
+
 export function generateThumbnail(publicUrl: string, mediaType: SignalMediaType) {
   return mediaType === "image" || mediaType === "ai_generated" || mediaType === "chart" ? publicUrl : null;
 }

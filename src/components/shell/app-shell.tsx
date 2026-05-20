@@ -178,7 +178,7 @@ export function AppShell({
             router.push("/feed#compose");
           }
         }}
-        className="mobile-compose-fab focus-ring fixed z-50 grid place-items-center rounded-full bg-white text-rook-void shadow-glow transition active:scale-95 md:hidden"
+        className="mobile-compose-fab rook-compose-fab focus-ring fixed z-50 grid place-items-center rounded-full bg-white text-rook-void shadow-glow transition active:scale-95 md:hidden"
       >
         <Plus className="h-5 w-5" />
       </button>
@@ -199,7 +199,7 @@ export function AppShell({
       )}
 
       <MobileNavigationBoundary>
-        <nav className="mobile-safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-rook-void/90 pl-[calc(0.45rem+env(safe-area-inset-left))] pr-[calc(0.45rem+env(safe-area-inset-right))] pt-1 backdrop-blur-2xl md:hidden">
+        <nav className="rook-mobile-bottom-nav mobile-safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-rook-void/90 pl-[calc(0.45rem+env(safe-area-inset-left))] pr-[calc(0.45rem+env(safe-area-inset-right))] pt-1 backdrop-blur-2xl md:hidden">
           <div className="mx-auto grid h-12 max-w-md grid-cols-5 gap-1">
             {safeNavItems(mobileNavItems).map((item) => {
               const Icon = item.icon;

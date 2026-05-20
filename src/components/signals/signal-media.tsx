@@ -107,7 +107,7 @@ function MediaFrame({
   }
 
   return (
-    <div className={`${frameClass} media-frame-safe min-w-0 overflow-hidden`}>
+    <div className={`rook-media-card ${frameClass} media-frame-safe min-w-0 overflow-hidden`}>
       <div className="flex min-w-0 items-center justify-between gap-3 border-b border-white/10 px-3 py-2">
         <div className="flex min-w-0 items-center gap-2">
           {media.aiGenerated ? <Bot className="h-4 w-4 text-rook-cyan" /> : media.mediaType === "pdf" ? <FileText className="h-4 w-4 text-rook-cyan" /> : media.mediaType === "video" || media.mediaType === "youtube" ? <Play className="h-4 w-4 text-rook-cyan" /> : <ImageIcon className="h-4 w-4 text-rook-cyan" />}
@@ -126,6 +126,7 @@ function MediaFrame({
         <button
           type="button"
           onClick={onOpenPreview}
+          aria-label="Open chart preview"
           className="group relative block h-24 max-h-24 w-full overflow-hidden bg-rook-void md:h-28 md:max-h-28"
         >
           <ChartTrendStrip title={media.ogTitle ?? "Chart signal"} />
@@ -137,7 +138,7 @@ function MediaFrame({
       )}
 
       {isImageMedia(media.mediaType) && media.mediaType !== "chart" && (
-        <button type="button" onClick={onOpenPreview} className={`media-skeleton group relative block w-full overflow-hidden bg-rook-void ${imageAspect}`}>
+        <button type="button" onClick={onOpenPreview} aria-label="Open Signal media preview" className={`media-skeleton group relative block w-full overflow-hidden bg-rook-void ${imageAspect}`}>
           <FallbackImage
             src={media.mediaUrl}
             alt={media.ogTitle ?? "Signal visual evidence"}

@@ -74,7 +74,7 @@ export default async function SignalDetailPage({
       </div>
       <section className="mx-auto grid w-full max-w-full min-w-0 gap-2 overflow-x-hidden px-0 py-2 sm:gap-4 sm:px-6 sm:py-5 md:max-w-4xl lg:px-8">
         <SignalErrorBoundary label="Signal detail card">
-          <SignalCard signal={signal} />
+          <SignalCard signal={signal} size="LG" />
         </SignalErrorBoundary>
         <SignalErrorBoundary label="Signal share card">
           <ShareableSignalCard signal={signal} />

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { AlertTriangle, BarChart3, Bot, BrainCircuit, Clock3, Gauge, GitBranch, ImageIcon, Link2, Network, Route, ShieldAlert, ShieldCheck, Sparkles, TrendingUp } from "lucide-react";
+import { AlertTriangle, BarChart3, Bookmark, Bot, BrainCircuit, Clock3, Eye, Gauge, GitBranch, ImageIcon, Link2, MessageCircle, MoreHorizontal, Network, Repeat2, Route, Share2, ShieldAlert, ShieldCheck, Sparkles, ThumbsUp, TrendingUp } from "lucide-react";
 import { OperatorAvatar } from "@/components/operator-avatar";
 import { SignalActions } from "@/components/signals/signal-actions";
 import { SignalEvidenceSection } from "@/components/signals/signal-evidence-section";
@@ -10,7 +10,7 @@ import { SignalIntelligencePanel } from "@/components/signals/signal-intelligenc
 import { SignalMedia } from "@/components/signals/signal-media";
 import { MediaBoundary } from "@/components/signals/signal-error-boundary";
 import { formatRelativeTime } from "@/lib/format";
-import { getSignalMedia } from "@/lib/media";
+import { getSignalMedia, shouldUseSyntheticSignalMedia } from "@/lib/media";
 import { scorePulseSignal } from "@/lib/pulse";
 import { getOperatorStyle } from "@/lib/operator-style";
 import { buildSignalEvidencePacket } from "@/lib/signal-evidence";
@@ -42,6 +42,7 @@ export function SignalCard({
   const pulseLabels = safeArray(pulse.pulse_labels).slice(0, 2);
   const topicTerms = safeArray(pulse.topic_terms).slice(0, 2);
   const authorIsAi = safeSignal.author?.operator_type === "ai_agent" || safeSignal.author?.operator_type === "autonomous";
+  const syntheticMediaAllowed = shouldUseSyntheticSignalMedia(safeSignal);
   const specialization = safeArray(safeSignal.author?.expertise_domains)[0] ?? safeSignal.author?.autonomous_status ?? null;
   const evidenceCount = [
     safeSignal.cover_image,
@@ -78,7 +79,7 @@ export function SignalCard({
   const showDeepIntel = resolvedSize === "LG" || featured;
   const showMedia = imageFirst || resolvedSize !== "XS";
   const sizeConfig = getSizeConfig(resolvedSize);
-  const articleClass = `surface-card rook-live-card intelligence-packet compact-mobile signal-size-${resolvedSize.toLowerCase()} signal-rhythm-${rhythm} w-full min-w-0 overflow-hidden rounded-xl ${sizeConfig.padding} transition duration-200 hover:border-rook-blue/40 ${operatorStyle.aura}`;
+  const articleClass = `rook-signal-card surface-card rook-live-card intelligence-packet compact-mobile signal-size-${resolvedSize.toLowerCase()} signal-rhythm-${rhythm} w-full min-w-0 overflow-hidden rounded-xl ${sizeConfig.padding} transition duration-200 hover:border-rook-blue/40 ${operatorStyle.aura}`;
   const bodyLimit = sizeConfig.bodyLimit;
   const visualUrl = getSignalVisualUrl(safeSignal);
   const sourceRows = buildMobileAccordionRows({
@@ -90,7 +91,7 @@ export function SignalCard({
 
   const media = (
     <MediaBoundary>
-      <SignalMedia signal={safeSignal} compact={compact} fallback />
+      <SignalMedia signal={safeSignal} compact={compact} fallback={syntheticMediaAllowed} />
     </MediaBoundary>
   );
 
@@ -99,9 +100,9 @@ export function SignalCard({
       <div className={`mb-3 h-1 rounded-full bg-gradient-to-r ${operatorStyle.accent}`} />
       <div className="mb-3 flex items-center justify-between gap-2">
         <SignalTypePill type={resolvedType} />
-        <span className="rounded-full border border-white/10 bg-white/[0.035] px-2 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-muted">
-          {resolvedSize}
-        </span>
+        <button type="button" aria-label="Signal options" className="focus-ring grid h-8 w-8 place-items-center rounded-full border border-white/10 bg-white/[0.035] text-rook-muted transition hover:text-white">
+          <MoreHorizontal className="h-4 w-4" />
+        </button>
       </div>
       {imageFirst && showMedia && <div className="hidden md:block">{media}</div>}
       <div className="flex min-w-0 gap-3">
@@ -120,10 +121,7 @@ export function SignalCard({
               {authorName}
             </Link>
             {authorIsAi && (
-              <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-black uppercase ${operatorStyle.chip}`}>
-                <Bot className="h-3 w-3" />
-                {operatorStyle.signature}
-              </span>
+              <OperatorBadge label={operatorStyle.signature} className={operatorStyle.chip} />
             )}
             <p className="text-sm text-rook-muted">@{username}</p>
             {specialization && (
@@ -175,9 +173,10 @@ export function SignalCard({
       {showIntel && (
         <div className="mt-3 hidden md:block">
           <div className="flex flex-wrap items-center gap-2">
-            <span className={escalationLevel === "critical" ? "rounded-full bg-rook-amber/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-amber" : escalationLevel === "rising" ? "rounded-full bg-rook-cyan/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-cyan" : "rounded-full bg-white/[0.04] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-muted"}>
+            <span className={escalationLevel === "critical" ? "rook-topic-chip rounded-full bg-rook-amber/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-amber" : escalationLevel === "rising" ? "rook-topic-chip rounded-full bg-rook-cyan/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-cyan" : "rook-topic-chip rounded-full bg-white/[0.04] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-muted"}>
               {escalationLevel === "critical" ? "Critical" : escalationLevel === "rising" ? "Accelerating" : "Watch"}
             </span>
+            {pulse.pulse_score >= 58 && <PulseTag hot label="Pulse hot" />}
             <span className="inline-flex items-center gap-1 rounded-full bg-white/[0.04] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-muted">
               <Gauge className="h-3.5 w-3.5 text-rook-green" />
               v{pulse.velocity}/h
@@ -265,6 +264,7 @@ export function SignalCard({
         ))}
       </div>
       {showDeepIntel && <SignalIntelligencePanel signal={safeSignal} />}
+      <SignalEngagementRow signal={safeSignal} />
       <div className="hidden md:block">
         <SignalActions
           signalId={safeSignal.id}
@@ -298,6 +298,73 @@ function SignalTypePill({ type }: { type: SignalType }) {
       {type}
     </span>
   );
+}
+
+function OperatorBadge({ label, className }: { label: string; className: string }) {
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-black uppercase ${className}`}>
+      <Bot className="h-3 w-3" />
+      {label}
+    </span>
+  );
+}
+
+function PulseTag({ label, hot = false }: { label: string; hot?: boolean }) {
+  return (
+    <span className={hot ? "rook-pulse-hot inline-flex items-center gap-1 rounded-full border border-rook-amber/30 bg-rook-amber/[0.12] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-amber" : "inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-muted"}>
+      <Sparkles className="h-3.5 w-3.5" />
+      {label}
+    </span>
+  );
+}
+
+function SignalEngagementRow({ signal }: { signal: SignalWithAuthor }) {
+  const views = estimateSignalViews(signal);
+  const items = [
+    { label: "Replies", value: signal.comments_count, icon: MessageCircle },
+    { label: "Boosts", value: signal.amplifies_count, icon: Repeat2 },
+    { label: "Likes", value: signal.likes_count, icon: ThumbsUp },
+    { label: "Views", value: views, icon: Eye },
+  ];
+
+  return (
+    <div className="rook-signal-engagement-row mt-3 grid grid-cols-5 gap-1.5 border-t border-white/10 pt-3 text-[11px] font-bold text-rook-muted">
+      {items.map((item) => {
+        const Icon = item.icon;
+        return (
+          <Link
+            key={item.label}
+            href={`/signals/${signal.id}${item.label === "Replies" ? "#comments" : ""}`}
+            aria-label={`${item.label}: ${formatCompactNumber(item.value)}`}
+            className="focus-ring inline-flex min-h-9 min-w-0 items-center justify-center gap-1 rounded-full bg-white/[0.035] px-1.5 transition hover:bg-white/[0.06] hover:text-white"
+          >
+            <Icon className="h-3.5 w-3.5 shrink-0 text-rook-cyan" />
+            <span className="truncate">{formatCompactNumber(item.value)}</span>
+          </Link>
+        );
+      })}
+      <div className="grid grid-cols-2 gap-1">
+        <button type="button" aria-label="Save Signal" className="focus-ring grid min-h-9 place-items-center rounded-full bg-white/[0.035] transition hover:bg-white/[0.06] hover:text-white">
+          <Bookmark className="h-3.5 w-3.5 text-rook-muted" />
+        </button>
+        <Link href={`/public/signals/${signal.id}`} aria-label="Share Signal" className="focus-ring grid min-h-9 place-items-center rounded-full bg-white/[0.035] transition hover:bg-white/[0.06] hover:text-white">
+          <Share2 className="h-3.5 w-3.5 text-rook-muted" />
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function estimateSignalViews(signal: SignalWithAuthor) {
+  const explicit = (signal as SignalWithAuthor & { engagement?: { views?: number } }).engagement?.views;
+  if (typeof explicit === "number" && Number.isFinite(explicit)) return explicit;
+  return Math.max(12, (signal.likes_count * 8) + (signal.amplifies_count * 15) + (signal.comments_count * 11));
+}
+
+function formatCompactNumber(value: number) {
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
+  return String(Math.max(0, Math.round(value)));
 }
 
 function getSizeConfig(size: SignalSize) {

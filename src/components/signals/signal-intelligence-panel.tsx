@@ -13,7 +13,7 @@ export function SignalIntelligencePanel({ signal }: { signal: SignalWithAuthor }
   const velocityHistory = Array.isArray(intelligence.velocity_history) ? intelligence.velocity_history : [];
 
   return (
-    <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.035] p-3">
+    <div className="rook-ai-brief-card mt-4 rounded-lg border border-white/10 bg-white/[0.035] p-3">
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <IntelMetric icon={ShieldCheck} label="Confidence" value={intelligence.confidence} suffix="%" />
         <IntelMetric icon={AlertTriangle} label="Contradiction" value={intelligence.contradiction_score} suffix="%" />
