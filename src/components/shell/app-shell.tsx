@@ -168,21 +168,6 @@ export function AppShell({
         <RightRailDrawer events={safeEvents} rightRailOpen={rightRailOpen} setRightRailOpen={setRightRailOpen} />
       </div>
 
-      <button
-        type="button"
-        aria-label="Create Signal"
-        onClick={() => {
-          if (pathname === "/feed" && typeof window !== "undefined") {
-            window.dispatchEvent(new Event("rook:open-compose"));
-          } else {
-            router.push("/feed#compose");
-          }
-        }}
-        className="mobile-compose-fab rook-compose-fab focus-ring fixed z-50 grid place-items-center rounded-full bg-white text-rook-void shadow-glow transition active:scale-95 md:hidden"
-      >
-        <Plus className="h-5 w-5" />
-      </button>
-
       {installPrompt && (
         <button
           type="button"
@@ -191,7 +176,7 @@ export function AppShell({
             await prompt.prompt?.();
             setInstallPrompt(null);
           }}
-          className="focus-ring fixed bottom-[calc(7.7rem+env(safe-area-inset-bottom))] right-4 z-50 inline-flex min-h-10 items-center gap-2 rounded-full border border-rook-cyan/25 bg-rook-void/92 px-3 text-xs font-black uppercase tracking-[0.12em] text-rook-cyan shadow-panel backdrop-blur-xl md:hidden"
+          className="focus-ring fixed bottom-[calc(4.9rem+env(safe-area-inset-bottom))] right-4 z-50 inline-flex min-h-10 items-center gap-2 rounded-full border border-rook-cyan/25 bg-rook-void/92 px-3 text-xs font-black uppercase tracking-[0.12em] text-rook-cyan shadow-panel backdrop-blur-xl md:hidden"
         >
           <Download className="h-4 w-4" />
           Install
@@ -200,12 +185,12 @@ export function AppShell({
 
       <MobileNavigationBoundary>
         <nav className="rook-mobile-bottom-nav mobile-safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-rook-void/90 pl-[calc(0.45rem+env(safe-area-inset-left))] pr-[calc(0.45rem+env(safe-area-inset-right))] pt-1 backdrop-blur-2xl md:hidden">
-          <div className="mx-auto grid h-12 max-w-md grid-cols-5 gap-1">
+          <div className="mx-auto grid h-11 max-w-md grid-cols-5 gap-1">
             {safeNavItems(mobileNavItems).map((item) => {
               const Icon = item.icon;
               const active = pathname === item.href;
               const classes = clsx(
-                "focus-ring flex min-h-11 touch-manipulation flex-col items-center justify-center gap-0.5 rounded-xl px-1 text-[9px] font-bold transition active:scale-95 xs:text-[10px]",
+                "focus-ring flex min-h-10 touch-manipulation flex-col items-center justify-center gap-0.5 rounded-xl px-1 text-[9px] font-bold transition duration-200 active:scale-95 xs:text-[9.5px]",
                 active
                   ? "bg-white/[0.1] text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08),0_0_18px_rgba(53,216,255,0.08)]"
                   : "text-rook-muted hover:bg-white/[0.06] hover:text-white",
@@ -222,14 +207,14 @@ export function AppShell({
                     }}
                     className={classes}
                   >
-                    <Icon className="h-4 w-4" />
+                    <Icon className="h-[15px] w-[15px]" />
                     {item.label}
                   </button>
                 );
               }
               return (
                 <Link key={item.href} href={item.href} className={classes}>
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-[15px] w-[15px]" />
                   {item.label}
                 </Link>
               );

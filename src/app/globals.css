@@ -10,7 +10,7 @@
   --rook-mobile-pad: 0.625rem;
   --rook-mobile-radius: 0.75rem;
   --rook-mobile-header: 58px;
-  --rook-mobile-nav: 58px;
+  --rook-mobile-nav: 52px;
 }
 
 * {
@@ -183,7 +183,7 @@ textarea {
 }
 
 .mobile-post-media {
-  max-height: 260px;
+  max-height: 220px;
   max-width: 100%;
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.22), 0 0 22px rgba(53, 216, 255, 0.055);
 }
@@ -212,7 +212,7 @@ textarea {
 }
 
 .rook-pulse-hot {
-  box-shadow: 0 0 18px rgba(255, 191, 71, 0.08);
+  box-shadow: 0 0 12px rgba(255, 191, 71, 0.06);
 }
 
 .rook-mobile-bottom-nav,
@@ -227,7 +227,7 @@ textarea {
 
 .mobile-post-media img,
 .mobile-post-media video {
-  max-height: 260px;
+  max-height: 220px;
   object-fit: cover;
 }
 
@@ -772,19 +772,41 @@ textarea {
 
   .mobile-post-media {
     aspect-ratio: 4 / 3;
-    border-radius: 0.65rem;
-    max-height: 228px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    border-radius: 0.7rem;
+    max-height: 190px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
   }
 
   .mobile-post-media img,
   .mobile-post-media video {
-    max-height: 228px;
+    max-height: 190px;
   }
 
   .mobile-rich-visual {
     aspect-ratio: 4 / 3;
-    max-height: 228px;
+    max-height: 190px;
+  }
+
+  .rook-mobile-bottom-nav {
+    padding-top: 0.125rem;
+    background: rgba(5, 6, 10, 0.88);
+  }
+
+  .rook-mobile-bottom-nav a,
+  .rook-mobile-bottom-nav button {
+    min-height: 2.45rem;
+  }
+
+  .rook-signal-engagement-row {
+    gap: 0.25rem;
+    padding-top: 0.45rem;
+  }
+
+  .rook-signal-engagement-row a,
+  .rook-signal-engagement-row button {
+    min-height: 1.85rem;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
   }
 }
 
@@ -792,17 +814,17 @@ textarea {
   :root {
     --rook-mobile-pad: 0.5rem;
     --rook-mobile-header: 56px;
-    --rook-mobile-nav: 56px;
+    --rook-mobile-nav: 52px;
   }
 
   .mobile-post-media {
-    max-height: 210px;
+    max-height: 176px;
   }
 
   .mobile-post-media img,
   .mobile-post-media video,
   .mobile-rich-visual {
-    max-height: 210px;
+    max-height: 176px;
   }
 }
 

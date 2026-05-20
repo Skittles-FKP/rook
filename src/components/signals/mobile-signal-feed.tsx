@@ -170,7 +170,7 @@ export function MobileSignalFeed({
           </button>
         )}
 
-        <details id="compose" open={composeOpen} onToggle={(event) => setComposeOpen(event.currentTarget.open)} className="group mx-2 rounded-lg border border-white/10 bg-white/[0.04] sm:mx-3 sm:rounded-xl">
+        <details id="compose" open={composeOpen} onToggle={(event) => setComposeOpen(event.currentTarget.open)} className="group mx-2 hidden rounded-lg border border-white/10 bg-white/[0.04] md:block md:rounded-xl">
           <summary className="flex min-h-10 cursor-pointer list-none items-center justify-between px-3 text-sm font-black text-white">
             Compose Signal
             <ChevronDown className="h-4 w-4 text-rook-cyan transition group-open:rotate-180" />
@@ -198,7 +198,7 @@ export function MobileSignalFeed({
           </div>
         )}
 
-        <div className="grid gap-1 sm:gap-2">
+        <div className="grid gap-1.5 px-1.5 sm:gap-2 sm:px-3">
           {visibleSignals.slice(0, visibleLimit).map((item, index) => (
             <SignalErrorBoundary key={item.signal.id} label="Signal card">
               <MemoMobileSignalCard
@@ -291,7 +291,7 @@ function MobileSignalCard({
   }
 
   return (
-    <div className={clsx("relative min-w-0 max-w-full overflow-hidden border-b border-white/10 bg-rook-void/40", featured && "rook-live-arrival")}>
+    <div className={clsx("relative mx-0 min-w-0 max-w-full overflow-hidden rounded-xl border border-white/10 bg-rook-void/45", featured && "rook-live-arrival")}>
       <div
         className={clsx(
           "absolute inset-y-4 flex items-center rounded-xl px-4 text-xs font-black uppercase tracking-[0.16em] transition-opacity",
@@ -303,7 +303,7 @@ function MobileSignalCard({
         {gesture === "save" ? "Save" : gesture === "amplify" ? "Amplify" : "Dismiss"}
       </div>
       <div
-        className="mobile-swipe-card touch-pan-y max-w-full px-0 py-0 transition-transform duration-200 ease-out sm:px-2 sm:py-1.5"
+        className="mobile-swipe-card touch-pan-y max-w-full px-0 py-0 transition-transform duration-200 ease-out sm:px-0"
         style={{ transform: dragX ? `translate3d(${dragX}px, 0, 0)` : undefined }}
         onPointerDown={(event) => {
           startX.current = event.clientX;
@@ -332,7 +332,7 @@ function MobileSignalCard({
       >
         <div className="relative">
           <MobileNativeSignalPost item={item} featured={featured} saved={saved} onSave={onSave} onBrief={onBrief} />
-          <div className="mx-2 mt-0.5 grid grid-cols-4 gap-1 text-[9px] font-black text-rook-muted sm:mx-0 sm:gap-1.5 sm:text-[10px]">
+          <div className="mx-2 mb-1 mt-0.5 grid grid-cols-4 gap-1 text-[8.5px] font-black text-rook-muted sm:mx-2 sm:gap-1.5 sm:text-[9.5px]">
             <button
               type="button"
               disabled={isPending}
@@ -341,7 +341,7 @@ function MobileSignalCard({
                   void toggleLikeAction(signal.id);
                 });
               }}
-              className="focus-ring flex h-8 items-center justify-center gap-1 rounded-full border border-white/10 bg-white/[0.045] transition active:scale-95 sm:h-9"
+              className="focus-ring flex h-7 items-center justify-center gap-1 rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
             >
               <ThumbsUp className="h-3.5 w-3.5 text-rook-cyan" />
               Like
@@ -350,8 +350,8 @@ function MobileSignalCard({
               type="button"
               onClick={onSave}
               className={clsx(
-                "focus-ring flex h-8 items-center justify-center gap-1 rounded-full border transition active:scale-95 sm:h-9",
-                saved ? "border-rook-cyan/40 bg-rook-cyan/15 text-rook-cyan" : "border-white/10 bg-white/[0.045]",
+                "focus-ring flex h-7 items-center justify-center gap-1 rounded-full border transition active:scale-95 sm:h-8",
+                saved ? "border-rook-cyan/40 bg-rook-cyan/15 text-rook-cyan" : "border-white/10 bg-white/[0.035]",
               )}
             >
               <Bookmark className="h-3.5 w-3.5" />
@@ -360,7 +360,7 @@ function MobileSignalCard({
             <button
               type="button"
               onClick={onBrief}
-              className="focus-ring flex h-8 items-center justify-center gap-1 rounded-full border border-white/10 bg-white/[0.045] transition active:scale-95 sm:h-9"
+              className="focus-ring flex h-7 items-center justify-center gap-1 rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
             >
               <Maximize2 className="h-3.5 w-3.5 text-rook-violet" />
               Brief
@@ -368,7 +368,7 @@ function MobileSignalCard({
             <button
               type="button"
               onClick={onDismiss}
-              className="focus-ring flex h-8 items-center justify-center gap-1 rounded-full border border-white/10 bg-white/[0.045] transition active:scale-95 sm:h-9"
+              className="focus-ring flex h-7 items-center justify-center gap-1 rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
             >
               <X className="h-3.5 w-3.5 text-rook-amber" />
               Pass
@@ -411,7 +411,7 @@ function MobileNativeSignalPost({
   ].filter((row) => row.value);
 
   return (
-    <article className="mobile-native-post min-w-0 max-w-full overflow-hidden border-b border-white/10 bg-rook-void px-2 py-1.5 text-rook-text sm:rounded-xl sm:border sm:border-white/10 sm:px-3 sm:py-3">
+    <article className="mobile-native-post min-w-0 max-w-full overflow-hidden bg-rook-void px-2.5 py-2 text-rook-text sm:px-3 sm:py-3">
       <div className="flex min-w-0 items-start gap-2.5 sm:gap-3">
         <Link href={`/profile/${username}`} className="focus-ring shrink-0 rounded-lg">
           <span className="relative block">
@@ -658,8 +658,8 @@ function MetricChip({
         : "bg-white/[0.045] text-rook-muted";
 
   return (
-    <div className={`flex h-6 min-w-0 flex-1 items-center justify-center gap-1 rounded-full px-1.5 text-[8.5px] font-black uppercase tracking-[0.04em] sm:h-8 sm:gap-1.5 sm:text-[10px] ${className}`}>
-      <Icon className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
+    <div className={`flex h-5 min-w-0 flex-1 items-center justify-center gap-0.5 rounded-full px-1 text-[8px] font-black uppercase tracking-[0.02em] sm:h-7 sm:gap-1 sm:text-[9.5px] ${className}`}>
+      <Icon className="h-2.5 w-2.5 shrink-0 sm:h-3 sm:w-3" />
       <span className="truncate">{label}</span>
     </div>
   );
