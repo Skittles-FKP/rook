@@ -86,16 +86,16 @@ export function AppShell({
   useEffect(() => {
     if (typeof document === "undefined") return;
     const previousOverflow = document.body.style.overflow;
-    const previousTouchAction = document.body.style.touchAction;
+    const previousOverscroll = document.body.style.overscrollBehavior;
 
     if (drawerOpen || rightRailOpen) {
       document.body.style.overflow = "hidden";
-      document.body.style.touchAction = "none";
+      document.body.style.overscrollBehavior = "none";
     }
 
     return () => {
       document.body.style.overflow = previousOverflow;
-      document.body.style.touchAction = previousTouchAction;
+      document.body.style.overscrollBehavior = previousOverscroll;
     };
   }, [drawerOpen, rightRailOpen]);
 
@@ -178,7 +178,7 @@ export function AppShell({
             router.push("/feed#compose");
           }
         }}
-        className="mobile-compose-fab focus-ring fixed z-40 grid place-items-center rounded-full bg-white text-rook-void shadow-glow transition active:scale-95 md:hidden"
+        className="mobile-compose-fab focus-ring fixed z-50 grid place-items-center rounded-full bg-white text-rook-void shadow-glow transition active:scale-95 md:hidden"
       >
         <Plus className="h-5 w-5" />
       </button>
@@ -191,7 +191,7 @@ export function AppShell({
             await prompt.prompt?.();
             setInstallPrompt(null);
           }}
-          className="focus-ring fixed bottom-[calc(7.7rem+env(safe-area-inset-bottom))] right-4 z-40 inline-flex min-h-10 items-center gap-2 rounded-full border border-rook-cyan/25 bg-rook-void/92 px-3 text-xs font-black uppercase tracking-[0.12em] text-rook-cyan shadow-panel backdrop-blur-xl md:hidden"
+          className="focus-ring fixed bottom-[calc(7.7rem+env(safe-area-inset-bottom))] right-4 z-50 inline-flex min-h-10 items-center gap-2 rounded-full border border-rook-cyan/25 bg-rook-void/92 px-3 text-xs font-black uppercase tracking-[0.12em] text-rook-cyan shadow-panel backdrop-blur-xl md:hidden"
         >
           <Download className="h-4 w-4" />
           Install
@@ -259,18 +259,18 @@ function MobileHeader({
   setDrawerOpen: (open: boolean) => void;
 }) {
   return (
-    <header className="sticky top-0 z-30 max-w-full overflow-hidden border-b border-white/10 bg-rook-void/82 px-[calc(0.65rem+env(safe-area-inset-left))] py-1.5 pr-[calc(0.65rem+env(safe-area-inset-right))] pt-[calc(0.35rem+env(safe-area-inset-top))] backdrop-blur-2xl">
+    <header className="sticky top-0 z-40 max-w-full overflow-hidden border-b border-white/10 bg-rook-void/82 px-[calc(0.65rem+env(safe-area-inset-left))] py-1.5 pr-[calc(0.65rem+env(safe-area-inset-right))] pt-[calc(0.35rem+env(safe-area-inset-top))] backdrop-blur-2xl">
       <div className="flex h-11 items-center justify-between gap-2">
         <button
           type="button"
           aria-label="Open operator menu"
           onClick={() => setDrawerOpen(true)}
-          className="focus-ring grid h-9 w-9 place-items-center rounded-full border border-white/10 bg-white/[0.055] text-rook-muted"
+          className="focus-ring relative z-[80] grid h-10 w-10 touch-manipulation place-items-center rounded-full border border-white/10 bg-white/[0.07] text-rook-muted transition active:scale-95"
         >
           <Menu className="h-[18px] w-[18px]" />
         </button>
-        <Link href="/feed" aria-label="Rook feed" className="focus-ring grid h-9 w-9 place-items-center overflow-hidden rounded-lg border border-white/10 bg-rook-graphite shadow-glow">
-          <span className="absolute inset-0 bg-[radial-gradient(circle_at_35%_20%,rgba(53,216,255,0.55),transparent_34%),radial-gradient(circle_at_70%_70%,rgba(138,92,255,0.5),transparent_38%)]" />
+        <Link href="/feed" aria-label="Rook feed" className="focus-ring relative grid h-9 w-9 place-items-center overflow-hidden rounded-lg border border-white/10 bg-rook-graphite shadow-glow">
+          <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_20%,rgba(53,216,255,0.55),transparent_34%),radial-gradient(circle_at_70%_70%,rgba(138,92,255,0.5),transparent_38%)]" />
           <RookBirdIcon className="relative h-7 w-7 animate-rook-pulse" />
         </Link>
         <div className="flex items-center gap-1.5">
@@ -470,14 +470,19 @@ function MobileOperatorDrawer({
   setDrawerOpen: (open: boolean) => void;
 }) {
   const [startX, setStartX] = useState<number | null>(null);
+  const menuItems = getMobileDrawerItems(profile);
+
   return (
-    <div className={clsx("fixed inset-0 z-50 max-w-full overflow-hidden", drawerOpen ? "pointer-events-auto" : "pointer-events-none")}>
+    <div
+      aria-hidden={!drawerOpen}
+      className={clsx("fixed inset-0 z-[60] max-w-full overflow-hidden md:hidden", drawerOpen ? "pointer-events-auto" : "pointer-events-none")}
+    >
         <button
           type="button"
           aria-label="Close operator menu"
           onClick={() => setDrawerOpen(false)}
           className={clsx(
-            "absolute inset-0 bg-rook-void/70 backdrop-blur-sm transition-opacity duration-300 ease-out",
+            "absolute inset-0 z-[60] bg-rook-void/70 backdrop-blur-sm transition-opacity duration-300 ease-out",
             drawerOpen ? "opacity-100" : "opacity-0",
           )}
         />
@@ -490,8 +495,8 @@ function MobileOperatorDrawer({
             setStartX(null);
           }}
           className={clsx(
-            "mobile-safe-bottom absolute bottom-0 left-0 top-0 flex w-[min(86%,340px)] max-w-[calc(100%-0.75rem)] flex-col overflow-hidden border-r border-white/10 bg-rook-ink/96 px-3 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))] shadow-panel transition-[clip-path,opacity] duration-300 ease-out",
-            drawerOpen ? "opacity-100 [clip-path:inset(0_0_0_0)]" : "opacity-0 [clip-path:inset(0_100%_0_0)]",
+            "mobile-safe-bottom absolute bottom-0 left-0 top-0 z-[70] flex w-[80vw] max-w-[320px] touch-pan-y flex-col overflow-hidden border-r border-white/10 bg-rook-ink/96 px-2.5 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))] shadow-panel transition-transform duration-300 ease-out will-change-transform",
+            drawerOpen ? "translate-x-0" : "-translate-x-full",
           )}
         >
           <div className="flex min-w-0 items-center justify-between gap-2">
@@ -515,8 +520,8 @@ function MobileOperatorDrawer({
                 : "Complete onboarding to activate your operator profile."}
             </p>
           </div>
-          <nav className="mt-3 grid min-h-0 flex-1 gap-1 overflow-y-auto overflow-x-hidden pb-3">
-            {safeNavItems(appNavItems).map((item) => {
+          <nav className="mt-3 grid min-h-0 flex-1 content-start gap-1 overflow-y-auto overflow-x-hidden pb-3">
+            {safeNavItems(menuItems).map((item) => {
               const Icon = item.icon;
               const active = pathname === item.href;
               return (
@@ -525,12 +530,14 @@ function MobileOperatorDrawer({
                   href={item.href}
                   onClick={() => setDrawerOpen(false)}
                   className={clsx(
-                    "focus-ring flex min-h-11 min-w-0 items-center gap-2.5 rounded-lg px-2.5 text-sm font-bold transition",
-                    active ? "bg-white text-rook-void" : "text-rook-muted hover:bg-white/[0.06] hover:text-white",
+                    "focus-ring flex min-h-11 min-w-0 touch-manipulation items-center gap-2.5 rounded-xl px-2.5 text-sm font-bold transition active:scale-[0.99]",
+                    active
+                      ? "border border-rook-cyan/25 bg-rook-cyan/[0.12] text-white shadow-[0_0_22px_rgba(53,216,255,0.1)]"
+                      : "border border-transparent text-rook-muted hover:bg-white/[0.06] hover:text-white",
                   )}
                 >
                   <Icon className="h-5 w-5 shrink-0" />
-                  <span className="min-w-0 break-words">{item.label}</span>
+                  <span className="min-w-0 break-words">{item.href === "/alerts" ? "Notifications" : item.label}</span>
                 </Link>
               );
             })}
@@ -544,6 +551,25 @@ function MobileOperatorDrawer({
         </aside>
       </div>
   );
+}
+
+function getMobileDrawerItems(profile: Profile | null): NavItem[] {
+  const desired = ["/feed", "/pulse", "/flocks", "/briefs", "/alerts", "/profile", "/settings"];
+  const items = appNavItems.filter((item) => desired.includes(item.href));
+  const profileFlags = profile as (Profile & { role?: string | null; is_admin?: boolean | null }) | null;
+  const isAdmin = Boolean(
+    profileFlags?.is_admin ||
+    profileFlags?.role === "admin" ||
+    profileFlags?.role === "owner" ||
+    profileFlags?.username === "admin",
+  );
+
+  if (isAdmin) {
+    const ops = appNavItems.find((item) => item.href === "/ops");
+    if (ops) return [...items, ops];
+  }
+
+  return items;
 }
 
 function RightRail({ events }: { events: NetworkEvent[] }) {
