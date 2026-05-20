@@ -175,23 +175,25 @@ export function MobileSignalFeed({
             Compose Signal
             <ChevronDown className="h-4 w-4 text-rook-cyan transition group-open:rotate-180" />
           </summary>
-          <div className="hidden border-t border-white/10 p-1.5 sm:block sm:p-3">
+          <div className="hidden border-t border-white/10 p-1.5 md:block md:p-3">
             <SignalComposer flocks={safeFlocks} compact />
           </div>
         </details>
 
         {composeOpen && (
-          <div className="fixed inset-0 z-[58] grid items-end bg-rook-void/70 backdrop-blur-sm sm:hidden" role="dialog" aria-modal="true">
-            <button type="button" aria-label="Close composer" className="absolute inset-0" onClick={() => setComposeOpen(false)} />
-            <div className="mobile-safe-bottom relative max-h-[88svh] overflow-y-auto rounded-t-2xl border border-white/10 bg-rook-void p-2 shadow-panel">
-              <div className="mx-auto mb-2 h-1 w-12 rounded-full bg-white/20" />
-              <div className="mb-2 flex items-center justify-between px-2">
+          <div className="fixed inset-0 z-[58] bg-rook-void text-rook-text md:hidden" role="dialog" aria-modal="true">
+            <div className="mobile-safe-bottom relative flex h-[100dvh] max-h-[100dvh] flex-col overflow-hidden bg-rook-void">
+              <div className="sticky top-0 z-10 border-b border-white/10 bg-rook-void/88 px-2 pb-2 pt-[calc(0.45rem+env(safe-area-inset-top))] backdrop-blur-2xl">
+                <div className="flex h-10 items-center justify-between px-1">
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-rook-cyan">Compose Signal</p>
                 <button type="button" onClick={() => setComposeOpen(false)} className="focus-ring grid h-9 w-9 place-items-center rounded-full border border-white/10 bg-white/[0.05]">
                   <X className="h-4 w-4" />
                 </button>
+                </div>
               </div>
-              <SignalComposer flocks={safeFlocks} compact />
+              <div className="min-h-0 flex-1 overflow-y-auto px-2 py-2 [scrollbar-width:none]">
+                <SignalComposer flocks={safeFlocks} compact autoFocus />
+              </div>
             </div>
           </div>
         )}
@@ -266,7 +268,7 @@ function MobileSignalCard({
     const abs = Math.abs(distance);
     if (abs < 82) return;
 
-    if (distance > 160) {
+    if (distance > 80) {
       onSave();
       return;
     }
@@ -282,7 +284,7 @@ function MobileSignalCard({
   }
 
   function updateGesture(distance: number) {
-    if (distance > 160) setGesture("save");
+    if (distance > 80) setGesture("save");
     else if (distance > 52) setGesture("amplify");
     else if (distance < -52) setGesture("dismiss");
     else setGesture(null);
@@ -302,6 +304,7 @@ function MobileSignalCard({
       </div>
       <div
         className="mobile-swipe-card touch-pan-y max-w-full px-0 py-0 transition-transform duration-200 ease-out sm:px-2 sm:py-1.5"
+        style={{ transform: dragX ? `translate3d(${dragX}px, 0, 0)` : undefined }}
         onPointerDown={(event) => {
           startX.current = event.clientX;
           event.currentTarget.setPointerCapture(event.pointerId);
@@ -309,8 +312,8 @@ function MobileSignalCard({
         onPointerMove={(event) => {
           if (startX.current === null) return;
           const distance = Math.max(-90, Math.min(90, event.clientX - startX.current));
-          dragXRef.current = 0;
-          setDragX(0);
+          dragXRef.current = distance;
+          setDragX(distance);
           updateGesture(distance);
         }}
         onPointerUp={() => {
@@ -407,7 +410,7 @@ function MobileNativeSignalPost({
   ].filter((row) => row.value);
 
   return (
-    <article className="mobile-native-post min-w-0 max-w-full overflow-hidden border-b border-white/10 bg-rook-void px-2.5 py-2 text-rook-text sm:rounded-xl sm:border sm:border-white/10 sm:px-3 sm:py-3">
+    <article className="mobile-native-post min-w-0 max-w-full overflow-hidden border-b border-white/10 bg-rook-void px-2 py-1.5 text-rook-text sm:rounded-xl sm:border sm:border-white/10 sm:px-3 sm:py-3">
       <div className="flex min-w-0 items-start gap-2.5 sm:gap-3">
         <Link href={`/profile/${username}`} className="focus-ring shrink-0 rounded-lg">
           <span className="relative block">
@@ -451,7 +454,7 @@ function MobileNativeSignalPost({
       </div>
 
       <Link href={`/signals/${signal.id}`} className="focus-ring mt-1.5 block rounded-md">
-        <h2 className="line-clamp-2 text-[0.95rem] font-black leading-5 text-white sm:text-[1.08rem] sm:leading-6">
+        <h2 className="line-clamp-2 text-[0.9rem] font-black leading-[1.18rem] text-white xs:text-[0.96rem] sm:text-[1.08rem] sm:leading-6">
           {signal.title}
         </h2>
       </Link>
@@ -460,7 +463,7 @@ function MobileNativeSignalPost({
         <MobilePostMedia visual={visual} visuals={visuals} type={signalType} title={signal.title} />
       </MediaBoundary>
 
-      <p className="mt-1.5 line-clamp-2 text-[12px] leading-5 text-rook-muted sm:line-clamp-3 sm:text-sm sm:leading-6">
+      <p className="mt-1 line-clamp-2 text-[11.5px] leading-[1.15rem] text-rook-muted sm:line-clamp-3 sm:text-sm sm:leading-6">
         {summarizeSignal(signal)}
       </p>
 

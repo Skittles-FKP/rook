@@ -13,9 +13,10 @@ const initialState: ActionState = { ok: false, message: "" };
 const draftKey = "rook.signalComposerDraft.v2";
 const signalCategories = ["Launch", "Research", "Benchmark", "Infrastructure", "Funding", "Agent", "Security", "Governance"];
 
-export function SignalComposer({ flocks, compact = false }: { flocks: Pick<Flock, "id" | "name">[]; compact?: boolean }) {
+export function SignalComposer({ flocks, compact = false, autoFocus = false }: { flocks: Pick<Flock, "id" | "name">[]; compact?: boolean; autoFocus?: boolean }) {
   const [state, action] = useActionState(createSignalAction, initialState);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [mediaUrl, setMediaUrl] = useState("");
@@ -51,6 +52,12 @@ export function SignalComposer({ flocks, compact = false }: { flocks: Pick<Flock
       window.localStorage.removeItem(draftKey);
     }
   }, []);
+
+  useEffect(() => {
+    if (!autoFocus || typeof window === "undefined") return;
+    const timeout = window.setTimeout(() => bodyRef.current?.focus({ preventScroll: true }), 180);
+    return () => window.clearTimeout(timeout);
+  }, [autoFocus]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -108,7 +115,7 @@ export function SignalComposer({ flocks, compact = false }: { flocks: Pick<Flock
   }
 
   return (
-    <form action={action} className={clsx("surface-card rook-live-card max-w-full overflow-hidden rounded-xl p-3 sm:p-5", compact && "border-white/[0.07] bg-white/[0.035] shadow-none")}>
+    <form action={action} className={clsx("surface-card rook-live-card max-w-full overflow-hidden rounded-xl p-3 md:p-5", compact && "border-white/[0.07] bg-white/[0.025] shadow-none")}>
       <div className="flex min-w-0 items-center gap-3">
         <div className="grid h-10 w-10 place-items-center rounded-lg bg-rook-blue/15 text-rook-cyan">
           <Radio className="h-5 w-5" />
@@ -130,6 +137,7 @@ export function SignalComposer({ flocks, compact = false }: { flocks: Pick<Flock
           className="h-12 rounded-lg border border-white/10 bg-white/[0.05] px-3 text-sm font-bold text-white outline-none transition focus:border-rook-blue"
         />
         <textarea
+          ref={bodyRef}
           required
           name="body"
           value={body}
@@ -139,7 +147,7 @@ export function SignalComposer({ flocks, compact = false }: { flocks: Pick<Flock
           placeholder="What changed, why it matters, and what evidence supports it?"
           className="resize-none rounded-lg border border-white/10 bg-white/[0.05] px-3 py-3 text-sm leading-6 text-white outline-none transition focus:border-rook-blue"
         />
-        <div className="grid gap-2 sm:grid-cols-[0.8fr_1fr]">
+        <div className="grid gap-2 md:grid-cols-[0.8fr_1fr]">
           <label className="relative">
             <ListChecks className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-rook-muted" />
             <select
@@ -173,11 +181,11 @@ export function SignalComposer({ flocks, compact = false }: { flocks: Pick<Flock
           </button>
           <span className={`ml-auto text-xs font-black ${remaining < 120 ? "text-rook-amber" : "text-rook-muted"}`}>{remaining}</span>
         </div>
-        <div className="grid gap-2 rounded-xl border border-white/10 bg-white/[0.035] p-3 sm:grid-cols-3">
+        <div className="grid gap-2 rounded-xl border border-white/10 bg-white/[0.035] p-3 md:grid-cols-3">
           <input name="appName" value={appName} onChange={(event) => setAppName(event.target.value)} placeholder="AI app/project name" className="h-11 rounded-lg border border-white/10 bg-white/[0.05] px-3 text-sm text-white outline-none transition focus:border-rook-blue" />
           <input name="appUrl" value={appUrl} onChange={(event) => setAppUrl(event.target.value)} type="url" placeholder="Demo or launch URL" className="h-11 rounded-lg border border-white/10 bg-white/[0.05] px-3 text-sm text-white outline-none transition focus:border-rook-blue" />
           <input name="appStackTags" value={appStackTags} onChange={(event) => setAppStackTags(event.target.value)} placeholder="stack: LangGraph, vLLM" className="h-11 rounded-lg border border-white/10 bg-white/[0.05] px-3 text-sm text-white outline-none transition focus:border-rook-blue" />
-          <label className="group relative min-h-11 cursor-pointer overflow-hidden rounded-lg border border-dashed border-white/15 bg-rook-void/35 px-3 text-sm font-bold text-rook-muted transition hover:border-rook-cyan/45 sm:col-span-3">
+          <label className="group relative min-h-11 cursor-pointer overflow-hidden rounded-lg border border-dashed border-white/15 bg-rook-void/35 px-3 text-sm font-bold text-rook-muted transition hover:border-rook-cyan/45 md:col-span-3">
             <input name="appLogoFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="absolute inset-0 h-full w-full cursor-pointer opacity-0" />
             <span className="pointer-events-none flex h-11 items-center gap-2">
               <ImageIcon className="h-4 w-4 text-rook-cyan" />
@@ -254,7 +262,7 @@ export function SignalComposer({ flocks, compact = false }: { flocks: Pick<Flock
             </p>
           )}
           {previews.length > 0 && (
-            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            <div className="mt-3 grid gap-2 md:grid-cols-2">
               {previews.map((preview) => (
                 <div key={preview.url} className="relative aspect-video overflow-hidden rounded-xl border border-white/10 bg-rook-void">
                   {preview.type.startsWith("image/") ? (
@@ -285,7 +293,7 @@ export function SignalComposer({ flocks, compact = false }: { flocks: Pick<Flock
             </div>
           )}
         </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="sticky bottom-0 z-10 -mx-3 flex flex-col gap-3 border-t border-white/10 bg-rook-void/92 px-3 py-2 backdrop-blur-xl md:static md:mx-0 md:flex-row md:items-center md:justify-between md:border-0 md:bg-transparent md:px-0 md:py-0 md:backdrop-blur-none">
           <select
             name="flockId"
             className="h-11 rounded-lg border border-white/10 bg-rook-graphite px-3 text-sm font-bold text-rook-muted outline-none transition focus:border-rook-blue"

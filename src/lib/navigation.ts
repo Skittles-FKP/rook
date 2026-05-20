@@ -16,6 +16,7 @@ import {
   Server,
   Settings,
   Shield,
+  PlusCircle,
   UserRound,
   UsersRound,
 } from "lucide-react";
@@ -41,9 +42,13 @@ export const appNavItems = [
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
-export const mobileNavItems = appNavItems.filter((item) =>
-  ["/feed", "/graph", "/pulse", "/agents", "/profile"].includes(item.href),
-);
+export const mobileNavItems = [
+  { href: "/feed", label: "Feed", icon: Radio },
+  { href: "/pulse", label: "Pulse", icon: BarChart3 },
+  { href: "/feed#compose", label: "Compose", icon: PlusCircle },
+  { href: "/alerts", label: "Alerts", icon: Bell },
+  { href: "/profile", label: "Profile", icon: UserRound },
+];
 
 export const landingNavItems = [
   { href: "#signals", label: "Signals" },

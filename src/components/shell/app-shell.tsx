@@ -7,7 +7,7 @@ import { Bell, ChevronsLeft, ChevronsRight, Download, Menu, PanelRightOpen, Plus
 import { clsx } from "clsx";
 import { OperatorSwitcher } from "@/components/auth/operator-switcher";
 import { SignOutButton } from "@/components/auth/sign-out-button";
-import { RookMark } from "@/components/brand";
+import { RookBirdIcon, RookMark } from "@/components/brand";
 import { NetworkEventStream } from "@/components/shell/network-event-stream";
 import { FeedContentBoundary, FeedShellBoundary, MobileNavigationBoundary } from "@/components/signals/signal-error-boundary";
 import { createClient } from "@/lib/supabase/client";
@@ -178,7 +178,7 @@ export function AppShell({
             router.push("/feed#compose");
           }
         }}
-        className="mobile-compose-fab focus-ring fixed bottom-[calc(4.25rem+env(safe-area-inset-bottom))] right-4 z-40 grid h-12 w-12 place-items-center rounded-full bg-white text-rook-void shadow-glow transition active:scale-95 md:hidden"
+        className="mobile-compose-fab focus-ring fixed z-40 grid place-items-center rounded-full bg-white text-rook-void shadow-glow transition active:scale-95 md:hidden"
       >
         <Plus className="h-5 w-5" />
       </button>
@@ -199,22 +199,36 @@ export function AppShell({
       )}
 
       <MobileNavigationBoundary>
-        <nav className="mobile-safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-rook-void/92 px-2 pt-1 backdrop-blur-2xl md:hidden">
-          <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
+        <nav className="mobile-safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-rook-void/90 pl-[calc(0.45rem+env(safe-area-inset-left))] pr-[calc(0.45rem+env(safe-area-inset-right))] pt-1 backdrop-blur-2xl md:hidden">
+          <div className="mx-auto grid h-12 max-w-md grid-cols-5 gap-1">
             {safeNavItems(mobileNavItems).map((item) => {
               const Icon = item.icon;
               const active = pathname === item.href;
+              const classes = clsx(
+                "focus-ring flex min-h-11 touch-manipulation flex-col items-center justify-center gap-0.5 rounded-xl px-1 text-[9px] font-bold transition active:scale-95 xs:text-[10px]",
+                active
+                  ? "bg-white/[0.1] text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08),0_0_18px_rgba(53,216,255,0.08)]"
+                  : "text-rook-muted hover:bg-white/[0.06] hover:text-white",
+                item.href === "/feed#compose" && "text-rook-cyan",
+              );
+              if (item.href === "/feed#compose") {
+                return (
+                  <button
+                    key={item.href}
+                    type="button"
+                    onClick={() => {
+                      if (pathname === "/feed" && typeof window !== "undefined") window.dispatchEvent(new Event("rook:open-compose"));
+                      else router.push("/feed#compose");
+                    }}
+                    className={classes}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {item.label}
+                  </button>
+                );
+              }
               return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={clsx(
-                    "focus-ring flex min-h-11 touch-manipulation flex-col items-center justify-center gap-0.5 rounded-md px-1 text-[9px] font-bold transition sm:text-[10px]",
-                    active
-                      ? "bg-white text-rook-void"
-                      : "text-rook-muted hover:bg-white/[0.06] hover:text-white",
-                  )}
-                >
+                <Link key={item.href} href={item.href} className={classes}>
                   <Icon className="h-4 w-4" />
                   {item.label}
                 </Link>
@@ -245,37 +259,38 @@ function MobileHeader({
   setDrawerOpen: (open: boolean) => void;
 }) {
   return (
-    <header className="sticky top-0 z-30 max-w-full overflow-hidden border-b border-white/10 bg-rook-void/86 px-3 py-2.5 pt-[calc(0.625rem+env(safe-area-inset-top))] backdrop-blur-2xl">
-      <div className="flex items-center justify-between gap-3">
+    <header className="sticky top-0 z-30 max-w-full overflow-hidden border-b border-white/10 bg-rook-void/82 px-[calc(0.65rem+env(safe-area-inset-left))] py-1.5 pr-[calc(0.65rem+env(safe-area-inset-right))] pt-[calc(0.35rem+env(safe-area-inset-top))] backdrop-blur-2xl">
+      <div className="flex h-11 items-center justify-between gap-2">
         <button
           type="button"
           aria-label="Open operator menu"
           onClick={() => setDrawerOpen(true)}
-          className="focus-ring grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.055] text-rook-muted"
+          className="focus-ring grid h-9 w-9 place-items-center rounded-full border border-white/10 bg-white/[0.055] text-rook-muted"
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="h-[18px] w-[18px]" />
         </button>
-        <Link href="/feed" className="focus-ring rounded-lg">
-          <RookMark compact />
+        <Link href="/feed" aria-label="Rook feed" className="focus-ring grid h-9 w-9 place-items-center overflow-hidden rounded-lg border border-white/10 bg-rook-graphite shadow-glow">
+          <span className="absolute inset-0 bg-[radial-gradient(circle_at_35%_20%,rgba(53,216,255,0.55),transparent_34%),radial-gradient(circle_at_70%_70%,rgba(138,92,255,0.5),transparent_38%)]" />
+          <RookBirdIcon className="relative h-7 w-7 animate-rook-pulse" />
         </Link>
         <div className="flex items-center gap-1.5">
-          <Link href="/search" aria-label="Search" className="focus-ring grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.05] text-rook-muted">
+          <Link href="/search" aria-label="Search" className="focus-ring grid h-9 w-9 place-items-center rounded-full border border-white/10 bg-white/[0.05] text-rook-muted">
             <Search className="h-4 w-4" />
           </Link>
-          <Link href="/alerts" aria-label="Alerts" className="focus-ring relative grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.05] text-rook-muted">
+          <Link href="/alerts" aria-label="Alerts" className="focus-ring relative grid h-9 w-9 place-items-center rounded-full border border-white/10 bg-white/[0.05] text-rook-muted">
             <Bell className="h-4 w-4" />
             {events.length > 0 && <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-rook-cyan shadow-glow" />}
           </Link>
         </div>
       </div>
-      <div className="mt-2 flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-3 py-2">
-        <Search className="h-4 w-4 shrink-0 text-rook-cyan" />
-        <Link href="/search" className="min-w-0 flex-1 text-sm font-semibold text-rook-muted">
+      <div className="mt-1 flex h-8 items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-2.5">
+        <Search className="h-3.5 w-3.5 shrink-0 text-rook-cyan" />
+        <Link href="/search" className="min-w-0 flex-1 truncate text-xs font-semibold text-rook-muted">
           Search Signals, operators, narratives
         </Link>
       </div>
       {events.length > 0 && (
-        <Link href="/alerts" className="mt-2 flex min-w-0 items-center gap-2 rounded-lg border border-rook-cyan/15 bg-rook-cyan/[0.055] px-3 py-2">
+        <Link href="/alerts" className="mt-1.5 flex min-w-0 items-center gap-2 rounded-lg border border-rook-cyan/15 bg-rook-cyan/[0.055] px-2.5 py-1.5">
           <span className="network-pulse h-2 w-2 shrink-0 rounded-full bg-rook-cyan" />
           <span className="min-w-0 flex-1 truncate text-xs font-bold text-rook-muted">{events[0]?.label ?? "Network notification"}</span>
           <span className="shrink-0 rounded-full bg-rook-cyan/15 px-2 py-0.5 text-[10px] font-black text-rook-cyan">{events.length}</span>
