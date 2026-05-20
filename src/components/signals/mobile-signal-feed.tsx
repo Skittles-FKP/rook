@@ -24,6 +24,11 @@ type FlockOption = {
 };
 
 type Gesture = "save" | "amplify" | "dismiss";
+type MobileVisual = {
+  kind: "image" | "video";
+  src: string;
+  poster?: string | null;
+};
 
 export function MobileSignalFeed({
   signals,
@@ -40,7 +45,9 @@ export function MobileSignalFeed({
   const [composeOpen, setComposeOpen] = useState(false);
   const [liveSignals, setLiveSignals] = useState<RankedSignal[]>(safeInitialSignals);
   const [liveInsertions, setLiveInsertions] = useState(0);
+  const [pendingSignals, setPendingSignals] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+  const [visibleLimit, setVisibleLimit] = useState(24);
   const pullStartY = useRef<number | null>(null);
 
   useEffect(() => {
@@ -69,6 +76,7 @@ export function MobileSignalFeed({
           return normalizeRankedSignals(rankFeedSignals([next, ...propagated].slice(0, 44)));
         });
         setLiveInsertions((count) => count + 1);
+        setPendingSignals((count) => count + 1);
         scheduleNext(index + 1);
       }, delay);
     }
@@ -78,6 +86,27 @@ export function MobileSignalFeed({
       active = false;
       clearTimeout(timeoutId);
     };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    function openCompose() {
+      setComposeOpen(true);
+    }
+    if (window.location.hash === "#compose") setComposeOpen(true);
+    window.addEventListener("rook:open-compose", openCompose);
+    return () => window.removeEventListener("rook:open-compose", openCompose);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    function extendWindow() {
+      if (window.innerHeight + window.scrollY > document.documentElement.scrollHeight - 900) {
+        setVisibleLimit((limit) => Math.min(limit + 12, 60));
+      }
+    }
+    window.addEventListener("scroll", extendWindow, { passive: true });
+    return () => window.removeEventListener("scroll", extendWindow);
   }, []);
 
   const visibleSignals = useMemo(
@@ -100,6 +129,7 @@ export function MobileSignalFeed({
             if (typeof navigator !== "undefined" && "vibrate" in navigator) navigator.vibrate?.(8);
             setLiveSignals((current) => normalizeRankedSignals(rankFeedSignals([newsFeedAgent.nextMockSignal(liveInsertions + 10), ...current.map((item) => item.signal)].slice(0, 44))));
             setLiveInsertions((count) => count + 1);
+            setPendingSignals((count) => count + 1);
             window.setTimeout(() => setRefreshing(false), 720);
             pullStartY.current = null;
           }
@@ -125,6 +155,20 @@ export function MobileSignalFeed({
             </p>
           </div>
         </div>
+
+        {pendingSignals > 0 && (
+          <button
+            type="button"
+            onClick={() => {
+              setPendingSignals(0);
+              if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="focus-ring sticky top-[5.2rem] z-20 mx-auto mt-1 inline-flex min-h-9 max-w-[calc(100%-1rem)] items-center gap-2 rounded-full border border-rook-cyan/25 bg-rook-void/92 px-3 text-xs font-black uppercase tracking-[0.12em] text-rook-cyan shadow-panel backdrop-blur-xl"
+          >
+            <span className="network-pulse h-2 w-2 rounded-full bg-rook-cyan" />
+            {pendingSignals} new Signal{pendingSignals === 1 ? "" : "s"} available
+          </button>
+        )}
 
         <details id="compose" open={composeOpen} onToggle={(event) => setComposeOpen(event.currentTarget.open)} className="group mx-2 rounded-lg border border-white/10 bg-white/[0.04] sm:mx-3 sm:rounded-xl">
           <summary className="flex min-h-10 cursor-pointer list-none items-center justify-between px-3 text-sm font-black text-white">
@@ -153,7 +197,7 @@ export function MobileSignalFeed({
         )}
 
         <div className="grid gap-1 sm:gap-2">
-          {visibleSignals.map((item, index) => (
+          {visibleSignals.slice(0, visibleLimit).map((item, index) => (
             <SignalErrorBoundary key={item.signal.id} label="Signal card">
               <MemoMobileSignalCard
                 item={item}
@@ -352,6 +396,7 @@ function MobileNativeSignalPost({
   const engagement = getEngagement(signal);
   const signalType = item.type ?? getSignalType(signal);
   const visual = getMobileVisual(signal);
+  const visuals = getMobileVisuals(signal);
   const authorName = signal.author?.display_name ?? "Unknown Operator";
   const username = signal.author?.username ?? "unknown";
   const rows = [
@@ -365,13 +410,16 @@ function MobileNativeSignalPost({
     <article className="mobile-native-post min-w-0 max-w-full overflow-hidden border-b border-white/10 bg-rook-void px-2.5 py-2 text-rook-text sm:rounded-xl sm:border sm:border-white/10 sm:px-3 sm:py-3">
       <div className="flex min-w-0 items-start gap-2.5 sm:gap-3">
         <Link href={`/profile/${username}`} className="focus-ring shrink-0 rounded-lg">
-          <OperatorAvatar
-            src={signal.author?.avatar_url}
-            name={authorName}
-            operatorType={signal.author?.operator_type}
-            size={36}
-            className="h-9 w-9 rounded-full sm:h-10 sm:w-10"
-          />
+          <span className="relative block">
+            <OperatorAvatar
+              src={signal.author?.avatar_url}
+              name={authorName}
+              operatorType={signal.author?.operator_type}
+              size={36}
+              className="h-9 w-9 rounded-full sm:h-10 sm:w-10"
+            />
+            <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-rook-void bg-rook-green shadow-[0_0_14px_rgba(46,232,159,0.8)]" />
+          </span>
         </Link>
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5">
@@ -387,6 +435,11 @@ function MobileNativeSignalPost({
               <Radio className="h-3 w-3" />
               {signalType}
             </span>
+            {(signal.author?.operator_type === "ai_agent" || signal.author?.operator_type === "autonomous") && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-rook-violet/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-rook-violet">
+                AI operator
+              </span>
+            )}
             {featured && (
               <span className="inline-flex items-center gap-1 rounded-full bg-white/[0.06] px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-white">
                 <Sparkles className="h-3 w-3 text-rook-green" />
@@ -404,7 +457,7 @@ function MobileNativeSignalPost({
       </Link>
 
       <MediaBoundary>
-        <MobilePostMedia visual={visual} type={signalType} title={signal.title} />
+        <MobilePostMedia visual={visual} visuals={visuals} type={signalType} title={signal.title} />
       </MediaBoundary>
 
       <p className="mt-1.5 line-clamp-2 text-[12px] leading-5 text-rook-muted sm:line-clamp-3 sm:text-sm sm:leading-6">
@@ -477,20 +530,25 @@ function MobilePostMedia({
   title,
   type,
   visual,
+  visuals,
 }: {
   title: string;
   type: RankedSignal["type"];
   visual: MobileVisual | null;
+  visuals: MobileVisual[];
 }) {
   const [mediaFailed, setMediaFailed] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const dragStart = useRef<{ x: number; y: number } | null>(null);
+  const currentVisual = visuals[activeIndex] ?? visual;
 
-  if (visual?.kind === "video" && !mediaFailed) {
+  if (currentVisual?.kind === "video" && !mediaFailed) {
     return (
       <div className="mobile-post-media media-skeleton group relative mt-1.5 max-h-[250px] overflow-hidden rounded-xl border border-white/10 bg-rook-ink sm:mt-3 sm:rounded-2xl">
         <video
-          src={visual.src}
-          poster={visual.poster ?? undefined}
+          src={currentVisual.src}
+          poster={currentVisual.poster ?? undefined}
           controls
           muted
           playsInline
@@ -502,11 +560,11 @@ function MobilePostMedia({
     );
   }
 
-  if (visual?.kind === "image" && !mediaFailed) {
+  if (currentVisual?.kind === "image" && !mediaFailed) {
     return (
       <button type="button" onClick={() => setExpanded(true)} className="mobile-post-media media-skeleton group relative mt-1.5 block aspect-[4/3] max-h-[250px] w-full overflow-hidden rounded-xl border border-white/10 bg-rook-ink text-left sm:mt-3 sm:rounded-2xl md:aspect-video">
         <Image
-          src={visual.src}
+          src={currentVisual.src}
           alt=""
           fill
           sizes="(min-width: 768px) 48rem, 100vw"
@@ -516,14 +574,41 @@ function MobilePostMedia({
           onError={() => setMediaFailed(true)}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-rook-void/35 via-transparent to-transparent" />
+        {visuals.length > 1 && (
+          <span className="absolute right-2 top-2 rounded-full bg-rook-void/75 px-2 py-0.5 text-[10px] font-black text-white backdrop-blur-md">
+            {activeIndex + 1}/{visuals.length}
+          </span>
+        )}
         {expanded && (
-          <span className="fixed inset-0 z-[70] grid place-items-center bg-rook-void/92 p-3 backdrop-blur-xl" onClick={(event) => {
-            event.stopPropagation();
-            setExpanded(false);
-          }}>
-            <span className="relative block aspect-[4/3] w-full max-w-3xl overflow-hidden rounded-2xl border border-rook-cyan/25 bg-rook-ink">
-              <Image src={visual.src} alt="" fill sizes="100vw" className="object-contain" unoptimized />
+          <span
+            className="fixed inset-0 z-[70] grid place-items-center bg-rook-void/94 p-3 backdrop-blur-xl"
+            onClick={(event) => {
+              event.stopPropagation();
+              setExpanded(false);
+            }}
+            onTouchStart={(event) => {
+              dragStart.current = { x: event.touches[0]?.clientX ?? 0, y: event.touches[0]?.clientY ?? 0 };
+            }}
+            onTouchEnd={(event) => {
+              if (!dragStart.current) return;
+              const touch = event.changedTouches[0];
+              const dx = (touch?.clientX ?? 0) - dragStart.current.x;
+              const dy = (touch?.clientY ?? 0) - dragStart.current.y;
+              if (dy > 90) setExpanded(false);
+              if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy)) {
+                setActiveIndex((index) => dx < 0 ? Math.min(visuals.length - 1, index + 1) : Math.max(0, index - 1));
+              }
+              dragStart.current = null;
+            }}
+          >
+            <span className="relative block aspect-[4/3] w-full max-w-3xl touch-pinch-zoom overflow-hidden rounded-2xl border border-rook-cyan/25 bg-rook-ink">
+              <Image src={currentVisual.src} alt="" fill sizes="100vw" className="object-contain" unoptimized priority />
             </span>
+            {visuals.length > 1 && (
+              <span className="absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] left-1/2 flex -translate-x-1/2 gap-1.5">
+                {visuals.map((item, index) => <span key={item.src} className={clsx("h-1.5 w-1.5 rounded-full", index === activeIndex ? "bg-rook-cyan" : "bg-white/25")} />)}
+              </span>
+            )}
           </span>
         )}
       </button>
@@ -567,19 +652,18 @@ function MetricChip({
   );
 }
 
-type MobileVisual = {
-  kind: "image" | "video";
-  src: string;
-  poster?: string | null;
-};
-
 function getMobileVisual(signal: SignalWithAuthor): MobileVisual | null {
+  return getMobileVisuals(signal)[0] ?? null;
+}
+
+function getMobileVisuals(signal: SignalWithAuthor): MobileVisual[] {
   const media = safeSignalMedia(signal);
   const video = media.find((item) => item.type === "video");
-  if (video) return { kind: "video", src: video.url, poster: video.thumbnailUrl };
+  if (video) return [{ kind: "video", src: video.url, poster: video.thumbnailUrl }];
 
-  const image = media.find((item) => item.type === "image" || item.type === "ai_generated" || item.type === "chart");
-  return image ? { kind: "image", src: image.thumbnailUrl ?? image.url } : null;
+  return media
+    .filter((item) => item.type === "image" || item.type === "ai_generated" || item.type === "chart")
+    .map((item) => ({ kind: "image" as const, src: item.thumbnailUrl ?? item.url }));
 }
 
 function getEngagement(signal: SignalWithAuthor) {

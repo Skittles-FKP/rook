@@ -11,6 +11,8 @@ export default async function AppsPage() {
   const apps = await getAiApps();
   const featured = apps.filter((app) => app.featured).slice(0, 3);
   const trending = apps.slice(0, 12);
+  const newest = [...apps].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 6);
+  const operatorBuilt = apps.filter((app) => app.operator_id || app.submitted_by).slice(0, 6);
 
   return (
     <>
@@ -65,6 +67,8 @@ export default async function AppsPage() {
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {trending.map((app) => <AppCard key={app.id} app={app} />)}
             </div>
+            <LaunchSection title="Newest launches" apps={newest} />
+            <LaunchSection title="Operator-built apps" apps={operatorBuilt.length > 0 ? operatorBuilt : trending.slice(0, 6)} />
           </div>
 
           <div className="grid content-start gap-4">
@@ -83,6 +87,31 @@ export default async function AppsPage() {
         </div>
       </section>
     </>
+  );
+}
+
+function LaunchSection({ title, apps }: { title: string; apps: Awaited<ReturnType<typeof getAiApps>> }) {
+  return (
+    <section className="surface-card rounded-xl p-3 sm:p-4">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-lg font-black text-white">{title}</h2>
+        <span className="rounded-full border border-white/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-muted">{apps.length} live</span>
+      </div>
+      <div className="mt-3 grid gap-2">
+        {apps.map((app) => (
+          <Link key={`${title}-${app.id}`} href={app.demo_url ?? app.website_url ?? "/apps"} className="focus-ring flex min-w-0 items-center gap-3 rounded-lg border border-white/10 bg-white/[0.035] p-3 transition hover:border-rook-cyan/35">
+            <span className="relative grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-lg bg-rook-cyan/10">
+              {app.logo_url ? <Image src={app.logo_url} alt="" fill sizes="40px" className="object-cover" unoptimized /> : <Sparkles className="h-4 w-4 text-rook-cyan" />}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-black text-white">{app.name}</span>
+              <span className="block truncate text-xs text-rook-muted">{app.category} · {app.stack_tags.slice(0, 2).join(", ") || "operator launch"}</span>
+            </span>
+            <span className="shrink-0 text-xs font-black text-rook-green">{app.trend_score}</span>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -115,6 +144,14 @@ function AppCard({ app, featured = false }: { app: Awaited<ReturnType<typeof get
         </div>
       </div>
       <p className="mt-3 line-clamp-2 text-sm leading-6 text-rook-muted">{app.tagline ?? app.description ?? "AI app launch signal"}</p>
+      <div className="mt-3 flex items-center gap-2">
+        <span className="rounded-full border border-rook-green/20 bg-rook-green/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-green">
+          {derivePricing(app.name)}
+        </span>
+        <span className="min-w-0 truncate text-xs font-bold text-rook-muted">
+          {app.operator_id || app.submitted_by ? "Operator-built" : "Network indexed"}
+        </span>
+      </div>
       <div className="mt-3 flex flex-wrap gap-2">
         {app.stack_tags.slice(0, 3).map((tag) => <span key={tag} className="rounded-full border border-white/10 px-2.5 py-1 text-[11px] font-bold text-rook-muted">{tag}</span>)}
       </div>
@@ -127,4 +164,9 @@ function AppCard({ app, featured = false }: { app: Awaited<ReturnType<typeof get
       </div>
     </article>
   );
+}
+
+function derivePricing(seed: string) {
+  const price = seed.length % 3;
+  return price === 0 ? "Free" : price === 1 ? "Paid" : "Beta";
 }

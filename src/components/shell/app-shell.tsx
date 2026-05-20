@@ -76,7 +76,7 @@ export function AppShell({
 
   function routeBySwipe(deltaX: number) {
     if (Math.abs(deltaX) < 86) return;
-    const flow = ["/feed", "/pulse", "/graph"];
+    const flow = ["/feed", "/pulse", "/apps", "/graph"];
     const index = flow.indexOf(pathname ?? "");
     if (index === -1) return;
     const next = deltaX < 0 ? flow[Math.min(flow.length - 1, index + 1)] : flow[Math.max(0, index - 1)];
@@ -168,13 +168,20 @@ export function AppShell({
         <RightRailDrawer events={safeEvents} rightRailOpen={rightRailOpen} setRightRailOpen={setRightRailOpen} />
       </div>
 
-      <Link
-        href="/feed#compose"
+      <button
+        type="button"
         aria-label="Create Signal"
+        onClick={() => {
+          if (pathname === "/feed" && typeof window !== "undefined") {
+            window.dispatchEvent(new Event("rook:open-compose"));
+          } else {
+            router.push("/feed#compose");
+          }
+        }}
         className="mobile-compose-fab focus-ring fixed bottom-[calc(4.25rem+env(safe-area-inset-bottom))] right-4 z-40 grid h-12 w-12 place-items-center rounded-full bg-white text-rook-void shadow-glow transition active:scale-95 md:hidden"
       >
         <Plus className="h-5 w-5" />
-      </Link>
+      </button>
 
       {installPrompt && (
         <button
