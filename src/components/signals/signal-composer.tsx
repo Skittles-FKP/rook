@@ -60,6 +60,13 @@ export function SignalComposer({ flocks, compact = false, autoFocus = false }: {
   }, [autoFocus]);
 
   useEffect(() => {
+    const textarea = bodyRef.current;
+    if (!textarea) return;
+    textarea.style.height = "auto";
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 320)}px`;
+  }, [body]);
+
+  useEffect(() => {
     if (typeof window === "undefined") return;
     const timeout = window.setTimeout(() => {
       window.localStorage.setItem(draftKey, JSON.stringify({ title, body, mediaUrl, tags, appName, appUrl, appStackTags, signalCategory }));
@@ -142,10 +149,10 @@ export function SignalComposer({ flocks, compact = false, autoFocus = false }: {
           name="body"
           value={body}
           onChange={(event) => setBody(event.target.value)}
-          rows={4}
+          rows={3}
           maxLength={2000}
           placeholder="What changed, why it matters, and what evidence supports it?"
-          className="resize-none rounded-lg border border-white/10 bg-white/[0.05] px-3 py-3 text-sm leading-6 text-white outline-none transition focus:border-rook-blue"
+          className="min-h-28 resize-none rounded-lg border border-white/10 bg-white/[0.05] px-3 py-3 text-sm leading-6 text-white outline-none transition focus:border-rook-blue"
         />
         <div className="grid gap-2 md:grid-cols-[0.8fr_1fr]">
           <label className="relative">
@@ -293,7 +300,7 @@ export function SignalComposer({ flocks, compact = false, autoFocus = false }: {
             </div>
           )}
         </div>
-        <div className="sticky bottom-0 z-10 -mx-3 flex flex-col gap-3 border-t border-white/10 bg-rook-void/92 px-3 py-2 backdrop-blur-xl md:static md:mx-0 md:flex-row md:items-center md:justify-between md:border-0 md:bg-transparent md:px-0 md:py-0 md:backdrop-blur-none">
+        <div className="sticky bottom-0 z-10 mx-0 flex flex-col gap-3 border-t border-white/10 bg-rook-void/92 px-3 py-2 backdrop-blur-xl md:static md:flex-row md:items-center md:justify-between md:border-0 md:bg-transparent md:px-0 md:py-0 md:backdrop-blur-none">
           <select
             name="flockId"
             className="h-11 rounded-lg border border-white/10 bg-rook-graphite px-3 text-sm font-bold text-rook-muted outline-none transition focus:border-rook-blue"

@@ -129,7 +129,7 @@ export function AppShell({
 
   return (
     <FeedShellBoundary>
-    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-rook-void/75 text-rook-text">
+    <div className="min-h-[100dvh] w-full max-w-full overflow-x-hidden bg-rook-void/75 text-rook-text md:min-h-screen">
       <div className="pointer-events-none fixed inset-0 z-0 hidden opacity-60 lg:block">
         <span className="ambient-scanline absolute left-0 top-1/3 h-px w-full bg-rook-cyan/20" />
       </div>
@@ -137,7 +137,7 @@ export function AppShell({
         <MobileHeader events={safeEvents} setDrawerOpen={setDrawerOpen} />
       </div>
 
-      <div className="mx-auto flex min-h-screen w-full max-w-full min-w-0 overflow-x-hidden xl:max-w-[104rem]">
+      <div className="mx-auto flex min-h-[100dvh] w-full max-w-full min-w-0 overflow-x-hidden md:min-h-screen xl:max-w-[104rem]">
         <DesktopSidebar
           pathname={pathname}
           profile={profile}
@@ -274,13 +274,6 @@ function MobileHeader({
           Search Signals, operators, narratives
         </Link>
       </div>
-      {events.length > 0 && (
-        <Link href="/alerts" className="mt-1.5 flex min-w-0 items-center gap-2 rounded-lg border border-rook-cyan/15 bg-rook-cyan/[0.055] px-2.5 py-1.5">
-          <span className="network-pulse h-2 w-2 shrink-0 rounded-full bg-rook-cyan" />
-          <span className="min-w-0 flex-1 truncate text-xs font-bold text-rook-muted">{events[0]?.label ?? "Network notification"}</span>
-          <span className="shrink-0 rounded-full bg-rook-cyan/15 px-2 py-0.5 text-[10px] font-black text-rook-cyan">{events.length}</span>
-        </Link>
-      )}
     </header>
   );
 }
