@@ -27,8 +27,8 @@ export function FollowButton({
       onClick={() =>
         startTransition(async () => {
           toggleOptimistic(undefined);
-          const result = await toggleFollowAction(profileId);
-          if (!result.ok) router.refresh();
+          await toggleFollowAction(profileId);
+          router.refresh();
         })
       }
       className={`focus-ring min-h-11 rounded-lg px-4 text-sm font-black transition disabled:opacity-50 ${

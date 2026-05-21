@@ -69,7 +69,11 @@ export function ShareSignalButton({
 }
 
 function buildSignalUrl(signalId: string) {
-  const path = `/signals/${encodeURIComponent(signalId)}`;
+  const path = isUuid(signalId) ? `/signals/${encodeURIComponent(signalId)}` : "/feed";
   if (typeof window === "undefined") return path;
   return new URL(path, window.location.origin).toString();
+}
+
+function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }

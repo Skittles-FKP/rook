@@ -40,6 +40,9 @@ export function AuthForm({
 
   async function handleSignupSubmit(event: React.FormEvent<HTMLFormElement>) {
     if (mode !== "signup") return;
+    const submitter = (event.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;
+    if (submitter?.name === "provider") return;
+
     event.preventDefault();
 
     const form = new FormData(event.currentTarget);
@@ -212,10 +215,15 @@ export function AuthForm({
         {(["google", "github"] as const).map((provider) => (
           <button
             key={provider}
+            type="submit"
             formAction={oauthAction}
             formNoValidate
             name="provider"
             value={provider}
+            onClick={() => {
+              setSignupPending(false);
+              setSignupState(initialState);
+            }}
             className="focus-ring inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.05] text-sm font-black text-white transition hover:border-rook-cyan/50 hover:bg-rook-cyan/10"
           >
             {provider === "github" ? <Github className="h-4 w-4" /> : <Sparkles className="h-4 w-4" />}

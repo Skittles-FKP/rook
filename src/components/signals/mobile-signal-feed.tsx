@@ -259,6 +259,7 @@ function MobileSignalCard({
   onSave: () => void;
 }) {
   const signal = normalizeSignal(item.signal);
+  const canPersistInteractions = isUuid(signal.id);
   const [dragX, setDragX] = useState(0);
   const [gesture, setGesture] = useState<Gesture | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -275,6 +276,7 @@ function MobileSignalCard({
     }
 
     if (distance > 0) {
+      if (!canPersistInteractions) return;
       startTransition(() => {
         void toggleAmplifyAction(signal.id);
       });
@@ -333,11 +335,12 @@ function MobileSignalCard({
       >
         <div className="relative w-full min-w-0 max-w-full overflow-hidden">
           <MobileNativeSignalPost item={item} featured={featured} saved={saved} onSave={onSave} onBrief={onBrief} />
-          <div className="actions-row mx-2 mb-1 mt-0.5 grid min-w-0 grid-cols-4 gap-1 overflow-hidden text-[8.5px] font-black text-rook-muted sm:mx-2 sm:gap-1.5 sm:text-[9.5px]">
+          <div className="actions-row mb-1 mt-0.5 grid min-w-0 grid-cols-4 gap-1 overflow-hidden px-2 text-[8.5px] font-black text-rook-muted sm:gap-1.5 sm:px-2 sm:text-[9.5px]">
             <button
               type="button"
-              disabled={isPending}
+              disabled={isPending || !canPersistInteractions}
               onClick={() => {
+                if (!canPersistInteractions) return;
                 startTransition(() => {
                   void toggleLikeAction(signal.id);
                 });

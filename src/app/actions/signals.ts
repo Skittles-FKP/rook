@@ -664,8 +664,16 @@ export async function toggleFollowAction(profileId: string) {
     });
   }
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("username")
+    .eq("id", profileId)
+    .maybeSingle();
+
   revalidatePath("/profile");
   revalidatePath(`/profile/${profileId}`);
+  if (profile?.username) revalidatePath(`/profile/${profile.username}`);
+  revalidatePath("/operators");
   return { ok: true, message: data ? "Follow removed." : "Following operator." };
 }
 
