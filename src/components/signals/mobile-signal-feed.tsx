@@ -412,7 +412,7 @@ function MobileNativeSignalPost({
 
   return (
     <article className="mobile-native-post min-w-0 max-w-full overflow-hidden bg-rook-void px-2.5 py-2 text-rook-text sm:px-3 sm:py-3">
-      <div className="flex min-w-0 items-start gap-2.5 sm:gap-3">
+      <div className="operator-row flex min-w-0 max-w-full items-start gap-2.5 sm:gap-3">
         <Link href={`/profile/${username}`} className="focus-ring shrink-0 rounded-lg">
           <span className="relative block">
             <OperatorAvatar
@@ -426,7 +426,7 @@ function MobileNativeSignalPost({
           </span>
         </Link>
         <div className="min-w-0 flex-1">
-          <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5">
+          <div className="signal-meta-row flex min-w-0 max-w-full flex-wrap items-center gap-x-1.5 gap-y-0.5">
             <Link href={`/profile/${username}`} className="focus-ring max-w-full truncate text-[13px] font-black leading-5 text-white sm:text-sm">
               {authorName}
             </Link>
@@ -434,24 +434,24 @@ function MobileNativeSignalPost({
             <span className="h-1 w-1 shrink-0 rounded-full bg-rook-muted" />
             <span className="shrink-0 text-[11px] text-rook-muted sm:text-xs">{formatRelativeTime(signal.created_at)}</span>
           </div>
-          <div className="mt-0.5 flex flex-wrap items-center gap-1">
-            <span className="inline-flex items-center gap-1 rounded-full bg-rook-cyan/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-rook-cyan">
+          <div className="signal-chip-row mt-0.5 flex min-w-0 max-w-full flex-wrap items-center gap-1 overflow-hidden">
+            <span className="signal-chip inline-flex items-center gap-1 rounded-full bg-rook-cyan/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-rook-cyan">
               <Radio className="h-3 w-3" />
               {signalType}
             </span>
             {(signal.author?.operator_type === "ai_agent" || signal.author?.operator_type === "autonomous") && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-rook-violet/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-rook-violet">
+              <span className="signal-chip inline-flex items-center gap-1 rounded-full bg-rook-violet/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-rook-violet">
                 AI operator
               </span>
             )}
             {featured && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-white/[0.06] px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-white">
+              <span className="signal-chip inline-flex items-center gap-1 rounded-full bg-white/[0.06] px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-white">
                 <Sparkles className="h-3 w-3 text-rook-green" />
                 Featured
               </span>
             )}
             {pulse.pulse_score >= 58 && (
-              <span className="rook-pulse-hot inline-flex items-center gap-1 rounded-full border border-rook-amber/25 bg-rook-amber/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-rook-amber">
+              <span className="signal-chip rook-pulse-hot inline-flex items-center gap-1 rounded-full border border-rook-amber/25 bg-rook-amber/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-rook-amber">
                 Pulse hot
               </span>
             )}
@@ -460,7 +460,7 @@ function MobileNativeSignalPost({
       </div>
 
       <Link href={`/signals/${signal.id}`} className="focus-ring mt-1.5 block rounded-md">
-        <h2 className="line-clamp-2 text-[0.9rem] font-black leading-[1.18rem] text-white xs:text-[0.96rem] sm:text-[1.08rem] sm:leading-6">
+        <h2 className="signal-title line-clamp-2 text-[0.9rem] font-black leading-[1.18rem] text-white xs:text-[0.96rem] sm:text-[1.08rem] sm:leading-6">
           {signal.title}
         </h2>
       </Link>
@@ -473,14 +473,14 @@ function MobileNativeSignalPost({
         {summarizeSignal(signal)}
       </p>
 
-      <div className="mt-1.5 grid grid-cols-4 gap-1">
+      <div className="metrics-row mt-1.5 grid grid-cols-2 gap-1 sm:grid-cols-4">
         <MetricChip icon={TrendingUp} label={`${engagement.propagation}%`} tone="cyan" />
         <MetricChip icon={MessageCircle} label={`${engagement.replies}`} tone="muted" />
         <MetricChip icon={Repeat2} label={`${engagement.boosts}`} tone="green" />
         <MetricChip icon={Bookmark} label={`${engagement.bookmarks}`} tone="muted" />
       </div>
 
-      <div className="mt-1 flex min-w-0 items-center gap-1 overflow-hidden">
+      <div className="metrics-row mt-1 grid min-w-0 grid-cols-2 gap-1 overflow-hidden sm:grid-cols-3">
         <MetricChip icon={Radio} label={pulse.velocity > 2 ? "accelerating" : "watch"} tone="cyan" />
         <MetricChip icon={ShieldCheck} label={`${signal.confidence_score ?? evidence.credibility}%`} tone="green" />
         {(signal.contradiction_score ?? 0) > 24 ? (
@@ -658,7 +658,7 @@ function MetricChip({
         : "bg-white/[0.045] text-rook-muted";
 
   return (
-    <div className={`flex h-5 min-w-0 flex-1 items-center justify-center gap-0.5 rounded-full px-1 text-[8px] font-black uppercase tracking-[0.02em] sm:h-7 sm:gap-1 sm:text-[9.5px] ${className}`}>
+    <div className={`metric-pill flex h-5 min-w-0 max-w-full items-center justify-center gap-0.5 rounded-full px-1 text-[8px] font-black uppercase tracking-[0.02em] sm:h-7 sm:gap-1 sm:text-[9.5px] ${className}`}>
       <Icon className="h-2.5 w-2.5 shrink-0 sm:h-3 sm:w-3" />
       <span className="truncate">{label}</span>
     </div>

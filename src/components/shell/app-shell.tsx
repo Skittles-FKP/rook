@@ -104,18 +104,37 @@ export function AppShell({
 
     function markOverflowingElements() {
       const width = document.documentElement.clientWidth;
+      const scrollWidth = document.documentElement.scrollWidth;
       document.querySelectorAll<HTMLElement>("[data-rook-overflow-debug]").forEach((element) => {
         element.style.outline = "";
         element.removeAttribute("data-rook-overflow-debug");
       });
+      const offenders: Array<{ tag: string; className: string; scrollWidth: number; width: number }> = [];
       document.querySelectorAll<HTMLElement>("body *").forEach((element) => {
         const rect = element.getBoundingClientRect();
-        if (rect.left < -1 || rect.right > width + 1) {
+        const elementScrollWidth = element.scrollWidth;
+        if (rect.left < -1 || rect.right > width + 1 || elementScrollWidth > width + 1) {
           element.style.outline = "2px solid red";
           element.style.outlineOffset = "-2px";
           element.setAttribute("data-rook-overflow-debug", "true");
+          if (offenders.length < 12) {
+            offenders.push({
+              tag: element.tagName.toLowerCase(),
+              className: String(element.className ?? "").slice(0, 120),
+              scrollWidth: elementScrollWidth,
+              width: Math.round(rect.width),
+            });
+          }
         }
       });
+      if (scrollWidth !== window.innerWidth) {
+        console.info("[rook:mobile-overflow]", {
+          documentScrollWidth: scrollWidth,
+          windowInnerWidth: window.innerWidth,
+          clientWidth: width,
+          offenders,
+        });
+      }
     }
 
     markOverflowingElements();
