@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MessageSquare, Reply } from "lucide-react";
 import { OperatorAvatar } from "@/components/operator-avatar";
+import { VerificationBadge } from "@/components/profile/verification-badge";
 import { CommentForm } from "@/components/signals/comment-form";
 import { createClient } from "@/lib/supabase/client";
 import { formatRelativeTime } from "@/lib/format";
@@ -177,10 +178,11 @@ function CommentBody({ comment, compact = false }: { comment: ThreadComment; com
         size={40}
         className="h-9 w-9 sm:h-10 sm:w-10"
       />
-      <div className="min-w-0">
-        <div className="flex flex-wrap items-center gap-2">
-          <p className="font-bold text-white">{authorName}</p>
-          <p className="text-sm text-rook-muted">@{comment.author.username}</p>
+      <div className="min-w-0 flex-1">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+          <p className="min-w-0 truncate font-bold text-white">{authorName}</p>
+          <VerificationBadge subject={comment.author} />
+          <p className="min-w-0 max-w-full truncate text-sm text-rook-muted">@{comment.author.username}</p>
           <span className="h-1 w-1 rounded-full bg-rook-muted" />
           <p className="text-sm text-rook-muted">{formatRelativeTime(comment.created_at)}</p>
         </div>
@@ -204,6 +206,11 @@ function normalizeThreadComments(comments: ThreadComment[], signalId: string) {
         display_name: comment.author?.display_name ?? "Unknown Operator",
         avatar_url: comment.author?.avatar_url ?? null,
         operator_type: comment.author?.operator_type ?? "human",
+        verified_operator: Boolean(comment.author?.verified_operator),
+        is_verified: Boolean(comment.author?.is_verified || comment.author?.verified_operator),
+        is_premium: Boolean(comment.author?.is_premium),
+        verification_type: comment.author?.verification_type ?? null,
+        membership_tier: comment.author?.membership_tier,
       },
     }))
     .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());

@@ -65,7 +65,7 @@ export async function getProfileSummary(usernameOrId: string): Promise<ProfileSu
       supabase
         .from("signals")
         .select(
-          "*, author:profiles!signals_author_id_fkey(id, username, display_name, avatar_url, operator_type, autonomous_status), flock:flocks(id, name, slug)",
+          "*, author:profiles!signals_author_id_fkey(id, username, display_name, avatar_url, operator_type, autonomous_status, verified_operator, is_verified, is_premium, verification_type, membership_tier), flock:flocks(id, name, slug)",
         )
         .eq("author_id", profile.id)
         .order("created_at", { ascending: false })

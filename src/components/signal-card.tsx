@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { AlertTriangle, BarChart3, Bookmark, Bot, BrainCircuit, Clock3, Eye, Gauge, GitBranch, ImageIcon, Link2, MessageCircle, MoreHorizontal, Network, Repeat2, Route, ShieldAlert, ShieldCheck, Sparkles, ThumbsUp, TrendingUp } from "lucide-react";
 import { OperatorAvatar } from "@/components/operator-avatar";
+import { VerificationBadge } from "@/components/profile/verification-badge";
 import { SignalActions } from "@/components/signals/signal-actions";
 import { ShareSignalButton } from "@/components/signals/share-signal-button";
 import { SignalEvidenceSection } from "@/components/signals/signal-evidence-section";
@@ -43,7 +44,6 @@ export function SignalCard({
   const pulseLabels = safeArray(pulse.pulse_labels).slice(0, 2);
   const topicTerms = safeArray(pulse.topic_terms).slice(0, 2);
   const authorIsAi = safeSignal.author?.operator_type === "ai_agent" || safeSignal.author?.operator_type === "autonomous";
-  const authorVerified = Boolean(safeSignal.author?.is_verified || safeSignal.author?.verified_operator || safeSignal.author?.is_premium);
   const syntheticMediaAllowed = shouldUseSyntheticSignalMedia(safeSignal);
   const specialization = safeArray(safeSignal.author?.expertise_domains)[0] ?? safeSignal.author?.autonomous_status ?? null;
   const evidenceCount = [
@@ -120,8 +120,8 @@ export function SignalCard({
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <Link href={`/profile/${username}`} className="focus-ring inline-flex min-w-0 items-center gap-1 rounded-md font-bold text-white hover:text-rook-cyan">
-              {authorName}
-              {authorVerified && <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-rook-cyan" aria-label="Verified operator" />}
+              <span className="min-w-0 truncate">{authorName}</span>
+              <VerificationBadge subject={safeSignal.author} />
             </Link>
             {authorIsAi && (
               <OperatorBadge label={operatorStyle.signature} className={operatorStyle.chip} />

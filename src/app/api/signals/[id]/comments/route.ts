@@ -124,7 +124,7 @@ export async function POST(request: NextRequest, { params }: Params) {
         parent_comment_id: parentCommentId || null,
         body,
       })
-      .select("*, author:profiles!comments_author_id_fkey(id, username, display_name, avatar_url, operator_type)")
+      .select("*, author:profiles!comments_author_id_fkey(id, username, display_name, avatar_url, operator_type, verified_operator, is_verified, is_premium, verification_type, membership_tier)")
       .single();
 
     if (insertError) {

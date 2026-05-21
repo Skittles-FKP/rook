@@ -8,6 +8,7 @@ import { clsx } from "clsx";
 import { toggleAmplifyAction, toggleLikeAction } from "@/app/actions/signals";
 import { SignalCard } from "@/components/signal-card";
 import { OperatorAvatar } from "@/components/operator-avatar";
+import { VerificationBadge } from "@/components/profile/verification-badge";
 import { SignalComposer } from "@/components/signals/signal-composer";
 import { MediaBoundary, SignalErrorBoundary } from "@/components/signals/signal-error-boundary";
 import { ShareSignalButton } from "@/components/signals/share-signal-button";
@@ -434,6 +435,7 @@ function MobileNativeSignalPost({
             <Link href={`/profile/${username}`} className="focus-ring min-w-0 max-w-full truncate text-[13px] font-black leading-5 text-white sm:text-sm">
               {authorName}
             </Link>
+            <VerificationBadge subject={signal.author} />
             <span className="min-w-0 max-w-[8rem] truncate text-[11px] font-semibold text-rook-muted sm:max-w-[14rem] sm:text-xs">@{username}</span>
             <span className="h-1 w-1 shrink-0 rounded-full bg-rook-muted" />
             <span className="shrink-0 text-[11px] text-rook-muted sm:text-xs">{formatRelativeTime(signal.created_at)}</span>

@@ -5,7 +5,19 @@ import { validateFeedReadiness } from "@/lib/supabase/feed-health";
 import type { Comment, Profile, SignalWithAuthor } from "@/lib/supabase/types";
 
 type SignalRow = Omit<SignalWithAuthor, "viewer_has_liked" | "viewer_has_amplified">;
-export type SignalCommentAuthor = Pick<Profile, "id" | "username" | "display_name" | "avatar_url" | "operator_type">;
+export type SignalCommentAuthor = Pick<
+  Profile,
+  | "id"
+  | "username"
+  | "display_name"
+  | "avatar_url"
+  | "operator_type"
+  | "verified_operator"
+  | "is_verified"
+  | "is_premium"
+  | "verification_type"
+  | "membership_tier"
+>;
 export type NormalizedSignalComment = Comment & {
   author: SignalCommentAuthor;
   malformed?: boolean;
@@ -306,6 +318,11 @@ function getRuntimeAutonomousAuthor(signal: SignalWithAuthor): SignalWithAuthor[
     expertise_domains: identity.expertise_domains,
     reputation_score: identity.reputation_score,
     pulse_influence_score: identity.pulse_influence_score,
+    verified_operator: true,
+    is_verified: true,
+    is_premium: identity.username === "news_sentinel",
+    verification_type: "ai_operator",
+    membership_tier: identity.username === "news_sentinel" ? "premium" : "ai_operator",
   };
 }
 
@@ -389,7 +406,7 @@ export async function getSignalById(id: string) {
     const { data, error } = await supabase
       .from("signals")
       .select(
-        "*, author:profiles!signals_author_id_fkey(id, username, display_name, avatar_url, operator_type, autonomous_status), flock:flocks(id, name, slug)",
+        "*, author:profiles!signals_author_id_fkey(id, username, display_name, avatar_url, operator_type, autonomous_status, verified_operator, is_verified, is_premium, verification_type, membership_tier), flock:flocks(id, name, slug)",
       )
       .eq("id", id)
       .single();
@@ -460,10 +477,10 @@ export async function getSignalCommentsResult(signalId: string): Promise<SignalC
 
   try {
     const supabase = await createClient();
-    const query = "comments.select(*, author:profiles!comments_author_id_fkey(id, username, display_name, avatar_url, operator_type)).eq(signal_id).order(created_at asc)";
+    const query = "comments.select(*, author:profiles!comments_author_id_fkey(id, username, display_name, avatar_url, operator_type, verified_operator, is_verified, is_premium, verification_type, membership_tier)).eq(signal_id).order(created_at asc)";
     const { data, error } = await supabase
       .from("comments")
-      .select("*, author:profiles!comments_author_id_fkey(id, username, display_name, avatar_url, operator_type)")
+      .select("*, author:profiles!comments_author_id_fkey(id, username, display_name, avatar_url, operator_type, verified_operator, is_verified, is_premium, verification_type, membership_tier)")
       .eq("signal_id", signalId)
       .order("created_at", { ascending: true });
 
@@ -562,6 +579,11 @@ function normalizeCommentAuthor(value: unknown, fallbackId?: unknown): SignalCom
       author.operator_type === "organization"
       ? author.operator_type
       : "human",
+    verified_operator: Boolean(author.verified_operator),
+    is_verified: Boolean(author.is_verified || author.verified_operator),
+    is_premium: Boolean(author.is_premium),
+    verification_type: readVerificationType(author.verification_type),
+    membership_tier: readMembershipTier(author.membership_tier),
   };
 }
 

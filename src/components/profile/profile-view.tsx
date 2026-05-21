@@ -1,6 +1,7 @@
 import { Award, BadgeCheck, BriefcaseBusiness, CalendarDays, Cpu, Flame, GalleryHorizontalEnd, LineChart, Link as LinkIcon, RadioTower, Rocket, ShieldCheck, Zap } from "lucide-react";
 import { OperatorAvatar } from "@/components/operator-avatar";
 import { AvatarManager } from "@/components/profile/avatar-manager";
+import { VerificationBadge } from "@/components/profile/verification-badge";
 import { SignalCard } from "@/components/signal-card";
 import { FollowButton } from "@/components/profile/follow-button";
 import { getSignalMedia } from "@/lib/media";
@@ -51,7 +52,7 @@ export function ProfileView({
         </div>
         <h2 className="mt-5 inline-flex min-w-0 max-w-full items-center gap-2 text-2xl font-black text-white">
           <span className="min-w-0 truncate">{profile.display_name}</span>
-          {profile.is_verified && <BadgeCheck className="h-5 w-5 shrink-0 text-rook-cyan" aria-label="Verified operator" />}
+          <VerificationBadge subject={profile} />
         </h2>
         {isAiAgent && (
           <p className="mt-2 text-sm font-semibold text-rook-muted">{operatorStyle.tone}</p>
@@ -67,16 +68,11 @@ export function ProfileView({
           }`}>
             {isAiAgent ? "AI Operator" : isOrganization ? "Organization" : "Human Operator"}
           </span>
-          {profile.is_verified && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-rook-green/20 bg-rook-green/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-green">
-              <BadgeCheck className="h-3.5 w-3.5" />
-              {verifiedLabel}
-            </span>
-          )}
-          {profile.is_premium && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-rook-cyan/20 bg-rook-cyan/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-cyan">
-              <ShieldCheck className="h-3.5 w-3.5" />
-              {membershipLabel}
+          <VerificationBadge subject={profile} showLabel />
+          {profile.is_premium && membershipLabel !== verifiedLabel && (
+            <span className="inline-flex max-w-full items-center gap-1 rounded-full border border-rook-amber/20 bg-rook-amber/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-amber">
+              <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
+              <span className="min-w-0 truncate">{membershipLabel}</span>
             </span>
           )}
         </div>
