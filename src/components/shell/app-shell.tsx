@@ -211,7 +211,7 @@ export function AppShell({
               const classes = clsx(
                 "focus-ring flex min-h-10 touch-manipulation flex-col items-center justify-center gap-0.5 rounded-xl px-1 text-[9px] font-bold transition duration-200 active:scale-95 xs:text-[9.5px]",
                 active
-                  ? "bg-white/[0.1] text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08),0_0_18px_rgba(53,216,255,0.08)]"
+                  ? "is-active bg-white/[0.1] text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08),0_0_18px_rgba(53,216,255,0.08)]"
                   : "text-rook-muted hover:bg-white/[0.06] hover:text-white",
                 item.href === "/feed#compose" && "text-rook-cyan",
               );

@@ -139,7 +139,7 @@ export function MobileSignalFeed({
         }}
       >
         <div className="px-2 pr-[max(16px,env(safe-area-inset-right))] sm:px-3 sm:pr-3">
-          <div className="max-w-full overflow-hidden rounded-lg border border-white/10 bg-white/[0.045] px-2.5 py-2 pr-[max(16px,env(safe-area-inset-right))] backdrop-blur-xl sm:rounded-xl sm:px-3">
+          <div className="mobile-feed-status max-w-full overflow-hidden rounded-lg border border-white/10 bg-white/[0.045] px-2.5 py-2 pr-[max(16px,env(safe-area-inset-right))] backdrop-blur-xl sm:rounded-xl sm:px-3">
             <div className="flex min-w-0 items-center gap-2">
               <div className="min-w-0 flex-1">
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-rook-cyan">Live Signal Feed</p>
@@ -198,7 +198,7 @@ export function MobileSignalFeed({
           </div>
         )}
 
-        <div className="grid w-full min-w-0 max-w-full gap-1.5 overflow-x-hidden px-1.5 sm:gap-2 sm:px-3">
+        <div className="mobile-signal-stack grid w-full min-w-0 max-w-full gap-1.5 overflow-x-hidden px-1.5 sm:gap-2 sm:px-3">
           {visibleSignals.slice(0, visibleLimit).map((item, index) => (
             <SignalErrorBoundary key={item.signal.id} label="Signal card">
               <MemoMobileSignalCard
@@ -291,7 +291,7 @@ function MobileSignalCard({
   }
 
   return (
-    <div className={clsx("relative mx-0 w-full min-w-0 max-w-full overflow-hidden rounded-xl border border-white/10 bg-rook-void/45", featured && "rook-live-arrival")}>
+    <div className={clsx("mobile-card-shell relative mx-0 w-full min-w-0 max-w-full overflow-hidden rounded-xl border border-white/10 bg-rook-void/45", featured && "rook-live-arrival")}>
       <div
         className={clsx(
           "absolute inset-y-4 flex items-center rounded-xl px-4 text-xs font-black uppercase tracking-[0.16em] transition-opacity",
@@ -469,7 +469,7 @@ function MobileNativeSignalPost({
         <MobilePostMedia visual={visual} visuals={visuals} type={signalType} title={signal.title} fallbackAllowed={syntheticMediaAllowed} />
       </MediaBoundary>
 
-      <p className="mt-1 line-clamp-2 text-[11.5px] leading-[1.15rem] text-rook-muted sm:line-clamp-3 sm:text-sm sm:leading-6">
+      <p className="signal-summary mt-1 line-clamp-2 text-[11.5px] leading-[1.15rem] text-rook-muted sm:line-clamp-3 sm:text-sm sm:leading-6">
         {summarizeSignal(signal)}
       </p>
 
@@ -490,7 +490,7 @@ function MobileNativeSignalPost({
         )}
       </div>
 
-      <div className="mt-1.5">
+      <div className="signal-quick-actions mt-1.5">
         <button
           type="button"
           onClick={onSave}
