@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useActionState } from "react";
-import { Bot, FileText, Hash, ImageIcon, Link2, ListChecks, Radio, Sparkles, Upload, Video, WandSparkles } from "lucide-react";
+import { Bot, FileText, Hash, ImageIcon, Link2, ListChecks, Radio, Sparkles, Trash2, Upload, Video, WandSparkles } from "lucide-react";
 import { clsx } from "clsx";
 import { createSignalAction } from "@/app/actions/signals";
 import { SubmitButton } from "@/components/form/submit-button";
@@ -27,6 +27,7 @@ export function SignalComposer({ flocks, compact = false, autoFocus = false }: {
   const [signalCategory, setSignalCategory] = useState(signalCategories[0]);
   const [fileLabel, setFileLabel] = useState("");
   const [fileError, setFileError] = useState("");
+  const [mediaWarning, setMediaWarning] = useState("");
   const [previews, setPreviews] = useState<Array<{ url: string; type: string; name: string }>>([]);
   const [aiGenerated, setAiGenerated] = useState(false);
   const [markdownEnabled, setMarkdownEnabled] = useState(true);
@@ -86,6 +87,7 @@ export function SignalComposer({ flocks, compact = false, autoFocus = false }: {
     setAppStackTags("");
     setFileLabel("");
     setFileError("");
+    setMediaWarning("");
     setPreviews([]);
     setAiGenerated(false);
   }, [state.ok]);
@@ -102,16 +104,35 @@ export function SignalComposer({ flocks, compact = false, autoFocus = false }: {
     if (invalid && !invalid.ok) {
       setFileError(invalid.message);
       setFileLabel("");
+      setMediaWarning("");
       setPreviews([]);
       return;
     }
     setFileError("");
+    setMediaWarning("");
     setFileLabel(files.length > 1 ? `${files.length} files queued` : files[0]?.name ?? "");
-    setPreviews(files.slice(0, 4).map((file) => ({
+    const queued = files.slice(0, 4);
+    setPreviews(queued.map((file) => ({
       url: URL.createObjectURL(file),
       type: file.type,
       name: file.name,
     })));
+    queued.filter((file) => file.type.startsWith("video/")).forEach((file) => {
+      void getVideoDuration(file).then((duration) => {
+        if (duration && duration > 60) {
+          setMediaWarning("This video is longer than 60 seconds. It can be published, but short clips perform better in the feed.");
+        }
+      });
+    });
+  }
+
+  function clearQueuedMedia() {
+    previews.forEach((preview) => URL.revokeObjectURL(preview.url));
+    setPreviews([]);
+    setFileLabel("");
+    setFileError("");
+    setMediaWarning("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
   function draftWithAi() {
@@ -193,7 +214,7 @@ export function SignalComposer({ flocks, compact = false, autoFocus = false }: {
           <input name="appUrl" value={appUrl} onChange={(event) => setAppUrl(event.target.value)} type="url" placeholder="Demo or launch URL" className="h-11 rounded-lg border border-white/10 bg-white/[0.05] px-3 text-sm text-white outline-none transition focus:border-rook-blue" />
           <input name="appStackTags" value={appStackTags} onChange={(event) => setAppStackTags(event.target.value)} placeholder="stack: LangGraph, vLLM" className="h-11 rounded-lg border border-white/10 bg-white/[0.05] px-3 text-sm text-white outline-none transition focus:border-rook-blue" />
           <label className="group relative min-h-11 cursor-pointer overflow-hidden rounded-lg border border-dashed border-white/15 bg-rook-void/35 px-3 text-sm font-bold text-rook-muted transition hover:border-rook-cyan/45 md:col-span-3">
-            <input name="appLogoFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="absolute inset-0 h-full w-full cursor-pointer opacity-0" />
+              <input name="appLogoFile" type="file" accept="image/jpeg,image/png,image/webp" className="absolute inset-0 h-full w-full cursor-pointer opacity-0" />
             <span className="pointer-events-none flex h-11 items-center gap-2">
               <ImageIcon className="h-4 w-4 text-rook-cyan" />
               Optional AI app logo
@@ -249,7 +270,7 @@ export function SignalComposer({ flocks, compact = false, autoFocus = false }: {
                 name="mediaFile"
                 type="file"
                 multiple
-                accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime,application/pdf"
+                accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime,application/pdf"
                 capture={undefined}
                 className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
                 onChange={(event) => {
@@ -268,28 +289,42 @@ export function SignalComposer({ flocks, compact = false, autoFocus = false }: {
               {fileError}
             </p>
           )}
+          {mediaWarning && (
+            <p className="mt-3 rounded-lg border border-rook-amber/30 bg-rook-amber/10 px-3 py-2 text-xs font-bold text-rook-amber">
+              {mediaWarning}
+            </p>
+          )}
           {previews.length > 0 && (
-            <div className="mt-3 grid gap-2 md:grid-cols-2">
-              {previews.map((preview) => (
-                <div key={preview.url} className="relative aspect-video overflow-hidden rounded-xl border border-white/10 bg-rook-void">
-                  {preview.type.startsWith("image/") ? (
-                    <div
-                      className="h-full w-full bg-cover bg-center"
-                      style={{ backgroundImage: `url(${preview.url})` }}
-                      aria-label={preview.name}
-                    />
-                  ) : preview.type.startsWith("video/") ? (
-                    <video src={preview.url} muted playsInline preload="metadata" className="h-full w-full object-cover" />
-                  ) : (
-                    <div className="grid h-full place-items-center bg-white/[0.035]">
-                      <FileText className="h-8 w-8 text-rook-cyan" />
+            <div className="mt-3 grid gap-2">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-rook-muted">Preview before publish</p>
+                <button type="button" onClick={clearQueuedMedia} className="focus-ring inline-flex min-h-8 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 text-[11px] font-black uppercase tracking-[0.12em] text-rook-muted transition hover:text-white">
+                  <Trash2 className="h-3.5 w-3.5 text-rook-amber" />
+                  Remove
+                </button>
+              </div>
+              <div className="grid gap-2 md:grid-cols-2">
+                {previews.map((preview) => (
+                  <div key={preview.url} className="relative aspect-video overflow-hidden rounded-xl border border-white/10 bg-rook-void">
+                    {preview.type.startsWith("image/") ? (
+                      <div
+                        className="h-full w-full bg-cover bg-center"
+                        style={{ backgroundImage: `url(${preview.url})` }}
+                        aria-label={preview.name}
+                      />
+                    ) : preview.type.startsWith("video/") ? (
+                      <video src={preview.url} muted playsInline preload="metadata" controls className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="grid h-full place-items-center bg-white/[0.035]">
+                        <FileText className="h-8 w-8 text-rook-cyan" />
+                      </div>
+                    )}
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-rook-void/90 to-transparent p-2">
+                      <p className="truncate text-xs font-black text-white">{preview.name}</p>
                     </div>
-                  )}
-                  <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-rook-void/90 to-transparent p-2">
-                    <p className="truncate text-xs font-black text-white">{preview.name}</p>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
           {(detected.mediaType || fileLabel) && (
@@ -328,6 +363,26 @@ export function SignalComposer({ flocks, compact = false, autoFocus = false }: {
       )}
     </form>
   );
+}
+
+function getVideoDuration(file: File) {
+  if (typeof document === "undefined") return Promise.resolve<number | null>(null);
+  return new Promise<number | null>((resolve) => {
+    const video = document.createElement("video");
+    const url = URL.createObjectURL(file);
+    const cleanup = () => URL.revokeObjectURL(url);
+    video.preload = "metadata";
+    video.onloadedmetadata = () => {
+      const duration = Number.isFinite(video.duration) ? video.duration : null;
+      cleanup();
+      resolve(duration);
+    };
+    video.onerror = () => {
+      cleanup();
+      resolve(null);
+    };
+    video.src = url;
+  });
 }
 
 function MediaChip({

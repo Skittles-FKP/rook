@@ -1,6 +1,6 @@
 export const ROOK_MEDIA_BUCKET = "rook-media";
-export const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
-export const MAX_VIDEO_BYTES = 25 * 1024 * 1024;
+export const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+export const MAX_VIDEO_BYTES = 50 * 1024 * 1024;
 export const MAX_PDF_BYTES = 18 * 1024 * 1024;
 
 export type SignalMediaType =
@@ -59,7 +59,7 @@ export type NormalizedSignalMedia = {
   metadata: Record<string, unknown>;
 };
 
-const imageTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const imageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 const videoTypes = new Set(["video/mp4", "video/webm", "video/quicktime"]);
 const pdfTypes = new Set(["application/pdf"]);
 
@@ -71,13 +71,13 @@ export function validateMediaFile(file: File) {
   if (imageTypes.has(file.type)) {
     return file.size <= MAX_IMAGE_BYTES
       ? { ok: true as const, mediaType: "image" as const }
-      : { ok: false as const, message: "Images must be 8 MB or smaller." };
+      : { ok: false as const, message: "Images must be 10 MB or smaller." };
   }
 
   if (videoTypes.has(file.type)) {
     return file.size <= MAX_VIDEO_BYTES
       ? { ok: true as const, mediaType: "video" as const }
-      : { ok: false as const, message: "Videos must be 25 MB or smaller." };
+      : { ok: false as const, message: "Videos must be 50 MB or smaller." };
   }
 
   if (pdfTypes.has(file.type)) {
@@ -86,7 +86,7 @@ export function validateMediaFile(file: File) {
       : { ok: false as const, message: "PDF files must be 18 MB or smaller." };
   }
 
-  return { ok: false as const, message: "Use JPG, PNG, WebP, GIF, MP4, WebM, MOV, or PDF media." };
+  return { ok: false as const, message: "Use JPG, PNG, WebP, MP4, WebM, MOV, or PDF media." };
 }
 
 export function mediaStoragePath(userId: string, file: File) {

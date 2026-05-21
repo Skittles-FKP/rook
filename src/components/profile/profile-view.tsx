@@ -17,6 +17,8 @@ export function ProfileView({
   const isAiAgent = profile.operator_type === "ai_agent";
   const isOrganization = profile.operator_type === "organization";
   const operatorStyle = getOperatorStyle(profile.username);
+  const verifiedLabel = getVerificationLabel(profile.verification_type, profile.is_premium);
+  const membershipLabel = getMembershipLabel(profile.membership_tier, profile.membership_status);
 
   return (
     <section className="grid min-w-0 gap-4 overflow-hidden px-3 py-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
@@ -45,7 +47,10 @@ export function ProfileView({
             isSelf={isSelf}
           />
         </div>
-        <h2 className="mt-5 text-2xl font-black text-white">{profile.display_name}</h2>
+        <h2 className="mt-5 inline-flex min-w-0 max-w-full items-center gap-2 text-2xl font-black text-white">
+          <span className="min-w-0 truncate">{profile.display_name}</span>
+          {profile.is_verified && <BadgeCheck className="h-5 w-5 shrink-0 text-rook-cyan" aria-label="Verified operator" />}
+        </h2>
         {isAiAgent && (
           <p className="mt-2 text-sm font-semibold text-rook-muted">{operatorStyle.tone}</p>
         )}
@@ -60,10 +65,16 @@ export function ProfileView({
           }`}>
             {isAiAgent ? "AI Operator" : isOrganization ? "Organization" : "Human Operator"}
           </span>
-          {profile.verified_operator && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-rook-green/25 bg-rook-green/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-green">
+          {profile.is_verified && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-rook-green/20 bg-rook-green/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-green">
               <BadgeCheck className="h-3.5 w-3.5" />
-              Verified
+              {verifiedLabel}
+            </span>
+          )}
+          {profile.is_premium && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-rook-cyan/20 bg-rook-cyan/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-rook-cyan">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              {membershipLabel}
             </span>
           )}
         </div>
@@ -130,8 +141,9 @@ export function ProfileView({
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-rook-cyan">Verification</p>
                 <p className="mt-1 text-sm font-black text-white">
-                  {profile.reputation_score >= 70 ? "Verified intelligence operator" : "Verification in progress"}
+                  {profile.is_verified ? `${verifiedLabel} verified` : "Verification in progress"}
                 </p>
+                <p className="mt-1 text-xs font-bold text-rook-muted">{membershipLabel}</p>
               </div>
               <BadgeCheck className={profile.reputation_score >= 70 ? "h-5 w-5 text-rook-green" : "h-5 w-5 text-rook-muted"} />
             </div>
@@ -282,6 +294,27 @@ export function ProfileView({
       </div>
     </section>
   );
+}
+
+function getVerificationLabel(type: ProfileSummary["verification_type"], premium: boolean) {
+  if (type === "ai_operator") return "AI verified";
+  if (type === "institution") return "Institution";
+  if (type === "analyst") return "Analyst";
+  if (type === "premium" || premium) return "Premium";
+  return "Verified";
+}
+
+function getMembershipLabel(tier: ProfileSummary["membership_tier"], status: ProfileSummary["membership_status"]) {
+  const label = tier === "ai_operator"
+    ? "AI operator"
+    : tier === "institution"
+      ? "Institution"
+      : tier === "analyst"
+        ? "Analyst"
+        : tier === "premium"
+          ? "Premium"
+          : "Free";
+  return status === "active" || status === "trialing" ? label : `${label} ready`;
 }
 
 function ScoreTile({

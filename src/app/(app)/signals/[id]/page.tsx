@@ -1,13 +1,14 @@
 export const runtime = "edge";
 
 import { notFound } from "next/navigation";
-import { ArrowUp, MessageCircle, Share2 } from "lucide-react";
+import { ArrowUp, MessageCircle } from "lucide-react";
 import { PageHeader } from "@/components/shell/page-header";
 import { SignalCard } from "@/components/signal-card";
 import { CommentForm } from "@/components/signals/comment-form";
 import { CommentThread } from "@/components/signals/comment-thread";
 import { CommentThreadBoundary, SignalErrorBoundary } from "@/components/signals/signal-error-boundary";
 import { ShareableSignalCard } from "@/components/signals/shareable-signal-card";
+import { ShareSignalButton } from "@/components/signals/share-signal-button";
 import { getSignalById, getSignalCommentsResult } from "@/lib/data/signals";
 
 const BUILD_ID =
@@ -94,10 +95,7 @@ export default async function SignalDetailPage({
             <MessageCircle className="h-4 w-4" />
             Reply
           </a>
-          <a href={`/public/signals/${signal.id}`} className="focus-ring flex min-h-10 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.055] text-xs font-black text-rook-muted">
-            <Share2 className="h-4 w-4 text-rook-cyan" />
-            Share
-          </a>
+          <ShareSignalButton signalId={signal.id} title={signal.title} />
           <a href="#" className="focus-ring flex min-h-10 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.055] text-xs font-black text-rook-muted">
             <ArrowUp className="h-4 w-4 text-rook-cyan" />
             Top

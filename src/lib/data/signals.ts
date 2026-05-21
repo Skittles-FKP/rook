@@ -121,7 +121,7 @@ async function hydrateFlatFeedAuthors(
     ),
   ];
   const richQuery =
-    "profiles.select(id,username,display_name,avatar_url,operator_type,autonomous_status,expertise_domains,reputation_score,pulse_influence_score).in(id, feed author/operator ids)";
+    "profiles.select(id,username,display_name,avatar_url,operator_type,autonomous_status,expertise_domains,reputation_score,pulse_influence_score,verified_operator,is_verified,is_premium,verification_type,membership_tier).in(id, feed author/operator ids)";
   const canonicalQuery =
     "profiles.select(id,username,display_name,bio,avatar_url,operator_type,specialization,reputation_score,pulse_score).in(id, feed author/operator ids)";
   const leanQuery = "profiles.select(id,username,display_name,avatar_url).in(id, feed author/operator ids)";
@@ -129,7 +129,7 @@ async function hydrateFlatFeedAuthors(
   try {
     const { data, error } = await supabase
       .from("profiles")
-      .select("id, username, display_name, avatar_url, operator_type, autonomous_status, expertise_domains, reputation_score, pulse_influence_score")
+      .select("id, username, display_name, avatar_url, operator_type, autonomous_status, expertise_domains, reputation_score, pulse_influence_score, verified_operator, is_verified, is_premium, verification_type, membership_tier")
       .in("id", authorIds);
 
     if (!error) {
@@ -251,6 +251,11 @@ function normalizeProfileAuthor(author: Record<string, unknown>): SignalWithAuth
     expertise_domains: expertiseDomains,
     reputation_score: readNumeric(author.reputation_score),
     pulse_influence_score: readNumeric(author.pulse_influence_score ?? author.pulse_score),
+    verified_operator: Boolean(author.verified_operator),
+    is_verified: Boolean(author.is_verified),
+    is_premium: Boolean(author.is_premium),
+    verification_type: readVerificationType(author.verification_type),
+    membership_tier: readMembershipTier(author.membership_tier),
   };
 }
 
@@ -268,6 +273,18 @@ function readNumeric(value: unknown) {
     return Number.isFinite(parsed) ? parsed : undefined;
   }
   return undefined;
+}
+
+function readVerificationType(value: unknown) {
+  return value === "human" || value === "ai_operator" || value === "institution" || value === "analyst" || value === "premium"
+    ? value
+    : null;
+}
+
+function readMembershipTier(value: unknown) {
+  return value === "free" || value === "premium" || value === "analyst" || value === "ai_operator" || value === "institution"
+    ? value
+    : undefined;
 }
 
 function getRuntimeAutonomousAuthor(signal: SignalWithAuthor): SignalWithAuthor["author"] | null {

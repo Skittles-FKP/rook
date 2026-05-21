@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { slugify } from "@/lib/format";
 import { createInteractionAlert, shouldEmitPulseInteraction } from "@/lib/interactions";
-import { detectMediaUrl, inferSignalVisualMode, uploadMediaFile, type SignalMediaType } from "@/lib/media";
+import { detectMediaUrl, inferSignalVisualMode, uploadMediaFile, validateMediaFile, type SignalMediaType } from "@/lib/media";
 import { fetchOgMetadata } from "@/lib/og";
 import { checkActionRateLimit, scoreSignalAbuseRisk } from "@/lib/security";
 import type { ActionState } from "@/app/actions/auth";
@@ -79,8 +79,9 @@ export async function createSignalAction(
   const appStackTags = parseTagList(appStackInput).slice(0, 10);
 
   if (appLogoFile instanceof File && appLogoFile.size > 0) {
-    if (!appLogoFile.type.startsWith("image/")) {
-      return { ok: false, message: "AI app logos must be image files." };
+    const logoValidation = validateMediaFile(appLogoFile);
+    if (!logoValidation.ok || logoValidation.mediaType !== "image") {
+      return { ok: false, message: logoValidation.ok ? "AI app logos must be JPG, PNG, or WebP image files." : logoValidation.message };
     }
     const logoUpload = await uploadMediaFile(supabase, userId, appLogoFile);
     if (!logoUpload.ok) {

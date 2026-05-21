@@ -10,6 +10,7 @@ import { SignalCard } from "@/components/signal-card";
 import { OperatorAvatar } from "@/components/operator-avatar";
 import { SignalComposer } from "@/components/signals/signal-composer";
 import { MediaBoundary, SignalErrorBoundary } from "@/components/signals/signal-error-boundary";
+import { ShareSignalButton } from "@/components/signals/share-signal-button";
 import { formatRelativeTime } from "@/lib/format";
 import { getSignalMedia, shouldUseSyntheticSignalMedia } from "@/lib/media";
 import { getSignalType, rankFeedSignals, type RankedSignal } from "@/lib/feed-ranking";
@@ -510,6 +511,11 @@ function MobileNativeSignalPost({
           <BrainCircuit className="h-3.5 w-3.5 text-rook-violet" />
           Brief
         </button>
+        <ShareSignalButton
+          signalId={signal.id}
+          title={signal.title}
+          className="ml-1.5 h-7 min-h-7 px-2 text-[9px] tracking-[0.1em] sm:h-8 sm:min-h-8 sm:px-2.5 sm:text-[10px]"
+        />
       </div>
 
       {rows.length > 0 && (

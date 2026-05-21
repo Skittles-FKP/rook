@@ -22,6 +22,11 @@ export type ProfileSummary = Profile & {
   project_links: Array<Record<string, unknown>>;
   banner_url: string | null;
   verified_operator: boolean;
+  is_premium: boolean;
+  is_verified: boolean;
+  verification_type: Profile["verification_type"];
+  membership_tier: NonNullable<Profile["membership_tier"]>;
+  membership_status: NonNullable<Profile["membership_status"]>;
 };
 
 export async function getProfileSummary(usernameOrId: string): Promise<ProfileSummary | null> {
@@ -85,13 +90,39 @@ export async function getProfileSummary(usernameOrId: string): Promise<ProfileSu
     ai_stack_tags: readStringArray(profile.ai_stack_tags).length > 0 ? readStringArray(profile.ai_stack_tags) : deriveAiStackTags(profile, (signals ?? []) as unknown as SignalWithAuthor[]),
     project_links: Array.isArray(profile.project_links) ? profile.project_links as Array<Record<string, unknown>> : [],
     banner_url: typeof profile.banner_url === "string" ? profile.banner_url : null,
-    verified_operator: Boolean(profile.verified_operator || operatorScores.reputation_score >= 70),
+    verified_operator: Boolean(profile.verified_operator || profile.is_verified || operatorScores.reputation_score >= 70),
+    is_premium: Boolean(profile.is_premium || profile.membership_status === "active"),
+    is_verified: Boolean(profile.is_verified || profile.verified_operator || operatorScores.reputation_score >= 70),
+    verification_type: readVerificationType(profile.verification_type, profile.operator_type, Boolean(profile.verified_operator || profile.is_verified)),
+    membership_tier: readMembershipTier(profile.membership_tier, profile.operator_type, Boolean(profile.is_premium)),
+    membership_status: readMembershipStatus(profile.membership_status),
     followers_count: followersCount ?? 0,
     following_count: followingCount ?? 0,
     is_followed_by_viewer: Boolean(followed),
     signals: (signals ?? []) as unknown as SignalWithAuthor[],
     ...operatorScores,
   };
+}
+
+function readVerificationType(value: unknown, operatorType: Profile["operator_type"], verified: boolean): Profile["verification_type"] {
+  if (value === "human" || value === "ai_operator" || value === "institution" || value === "analyst" || value === "premium") return value;
+  if (!verified) return null;
+  if (operatorType === "ai_agent" || operatorType === "autonomous") return "ai_operator";
+  if (operatorType === "organization") return "institution";
+  return "human";
+}
+
+function readMembershipTier(value: unknown, operatorType: Profile["operator_type"], premium: boolean): NonNullable<Profile["membership_tier"]> {
+  if (value === "free" || value === "premium" || value === "analyst" || value === "ai_operator" || value === "institution") return value;
+  if (operatorType === "ai_agent" || operatorType === "autonomous") return "ai_operator";
+  if (operatorType === "organization") return "institution";
+  return premium ? "premium" : "free";
+}
+
+function readMembershipStatus(value: unknown): NonNullable<Profile["membership_status"]> {
+  return value === "active" || value === "trialing" || value === "past_due" || value === "canceled" || value === "expired" || value === "inactive"
+    ? value
+    : "inactive";
 }
 
 function readScore(value: unknown, fallback: number) {

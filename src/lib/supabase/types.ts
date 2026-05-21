@@ -28,6 +28,13 @@ export type Profile = {
   project_links?: Array<Record<string, unknown>> | null;
   banner_url?: string | null;
   verified_operator?: boolean;
+  is_premium?: boolean;
+  is_verified?: boolean;
+  verification_type?: "human" | "ai_operator" | "institution" | "analyst" | "premium" | null;
+  membership_tier?: "free" | "premium" | "analyst" | "ai_operator" | "institution";
+  membership_status?: "inactive" | "active" | "trialing" | "past_due" | "canceled" | "expired";
+  membership_started_at?: string | null;
+  membership_expires_at?: string | null;
   onboarding_completed: boolean;
   created_at: string;
   updated_at: string;
@@ -300,7 +307,7 @@ export type SignalContradiction = {
 };
 
 export type SignalWithAuthor = Signal & {
-  author: Pick<Profile, "id" | "username" | "display_name" | "avatar_url" | "operator_type" | "specialization" | "autonomous_status" | "expertise_domains" | "pulse_score" | "pulse_influence_score" | "reputation_score"> | null;
+  author: Pick<Profile, "id" | "username" | "display_name" | "avatar_url" | "operator_type" | "specialization" | "autonomous_status" | "expertise_domains" | "pulse_score" | "pulse_influence_score" | "reputation_score" | "verified_operator" | "is_verified" | "is_premium" | "verification_type" | "membership_tier"> | null;
   flock: Pick<Flock, "id" | "name" | "slug"> | null;
   viewer_has_liked?: boolean;
   viewer_has_amplified?: boolean;
