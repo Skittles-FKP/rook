@@ -2,9 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { createCommentAction } from "@/app/actions/signals";
 import { SubmitButton } from "@/components/form/submit-button";
-import { createClient } from "@/lib/supabase/client";
 import type { ActionState } from "@/app/actions/auth";
 
 type CommentSubmitState = ActionState & {
@@ -38,98 +36,43 @@ export function CommentForm({
     setState({ ok: false, message: "Posting...", pending: true });
 
     try {
-      const supabase = createClient();
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-      const userId = sessionData.session?.user.id ?? null;
-
-      console.info("signal-comments:client-submit auth state", {
-        signalId: targetSignalId,
-        parentCommentId: targetParentId || null,
-        hasSession: Boolean(sessionData.session),
-        hasAccessToken: Boolean(sessionData.session?.access_token),
-        userId,
-        sessionError: sessionError?.message ?? null,
-        origin: typeof window !== "undefined" ? window.location.origin : null,
-        supabaseHost: getSupabaseHost(),
+      const response = await fetch(`/api/signals/${encodeURIComponent(targetSignalId)}/comments`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          body,
+          parentCommentId: targetParentId || null,
+        }),
       });
 
-      if (sessionError || !userId) {
-        const fallback = await createCommentAction({ ok: false, message: "" }, formData);
-        console.info("signal-comments:server-action-fallback", {
-          signalId: targetSignalId,
-          parentCommentId: targetParentId || null,
-          ok: fallback.ok,
-          message: fallback.message,
-        });
-        setState(fallback);
-        return;
-      }
+      const payload = await response.json().catch(() => null) as {
+        ok?: boolean;
+        message?: string;
+        comment?: Record<string, unknown>;
+      } | null;
 
-      if (targetParentId) {
-        const { data: parent, error: parentError } = await supabase
-          .from("comments")
-          .select("id, signal_id")
-          .eq("id", targetParentId)
-          .maybeSingle();
-
-        if (parentError) {
-          console.error("signal-comments:client-submit parent lookup failed", {
-            signalId: targetSignalId,
-            parentCommentId: targetParentId,
-            code: parentError.code,
-            message: parentError.message,
-            details: parentError.details,
-            hint: parentError.hint,
-          });
-          setState({ ok: false, message: "Unable to verify the reply target. Refresh and try again." });
-          return;
-        }
-
-        if (!parent || parent.signal_id !== targetSignalId) {
-          setState({ ok: false, message: "This reply target is no longer available." });
-          return;
-        }
-      }
-
-      const payload = {
-        signal_id: targetSignalId,
-        author_id: userId,
-        parent_comment_id: targetParentId || null,
-        body,
-      };
-
-      const { data, error } = await supabase
-        .from("comments")
-        .insert(payload)
-        .select("*, author:profiles!comments_author_id_fkey(id, username, display_name, avatar_url, operator_type)")
-        .single();
-      const insertedComment = data as Record<string, unknown> | null;
-
-      if (error) {
+      if (!response.ok || !payload?.ok || !payload.comment) {
         console.error("signal-comments:client-submit insert failed", {
           signalId: targetSignalId,
           parentCommentId: targetParentId || null,
-          userId,
-          code: error.code,
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
+          status: response.status,
+          message: payload?.message ?? null,
         });
-        setState({ ok: false, message: normalizeCommentError(error.message) });
+        setState({ ok: false, message: normalizeCommentError(payload?.message ?? response.statusText) });
         return;
       }
 
       console.info("signal-comments:client-submit inserted", {
         signalId: targetSignalId,
         parentCommentId: targetParentId || null,
-        commentId: insertedComment?.id ?? null,
-        authorPresent: Boolean(insertedComment?.author),
+        commentId: payload.comment.id ?? null,
+        authorPresent: Boolean(payload.comment.author),
       });
 
       formRef.current?.reset();
       setState({ ok: true, message: targetParentId ? "Reply added." : "Comment added." });
       if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("rook:comment-created", { detail: { signalId: targetSignalId, comment: insertedComment } }));
+        window.dispatchEvent(new CustomEvent("rook:comment-created", { detail: { signalId: targetSignalId, comment: payload.comment } }));
       }
       startTransition(() => router.refresh());
     } catch (error) {
@@ -168,14 +111,6 @@ export function CommentForm({
       </div>
     </form>
   );
-}
-
-function getSupabaseHost() {
-  try {
-    return process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname : null;
-  } catch {
-    return null;
-  }
 }
 
 function normalizeCommentError(message: string) {

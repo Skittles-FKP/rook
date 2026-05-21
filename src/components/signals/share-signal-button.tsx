@@ -54,7 +54,7 @@ export function ShareSignalButton({
       onClick={shareSignal}
       aria-label={copied ? "Signal link copied" : "Share Signal"}
       className={clsx(
-        "focus-ring transition active:scale-95",
+        "focus-ring min-w-0 max-w-full overflow-hidden transition active:scale-95",
         compact
           ? "grid min-h-9 place-items-center rounded-full bg-white/[0.035] hover:bg-white/[0.06] hover:text-white"
           : "inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.055] px-3 text-xs font-black text-rook-muted hover:text-white",
@@ -62,8 +62,8 @@ export function ShareSignalButton({
         className,
       )}
     >
-      <Icon className={clsx(compact ? "h-3.5 w-3.5" : "h-4 w-4", copied ? "text-rook-green" : "text-rook-cyan")} />
-      {!compact && (copied ? "Copied" : "Share")}
+      <Icon className={clsx("shrink-0", compact ? "h-3.5 w-3.5" : "h-4 w-4", copied ? "text-rook-green" : "text-rook-cyan")} />
+      {!compact && <span className="min-w-0 truncate">{copied ? "Copied" : "Share"}</span>}
     </button>
   );
 }

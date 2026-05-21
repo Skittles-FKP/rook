@@ -342,7 +342,7 @@ function MobileSignalCard({
                   void toggleLikeAction(signal.id);
                 });
               }}
-              className="focus-ring flex h-7 min-w-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
+              className="action-button focus-ring flex h-7 min-w-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
             >
               <ThumbsUp className="h-3.5 w-3.5 text-rook-cyan" />
               Like
@@ -351,7 +351,7 @@ function MobileSignalCard({
               type="button"
               onClick={onSave}
               className={clsx(
-                "focus-ring flex h-7 min-w-0 items-center justify-center gap-1 overflow-hidden rounded-full border transition active:scale-95 sm:h-8",
+                "action-button focus-ring flex h-7 min-w-0 items-center justify-center gap-1 overflow-hidden rounded-full border transition active:scale-95 sm:h-8",
                 saved ? "border-rook-cyan/40 bg-rook-cyan/15 text-rook-cyan" : "border-white/10 bg-white/[0.035]",
               )}
             >
@@ -361,7 +361,7 @@ function MobileSignalCard({
             <button
               type="button"
               onClick={onBrief}
-              className="focus-ring flex h-7 min-w-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
+              className="action-button focus-ring flex h-7 min-w-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
             >
               <Maximize2 className="h-3.5 w-3.5 text-rook-violet" />
               Brief
@@ -369,7 +369,7 @@ function MobileSignalCard({
             <button
               type="button"
               onClick={onDismiss}
-              className="focus-ring flex h-7 min-w-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
+              className="action-button focus-ring flex h-7 min-w-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
             >
               <X className="h-3.5 w-3.5 text-rook-amber" />
               Pass
@@ -460,7 +460,7 @@ function MobileNativeSignalPost({
         </div>
       </div>
 
-      <Link href={`/signals/${signal.id}`} className="focus-ring mt-1.5 block rounded-md">
+      <Link href={getSignalDetailHref(signal)} className="focus-ring mt-1.5 block rounded-md">
         <h2 className="signal-title line-clamp-2 text-[0.9rem] font-black leading-[1.18rem] text-white xs:text-[0.96rem] sm:text-[1.08rem] sm:leading-6">
           {signal.title}
         </h2>
@@ -491,12 +491,12 @@ function MobileNativeSignalPost({
         )}
       </div>
 
-      <div className="signal-quick-actions mt-1.5">
+      <div className="signal-quick-actions actions-row mt-1.5 flex w-full min-w-0 max-w-full flex-wrap gap-2 overflow-hidden">
         <button
           type="button"
           onClick={onSave}
           className={clsx(
-            "focus-ring inline-flex h-7 items-center gap-1.5 rounded-full px-2 text-[9px] font-black uppercase tracking-[0.1em] transition active:scale-95 sm:h-8 sm:px-2.5 sm:text-[10px]",
+            "action-button focus-ring inline-flex h-7 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-full px-2 text-[9px] font-black uppercase tracking-[0.1em] transition active:scale-95 sm:h-8 sm:px-2.5 sm:text-[10px]",
             saved ? "bg-rook-cyan/15 text-rook-cyan" : "bg-white/[0.045] text-rook-muted",
           )}
         >
@@ -506,7 +506,7 @@ function MobileNativeSignalPost({
         <button
           type="button"
           onClick={onBrief}
-          className="focus-ring ml-1.5 inline-flex h-7 items-center gap-1.5 rounded-full bg-white/[0.045] px-2 text-[9px] font-black uppercase tracking-[0.1em] text-rook-muted transition active:scale-95 sm:h-8 sm:px-2.5 sm:text-[10px]"
+          className="action-button focus-ring inline-flex h-7 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-full bg-white/[0.045] px-2 text-[9px] font-black uppercase tracking-[0.1em] text-rook-muted transition active:scale-95 sm:h-8 sm:px-2.5 sm:text-[10px]"
         >
           <BrainCircuit className="h-3.5 w-3.5 text-rook-violet" />
           Brief
@@ -514,7 +514,7 @@ function MobileNativeSignalPost({
         <ShareSignalButton
           signalId={signal.id}
           title={signal.title}
-          className="ml-1.5 h-7 min-h-7 px-2 text-[9px] tracking-[0.1em] sm:h-8 sm:min-h-8 sm:px-2.5 sm:text-[10px]"
+          className="action-button h-7 min-h-7 min-w-0 flex-1 px-2 text-[9px] tracking-[0.1em] sm:h-8 sm:min-h-8 sm:px-2.5 sm:text-[10px]"
         />
       </div>
 
@@ -703,6 +703,16 @@ function getEngagement(signal: SignalWithAuthor) {
   };
 }
 
+function getSignalDetailHref(signal: SignalWithAuthor) {
+  return isUuid(signal.id)
+    ? `/signals/${signal.id}`
+    : signal.source_url || signal.reference_url || "/feed";
+}
+
+function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
 function summarizeSignal(signal: SignalWithAuthor) {
   const body = signal.body ?? "";
   const explicit = body.match(/why it matters:\s*(.+)$/i)?.[1]?.trim();
@@ -767,7 +777,7 @@ function SignalBriefMode({
           <BriefMetric label="Reach" value={`${signal.amplifies_count + signal.comments_count + signal.likes_count}`} />
         </div>
         <Link
-          href={`/signals/${signal.id}`}
+          href={getSignalDetailHref(signal)}
           className="focus-ring mt-4 flex h-12 items-center justify-center gap-2 rounded-full bg-white text-sm font-black text-rook-void"
         >
           <Eye className="h-4 w-4" />
