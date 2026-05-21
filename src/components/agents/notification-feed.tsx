@@ -45,7 +45,7 @@ export function NotificationFeed({ initialAlerts }: { initialAlerts: OperatorAle
           {unread} unread
         </span>
       </div>
-      <div className="mt-4 grid grid-cols-4 gap-2">
+      <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
         <NotificationMetric icon={MessageSquare} label="Replies" value={alerts.filter((alert) => /reply|comment/i.test(alert.title)).length} />
         <NotificationMetric icon={Repeat2} label="Signals" value={alerts.filter((alert) => /signal|ampl/i.test(alert.title)).length} />
         <NotificationMetric icon={UserPlus} label="Follows" value={alerts.filter((alert) => /follow/i.test(alert.title)).length} />
@@ -58,13 +58,13 @@ export function NotificationFeed({ initialAlerts }: { initialAlerts: OperatorAle
           </p>
         )}
         {alerts.map((alert) => (
-          <article key={alert.id} className="rook-live-arrival rounded-lg border border-white/10 bg-white/[0.035] p-3 sm:p-4">
+          <article key={alert.id} className="rook-live-arrival min-w-0 overflow-hidden rounded-lg border border-white/10 bg-white/[0.035] p-3 transition active:scale-[0.99] sm:p-4">
             <div className="flex gap-3">
               <div className="relative grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-rook-blue/10 text-rook-cyan">
                 {!alert.read_at && <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-rook-green shadow-[0_0_14px_rgba(46,232,159,0.8)]" />}
                 {getAlertIcon(alert.title)}
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="text-sm font-black text-white">{alert.title}</p>
                 <p className="mt-1 text-sm leading-6 text-rook-muted">{alert.detail ?? "Network activity routed."}</p>
                 <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-rook-muted">

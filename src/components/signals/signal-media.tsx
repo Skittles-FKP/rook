@@ -300,7 +300,14 @@ function ImagePreviewModal({ media, onClose }: { media: NormalizedMedia; onClose
         <X className="h-5 w-5" />
       </button>
       <div className="relative h-[82vh] w-full max-w-6xl overflow-hidden rounded-xl border border-rook-cyan/20 bg-rook-void shadow-glow">
-        <Image src={media.mediaUrl} alt={media.ogTitle ?? "Expanded Signal media"} fill sizes="100vw" className="object-contain" />
+        <Image
+          src={media.mediaUrl}
+          alt={media.ogTitle ?? "Expanded Signal media"}
+          fill
+          sizes="100vw"
+          className="object-contain"
+          unoptimized={/^https?:\/\//i.test(media.mediaUrl)}
+        />
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-rook-void via-rook-void/70 to-transparent p-4">
           <p className="text-xs font-black uppercase tracking-[0.18em] text-rook-cyan">{media.aiGenerated ? "AI Generated Visual" : "Visual Evidence"}</p>
           {media.ogTitle && <p className="mt-1 text-sm font-bold text-white">{media.ogTitle}</p>}

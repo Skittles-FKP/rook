@@ -259,6 +259,28 @@ export function getSignalMedia(
 
   if (media.length > 0 || !options.fallback) return media;
 
+  const editorialImage = buildContextualEditorialImage(signal);
+  if (editorialImage) {
+    return [{
+      type: "image",
+      url: editorialImage.url,
+      thumbnailUrl: editorialImage.url,
+      embedUrl: null,
+      title: editorialImage.title,
+      description: editorialImage.description,
+      domain: editorialImage.domain,
+      width: 1400,
+      height: 900,
+      aiGenerated: false,
+      synthetic: true,
+      metadata: {
+        source: editorialImage.provider,
+        license: "free editorial stock",
+        visualMode: inferSignalVisualMode(signal),
+      },
+    }];
+  }
+
   return [{
     type: "ai_generated",
     url: buildSignalFallbackImage(signal),
@@ -273,6 +295,55 @@ export function getSignalMedia(
     synthetic: true,
     metadata: { source: "fallback_visual" },
   }];
+}
+
+function buildContextualEditorialImage(input: {
+  id?: string | null;
+  title?: string | null;
+  body?: string | null;
+  flock?: { name?: string | null; slug?: string | null } | null;
+  ai_narrative_tags?: string[] | null;
+  categories?: string[] | null;
+  visual_mode?: SignalVisualMode | string | null;
+}): { url: string; title: string; description: string; domain: string; provider: string } | null {
+  const text = [
+    input.title,
+    input.body,
+    input.flock?.name,
+    input.flock?.slug,
+    ...(Array.isArray(input.ai_narrative_tags) ? input.ai_narrative_tags : []),
+    ...(Array.isArray(input.categories) ? input.categories : []),
+  ].filter(Boolean).join(" ").toLowerCase();
+
+  const catalog = getEditorialCatalog(text, inferSignalVisualMode(input));
+  if (catalog.length === 0) return null;
+  const selected = catalog[hashString(`${input.id ?? ""}:${input.title ?? ""}`) % catalog.length];
+  return {
+    ...selected,
+    url: `${selected.url}?auto=format&fit=crop&w=1400&h=875&q=82`,
+  };
+}
+
+function getEditorialCatalog(text: string, mode: SignalVisualMode) {
+  if (mode === "geopolitics" || /\b(red sea|shipping|war|geopolitic|policy|sanction|defense|border|election)\b/.test(text)) {
+    return EDITORIAL_IMAGES.geopolitics;
+  }
+  if (mode === "financial" || /\b(market|macro|rates|insurance|spread|capital|liquidity|price|finance|equity|credit)\b/.test(text)) {
+    return EDITORIAL_IMAGES.markets;
+  }
+  if (mode === "cyber" || /\b(cyber|breach|malware|exploit|vulnerability|security|ransomware|zero-day|cve)\b/.test(text)) {
+    return EDITORIAL_IMAGES.cybersecurity;
+  }
+  if (/\b(robot|drone|robotics|autonomous system|factory|industrial)\b/.test(text)) {
+    return EDITORIAL_IMAGES.robotics;
+  }
+  if (/\b(infrastructure|datacenter|data center|compute|gpu|chip|power|grid|energy)\b/.test(text)) {
+    return EDITORIAL_IMAGES.infrastructure;
+  }
+  if (/\b(startup|launch|app|product|founder|funding|demo)\b/.test(text)) {
+    return EDITORIAL_IMAGES.startups;
+  }
+  return EDITORIAL_IMAGES.ai;
 }
 
 export function shouldUseSyntheticSignalMedia(signal: {
@@ -531,6 +602,121 @@ const VISUAL_MODE_PALETTES: Record<SignalVisualMode, { bg1: string; bg2: string;
   cyber: { bg1: "#05090a", bg2: "#111827", glow: "#8aff6a", line: "#8aff6a" },
   geopolitics: { bg1: "#0b0907", bg2: "#18110a", glow: "#ffb84d", line: "#ffb84d" },
   science: { bg1: "#070817", bg2: "#11172a", glow: "#8a5cff", line: "#8a5cff" },
+};
+
+const EDITORIAL_IMAGES: Record<string, Array<{ url: string; title: string; description: string; domain: string; provider: string }>> = {
+  ai: [
+    {
+      url: "https://images.unsplash.com/photo-1518770660439-4636190af475",
+      title: "AI infrastructure signal",
+      description: "Contextual free editorial visual for AI and compute intelligence.",
+      domain: "unsplash.com",
+      provider: "Unsplash",
+    },
+    {
+      url: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
+      title: "Operator workspace signal",
+      description: "Contextual free editorial visual for AI operator workflows.",
+      domain: "unsplash.com",
+      provider: "Unsplash",
+    },
+  ],
+  cybersecurity: [
+    {
+      url: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5",
+      title: "Cybersecurity signal",
+      description: "Contextual free editorial visual for cyber and security intelligence.",
+      domain: "unsplash.com",
+      provider: "Unsplash",
+    },
+    {
+      url: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b",
+      title: "Security operations signal",
+      description: "Contextual free editorial visual for threat and infrastructure monitoring.",
+      domain: "unsplash.com",
+      provider: "Unsplash",
+    },
+  ],
+  geopolitics: [
+    {
+      url: "https://images.unsplash.com/photo-1451187580459-43490279c0fa",
+      title: "Geopolitical intelligence signal",
+      description: "Contextual free editorial visual for geopolitics and global risk.",
+      domain: "unsplash.com",
+      provider: "Unsplash",
+    },
+    {
+      url: "https://images.unsplash.com/photo-1521295121783-8a321d551ad2",
+      title: "Global network signal",
+      description: "Contextual free editorial visual for policy and international movement.",
+      domain: "unsplash.com",
+      provider: "Unsplash",
+    },
+  ],
+  infrastructure: [
+    {
+      url: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab",
+      title: "Infrastructure signal",
+      description: "Contextual free editorial visual for infrastructure and capacity intelligence.",
+      domain: "unsplash.com",
+      provider: "Unsplash",
+    },
+    {
+      url: "https://images.unsplash.com/photo-1497366754035-f200968a6e72",
+      title: "Operations infrastructure signal",
+      description: "Contextual free editorial visual for organizational and deployment activity.",
+      domain: "unsplash.com",
+      provider: "Unsplash",
+    },
+  ],
+  markets: [
+    {
+      url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
+      title: "Market intelligence signal",
+      description: "Contextual free editorial visual for economics and market movement.",
+      domain: "unsplash.com",
+      provider: "Unsplash",
+    },
+    {
+      url: "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a",
+      title: "Financial analysis signal",
+      description: "Contextual free editorial visual for finance and business intelligence.",
+      domain: "unsplash.com",
+      provider: "Unsplash",
+    },
+  ],
+  robotics: [
+    {
+      url: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e",
+      title: "Robotics intelligence signal",
+      description: "Contextual free editorial visual for robotics and autonomous systems.",
+      domain: "unsplash.com",
+      provider: "Unsplash",
+    },
+    {
+      url: "https://images.unsplash.com/photo-1516192518150-0d8fee5425e3",
+      title: "Autonomous systems signal",
+      description: "Contextual free editorial visual for machines and industrial autonomy.",
+      domain: "unsplash.com",
+      provider: "Unsplash",
+    },
+  ],
+  startups: [
+    {
+      url: "https://images.unsplash.com/photo-1559136555-9303baea8ebd",
+      title: "Startup launch signal",
+      description: "Contextual free editorial visual for launches and venture activity.",
+      domain: "unsplash.com",
+      provider: "Unsplash",
+    },
+    {
+      url: "https://images.unsplash.com/photo-1497366811353-6870744d04b2",
+      title: "Product team signal",
+      description: "Contextual free editorial visual for startup and product execution.",
+      domain: "unsplash.com",
+      provider: "Unsplash",
+    },
+  ],
 };
 
 export function isSafePublicUrl(url: URL) {

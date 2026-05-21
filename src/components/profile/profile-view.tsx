@@ -3,6 +3,7 @@ import { OperatorAvatar } from "@/components/operator-avatar";
 import { AvatarManager } from "@/components/profile/avatar-manager";
 import { SignalCard } from "@/components/signal-card";
 import { FollowButton } from "@/components/profile/follow-button";
+import { getSignalMedia } from "@/lib/media";
 import { getOperatorStyle } from "@/lib/operator-style";
 import type { ProfileSummary } from "@/lib/data/profiles";
 
@@ -19,6 +20,7 @@ export function ProfileView({
   const operatorStyle = getOperatorStyle(profile.username);
   const verifiedLabel = getVerificationLabel(profile.verification_type, profile.is_premium);
   const membershipLabel = getMembershipLabel(profile.membership_tier, profile.membership_status);
+  const galleryItems = buildProfileGalleryItems(profile);
 
   return (
     <section className="grid min-w-0 gap-4 overflow-hidden px-3 py-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
@@ -270,10 +272,20 @@ export function ProfileView({
             </div>
           </div>
           <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {profile.signals.slice(0, 6).map((signal) => (
-              <div key={signal.id} className="aspect-video overflow-hidden rounded-lg border border-white/10 bg-white/[0.035] p-3">
-                <p className="line-clamp-2 text-xs font-black text-white">{signal.title}</p>
-                <p className="mt-2 text-[10px] uppercase tracking-[0.12em] text-rook-cyan">{signal.signal_category ?? signal.media_type ?? "signal"}</p>
+            {galleryItems.map((item) => (
+              <div key={item.id} className="relative aspect-video overflow-hidden rounded-lg border border-white/10 bg-white/[0.035]">
+                {item.imageUrl && (
+                  <div
+                    className="absolute inset-0 bg-cover bg-center opacity-85"
+                    style={{ backgroundImage: `url(${item.imageUrl})` }}
+                    aria-hidden="true"
+                  />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-rook-void via-rook-void/55 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-2">
+                  <p className="line-clamp-2 text-xs font-black text-white">{item.title}</p>
+                  <p className="mt-1 truncate text-[10px] font-black uppercase tracking-[0.12em] text-rook-cyan">{item.label}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -294,6 +306,18 @@ export function ProfileView({
       </div>
     </section>
   );
+}
+
+function buildProfileGalleryItems(profile: ProfileSummary) {
+  return profile.signals.slice(0, 6).map((signal) => {
+    const media = getSignalMedia(signal, { fallback: true }).find((item) => item.type === "image" || item.type === "ai_generated" || item.type === "chart");
+    return {
+      id: signal.id,
+      title: signal.title,
+      label: signal.signal_category ?? signal.media_type ?? media?.domain ?? "signal",
+      imageUrl: media?.thumbnailUrl ?? media?.url ?? null,
+    };
+  });
 }
 
 function getVerificationLabel(type: ProfileSummary["verification_type"], premium: boolean) {
