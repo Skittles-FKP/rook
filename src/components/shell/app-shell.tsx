@@ -203,8 +203,8 @@ export function AppShell({
       )}
 
       <MobileNavigationBoundary>
-        <nav className="rook-mobile-bottom-nav mobile-safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-rook-void/90 pl-[calc(0.45rem+env(safe-area-inset-left))] pr-[calc(0.45rem+env(safe-area-inset-right))] pt-1 backdrop-blur-2xl md:hidden">
-          <div className="mx-auto grid h-11 max-w-md grid-cols-5 gap-1">
+        <nav className="rook-mobile-bottom-nav mobile-safe-bottom fixed inset-x-0 bottom-0 z-40 w-full max-w-full overflow-hidden border-t border-white/10 bg-rook-void/90 pl-[max(0.45rem,env(safe-area-inset-left))] pr-[max(0.45rem,env(safe-area-inset-right))] pt-1 backdrop-blur-2xl md:hidden">
+          <div className="mx-auto grid h-11 w-full max-w-md min-w-0 grid-cols-5 gap-1 overflow-hidden">
             {safeNavItems(mobileNavItems).map((item) => {
               const Icon = item.icon;
               const active = pathname === item.href;
@@ -263,8 +263,8 @@ function MobileHeader({
   setDrawerOpen: (open: boolean) => void;
 }) {
   return (
-    <header className="sticky top-0 z-40 max-w-full overflow-hidden border-b border-white/10 bg-rook-void/82 px-[calc(0.65rem+env(safe-area-inset-left))] py-1.5 pr-[calc(0.65rem+env(safe-area-inset-right))] pt-[calc(0.35rem+env(safe-area-inset-top))] backdrop-blur-2xl">
-      <div className="flex h-11 items-center justify-between gap-2">
+    <header className="sticky top-0 z-40 w-full max-w-full min-w-0 overflow-hidden border-b border-white/10 bg-rook-void/82 pl-[max(0.65rem,env(safe-area-inset-left))] pr-[max(0.65rem,env(safe-area-inset-right))] py-1.5 pt-[calc(0.35rem+env(safe-area-inset-top))] backdrop-blur-2xl">
+      <div className="flex h-11 w-full min-w-0 items-center justify-between gap-2 overflow-hidden">
         <button
           type="button"
           aria-label="Open operator menu"
@@ -277,7 +277,7 @@ function MobileHeader({
           <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_20%,rgba(53,216,255,0.55),transparent_34%),radial-gradient(circle_at_70%_70%,rgba(138,92,255,0.5),transparent_38%)]" />
           <RookBirdIcon className="relative h-7 w-7 animate-rook-pulse" />
         </Link>
-        <div className="flex items-center gap-1.5">
+        <div className="flex min-w-0 shrink-0 items-center gap-1.5">
           <Link href="/search" aria-label="Search" className="focus-ring grid h-9 w-9 place-items-center rounded-full border border-white/10 bg-white/[0.05] text-rook-muted">
             <Search className="h-4 w-4" />
           </Link>
@@ -287,7 +287,7 @@ function MobileHeader({
           </Link>
         </div>
       </div>
-      <div className="mt-1 flex h-8 items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-2.5">
+      <div className="mt-1 flex h-8 w-full min-w-0 items-center gap-2 overflow-hidden rounded-full border border-white/10 bg-white/[0.045] px-2.5">
         <Search className="h-3.5 w-3.5 shrink-0 text-rook-cyan" />
         <Link href="/search" className="min-w-0 flex-1 truncate text-xs font-semibold text-rook-muted">
           Search Signals, operators, narratives

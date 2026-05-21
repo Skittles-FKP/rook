@@ -198,7 +198,7 @@ export function MobileSignalFeed({
           </div>
         )}
 
-        <div className="grid gap-1.5 px-1.5 sm:gap-2 sm:px-3">
+        <div className="grid w-full min-w-0 max-w-full gap-1.5 overflow-x-hidden px-1.5 sm:gap-2 sm:px-3">
           {visibleSignals.slice(0, visibleLimit).map((item, index) => (
             <SignalErrorBoundary key={item.signal.id} label="Signal card">
               <MemoMobileSignalCard
@@ -291,7 +291,7 @@ function MobileSignalCard({
   }
 
   return (
-    <div className={clsx("relative mx-0 min-w-0 max-w-full overflow-hidden rounded-xl border border-white/10 bg-rook-void/45", featured && "rook-live-arrival")}>
+    <div className={clsx("relative mx-0 w-full min-w-0 max-w-full overflow-hidden rounded-xl border border-white/10 bg-rook-void/45", featured && "rook-live-arrival")}>
       <div
         className={clsx(
           "absolute inset-y-4 flex items-center rounded-xl px-4 text-xs font-black uppercase tracking-[0.16em] transition-opacity",
@@ -303,7 +303,7 @@ function MobileSignalCard({
         {gesture === "save" ? "Save" : gesture === "amplify" ? "Amplify" : "Dismiss"}
       </div>
       <div
-        className="mobile-swipe-card touch-pan-y max-w-full px-0 py-0 transition-transform duration-200 ease-out sm:px-0"
+        className="mobile-swipe-card touch-pan-y w-full min-w-0 max-w-full overflow-hidden px-0 py-0 transition-transform duration-200 ease-out sm:px-0"
         style={{ transform: dragX ? `translate3d(${dragX}px, 0, 0)` : undefined }}
         onPointerDown={(event) => {
           startX.current = event.clientX;
@@ -330,9 +330,9 @@ function MobileSignalCard({
           setGesture(null);
         }}
       >
-        <div className="relative">
+        <div className="relative w-full min-w-0 max-w-full overflow-hidden">
           <MobileNativeSignalPost item={item} featured={featured} saved={saved} onSave={onSave} onBrief={onBrief} />
-          <div className="mx-2 mb-1 mt-0.5 grid grid-cols-4 gap-1 text-[8.5px] font-black text-rook-muted sm:mx-2 sm:gap-1.5 sm:text-[9.5px]">
+          <div className="actions-row mx-2 mb-1 mt-0.5 grid min-w-0 grid-cols-4 gap-1 overflow-hidden text-[8.5px] font-black text-rook-muted sm:mx-2 sm:gap-1.5 sm:text-[9.5px]">
             <button
               type="button"
               disabled={isPending}
@@ -341,7 +341,7 @@ function MobileSignalCard({
                   void toggleLikeAction(signal.id);
                 });
               }}
-              className="focus-ring flex h-7 items-center justify-center gap-1 rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
+              className="focus-ring flex h-7 min-w-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
             >
               <ThumbsUp className="h-3.5 w-3.5 text-rook-cyan" />
               Like
@@ -350,7 +350,7 @@ function MobileSignalCard({
               type="button"
               onClick={onSave}
               className={clsx(
-                "focus-ring flex h-7 items-center justify-center gap-1 rounded-full border transition active:scale-95 sm:h-8",
+                "focus-ring flex h-7 min-w-0 items-center justify-center gap-1 overflow-hidden rounded-full border transition active:scale-95 sm:h-8",
                 saved ? "border-rook-cyan/40 bg-rook-cyan/15 text-rook-cyan" : "border-white/10 bg-white/[0.035]",
               )}
             >
@@ -360,7 +360,7 @@ function MobileSignalCard({
             <button
               type="button"
               onClick={onBrief}
-              className="focus-ring flex h-7 items-center justify-center gap-1 rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
+              className="focus-ring flex h-7 min-w-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
             >
               <Maximize2 className="h-3.5 w-3.5 text-rook-violet" />
               Brief
@@ -368,7 +368,7 @@ function MobileSignalCard({
             <button
               type="button"
               onClick={onDismiss}
-              className="focus-ring flex h-7 items-center justify-center gap-1 rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
+              className="focus-ring flex h-7 min-w-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
             >
               <X className="h-3.5 w-3.5 text-rook-amber" />
               Pass
@@ -411,7 +411,7 @@ function MobileNativeSignalPost({
   ].filter((row) => row.value);
 
   return (
-    <article className="mobile-native-post min-w-0 max-w-full overflow-hidden bg-rook-void px-2.5 py-2 text-rook-text sm:px-3 sm:py-3">
+    <article className="mobile-native-post w-full min-w-0 max-w-full overflow-hidden bg-rook-void px-2.5 py-2 text-rook-text sm:px-3 sm:py-3">
       <div className="operator-row flex min-w-0 max-w-full items-start gap-2.5 sm:gap-3">
         <Link href={`/profile/${username}`} className="focus-ring shrink-0 rounded-lg">
           <span className="relative block">
@@ -427,10 +427,10 @@ function MobileNativeSignalPost({
         </Link>
         <div className="min-w-0 flex-1">
           <div className="signal-meta-row flex min-w-0 max-w-full flex-wrap items-center gap-x-1.5 gap-y-0.5">
-            <Link href={`/profile/${username}`} className="focus-ring max-w-full truncate text-[13px] font-black leading-5 text-white sm:text-sm">
+            <Link href={`/profile/${username}`} className="focus-ring min-w-0 max-w-full truncate text-[13px] font-black leading-5 text-white sm:text-sm">
               {authorName}
             </Link>
-            <span className="max-w-[8rem] truncate text-[11px] font-semibold text-rook-muted sm:max-w-[14rem] sm:text-xs">@{username}</span>
+            <span className="min-w-0 max-w-[8rem] truncate text-[11px] font-semibold text-rook-muted sm:max-w-[14rem] sm:text-xs">@{username}</span>
             <span className="h-1 w-1 shrink-0 rounded-full bg-rook-muted" />
             <span className="shrink-0 text-[11px] text-rook-muted sm:text-xs">{formatRelativeTime(signal.created_at)}</span>
           </div>
@@ -473,7 +473,7 @@ function MobileNativeSignalPost({
         {summarizeSignal(signal)}
       </p>
 
-      <div className="metrics-row mt-1.5 grid grid-cols-2 gap-1 sm:grid-cols-4">
+      <div className="metrics-row mt-1.5 grid min-w-0 grid-cols-2 gap-1 overflow-hidden sm:grid-cols-4">
         <MetricChip icon={TrendingUp} label={`${engagement.propagation}%`} tone="cyan" />
         <MetricChip icon={MessageCircle} label={`${engagement.replies}`} tone="muted" />
         <MetricChip icon={Repeat2} label={`${engagement.boosts}`} tone="green" />
