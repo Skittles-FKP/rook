@@ -22,6 +22,7 @@ export function SignalActions({
   amplified: boolean;
 }) {
   const router = useRouter();
+  const persistedSignal = isUuid(signalId);
   const [isPending, startTransition] = useTransition();
   const [state, update] = useOptimistic(
     { likes, amplifies, liked, amplified },
@@ -48,7 +49,7 @@ export function SignalActions({
   return (
     <div className="mt-5 grid grid-cols-3 gap-2 text-xs font-bold text-rook-muted">
       <button
-        disabled={isPending}
+        disabled={isPending || !persistedSignal}
         onClick={() =>
           startTransition(async () => {
             update("like");
@@ -64,7 +65,7 @@ export function SignalActions({
         {state.likes}
       </button>
       <button
-        disabled={isPending}
+        disabled={isPending || !persistedSignal}
         onClick={() =>
           startTransition(async () => {
             update("amplify");
@@ -79,10 +80,14 @@ export function SignalActions({
         <Repeat2 className="h-4 w-4" />
         {state.amplifies}
       </button>
-      <Link href={`/signals/${signalId}`} className="focus-ring inline-flex items-center gap-2 rounded-lg py-2 transition hover:text-white">
+      <Link href={persistedSignal ? `/signals/${signalId}#comments` : "/feed"} className="focus-ring inline-flex items-center gap-2 rounded-lg py-2 transition hover:text-white">
         <MessageCircle className="h-4 w-4" />
         {comments}
       </Link>
     </div>
   );
+}
+
+function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }

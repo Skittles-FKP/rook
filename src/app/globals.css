@@ -855,6 +855,27 @@ textarea {
     overflow-x: hidden;
   }
 
+  .mobile-feed-scroll {
+    padding-left: max(0.5rem, env(safe-area-inset-left));
+    padding-right: max(0.5rem, env(safe-area-inset-right));
+  }
+
+  .mobile-signal-stack {
+    gap: 0.625rem;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .signal-detail-shell,
+  .signal-detail-shell > *,
+  .signal-detail-shell form,
+  .signal-detail-shell article {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
   .mobile-native-post {
     border-radius: var(--rook-mobile-radius);
     background: transparent;
@@ -937,6 +958,13 @@ textarea {
     max-width: 100%;
     overflow: hidden;
     white-space: nowrap;
+  }
+
+  .signal-quick-actions .action-button span,
+  .actions-row .action-button span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .signal-quick-actions .action-button svg,

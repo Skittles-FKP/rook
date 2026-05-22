@@ -86,7 +86,15 @@ export function CommentForm({
   }
 
   return (
-    <form ref={formRef} action={submitComment} className={compact ? "rounded-lg border border-white/10 bg-white/[0.035] p-3" : "surface-card rounded-xl p-4"}>
+    <form
+      ref={formRef}
+      action={submitComment}
+      className={
+        compact
+          ? "w-full max-w-full min-w-0 overflow-hidden rounded-lg border border-white/10 bg-white/[0.035] p-3"
+          : "surface-card w-full max-w-full min-w-0 overflow-hidden rounded-xl p-3 sm:p-4"
+      }
+    >
       <input type="hidden" name="signalId" value={signalId} />
       {parentCommentId && <input type="hidden" name="parentCommentId" value={parentCommentId} />}
       <textarea
@@ -95,15 +103,15 @@ export function CommentForm({
         rows={compact ? 2 : 3}
         maxLength={800}
         placeholder={parentCommentId ? "Reply with context or a correction." : "Add context, evidence, or a counter-signal."}
-        className="w-full resize-none rounded-lg border border-white/10 bg-white/[0.05] px-3 py-3 text-sm leading-6 text-white outline-none transition focus:border-rook-blue"
+        className="w-full max-w-full min-w-0 resize-none rounded-lg border border-white/10 bg-white/[0.05] px-3 py-3 text-sm leading-6 text-white outline-none transition focus:border-rook-blue"
       />
-      <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-3 flex min-w-0 max-w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {state.message ? (
-          <p className={`text-sm ${state.ok ? "text-rook-green" : "text-red-200"}`}>
+          <p className={`min-w-0 text-sm [overflow-wrap:anywhere] ${state.ok ? "text-rook-green" : "text-red-200"}`}>
             {state.message}
           </p>
         ) : (
-          <p className="text-sm text-rook-muted">{parentCommentId ? "Replies stay attached to this thread." : "Comments become part of the Signal trail."}</p>
+          <p className="min-w-0 text-sm text-rook-muted [overflow-wrap:anywhere]">{parentCommentId ? "Replies stay attached to this thread." : "Comments become part of the Signal trail."}</p>
         )}
         <SubmitButton pendingLabel="Posting..." disabled={Boolean(state.pending) || isPending}>
           {parentCommentId ? "Reply" : "Comment"}

@@ -98,7 +98,7 @@ export default async function BriefDetailPage({
             {sourceSignals.map((signal) => (
               <Link
                 key={signal.id}
-                href={`/signals/${signal.id}`}
+                href={getSignalHref(signal.id)}
                 className="focus-ring rounded-lg border border-white/10 bg-white/[0.035] p-4 transition hover:border-rook-cyan/40"
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -115,6 +115,14 @@ export default async function BriefDetailPage({
       </section>
     </>
   );
+}
+
+function getSignalHref(id: string) {
+  return isUuid(id) ? `/signals/${id}` : "/feed";
+}
+
+function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
 
 function BriefList({

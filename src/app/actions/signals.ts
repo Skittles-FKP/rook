@@ -405,6 +405,10 @@ function getFilenameFromUrl(value: string) {
 }
 
 export async function toggleLikeAction(signalId: string) {
+  if (!isUuid(signalId)) {
+    return { ok: false, message: "Live preview Signals cannot be liked until they are saved." };
+  }
+
   const { supabase, userId } = await getUserId();
 
   if (!userId) {
@@ -465,6 +469,10 @@ export async function toggleLikeAction(signalId: string) {
 }
 
 export async function toggleAmplifyAction(signalId: string) {
+  if (!isUuid(signalId)) {
+    return { ok: false, message: "Live preview Signals cannot be amplified until they are saved." };
+  }
+
   const { supabase, userId } = await getUserId();
 
   if (!userId) {
@@ -535,6 +543,10 @@ export async function createCommentAction(
 
   if (!userId) {
     return { ok: false, message: "Log in to comment." };
+  }
+
+  if (!isUuid(signalId)) {
+    return { ok: false, message: "Live preview Signals are not commentable yet." };
   }
 
   if (!signalId || !body) {
@@ -675,6 +687,10 @@ export async function toggleFollowAction(profileId: string) {
   if (profile?.username) revalidatePath(`/profile/${profile.username}`);
   revalidatePath("/operators");
   return { ok: true, message: data ? "Follow removed." : "Following operator." };
+}
+
+function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
 
 export async function createFlockAction(

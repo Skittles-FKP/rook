@@ -348,8 +348,8 @@ function MobileSignalCard({
               }}
               className="action-button focus-ring flex h-7 min-w-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
             >
-              <ThumbsUp className="h-3.5 w-3.5 text-rook-cyan" />
-              Like
+              <ThumbsUp className="h-3.5 w-3.5 flex-shrink-0 text-rook-cyan" />
+              <span className="min-w-0 truncate">Like</span>
             </button>
             <button
               type="button"
@@ -359,24 +359,24 @@ function MobileSignalCard({
                 saved ? "border-rook-cyan/40 bg-rook-cyan/15 text-rook-cyan" : "border-white/10 bg-white/[0.035]",
               )}
             >
-              <Bookmark className="h-3.5 w-3.5" />
-              Keep
+              <Bookmark className="h-3.5 w-3.5 flex-shrink-0" />
+              <span className="min-w-0 truncate">Keep</span>
             </button>
             <button
               type="button"
               onClick={onBrief}
               className="action-button focus-ring flex h-7 min-w-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
             >
-              <Maximize2 className="h-3.5 w-3.5 text-rook-violet" />
-              Brief
+              <Maximize2 className="h-3.5 w-3.5 flex-shrink-0 text-rook-violet" />
+              <span className="min-w-0 truncate">Brief</span>
             </button>
             <button
               type="button"
               onClick={onDismiss}
               className="action-button focus-ring flex h-7 min-w-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
             >
-              <X className="h-3.5 w-3.5 text-rook-amber" />
-              Pass
+              <X className="h-3.5 w-3.5 flex-shrink-0 text-rook-amber" />
+              <span className="min-w-0 truncate">Pass</span>
             </button>
           </div>
         </div>
@@ -505,16 +505,16 @@ function MobileNativeSignalPost({
             saved ? "bg-rook-cyan/15 text-rook-cyan" : "bg-white/[0.045] text-rook-muted",
           )}
         >
-          <Bookmark className="h-3.5 w-3.5" />
-          Keep
+          <Bookmark className="h-3.5 w-3.5 flex-shrink-0" />
+          <span className="min-w-0 truncate">Keep</span>
         </button>
         <button
           type="button"
           onClick={onBrief}
           className="action-button focus-ring inline-flex h-7 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-full bg-white/[0.045] px-2 text-[9px] font-black uppercase tracking-[0.1em] text-rook-muted transition active:scale-95 sm:h-8 sm:px-2.5 sm:text-[10px]"
         >
-          <BrainCircuit className="h-3.5 w-3.5 text-rook-violet" />
-          Brief
+          <BrainCircuit className="h-3.5 w-3.5 flex-shrink-0 text-rook-violet" />
+          <span className="min-w-0 truncate">Brief</span>
         </button>
         <ShareSignalButton
           signalId={signal.id}

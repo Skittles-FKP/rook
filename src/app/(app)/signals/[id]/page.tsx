@@ -1,7 +1,7 @@
 export const runtime = "edge";
 
-import { notFound } from "next/navigation";
-import { ArrowUp, MessageCircle } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, ArrowUp, MessageCircle } from "lucide-react";
 import { PageHeader } from "@/components/shell/page-header";
 import { SignalCard } from "@/components/signal-card";
 import { CommentForm } from "@/components/signals/comment-form";
@@ -25,6 +25,10 @@ export default async function SignalDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  if (!isUuid(id)) {
+    return <UnavailableSignal id={id} reason="Live preview Signals open from the feed once they are persisted." />;
+  }
+
   const [signalResult, commentsResult] = await Promise.allSettled([
     getSignalById(id),
     getSignalCommentsResult(id),
@@ -61,7 +65,7 @@ export default async function SignalDetailPage({
   });
 
   if (!signal) {
-    notFound();
+    return <UnavailableSignal id={id} reason="This Signal is unavailable or has moved." />;
   }
 
   return (
@@ -73,7 +77,7 @@ export default async function SignalDetailPage({
           description="Inspect the Signal, its amplification, and the conversation around it."
         />
       </div>
-      <section className="mx-auto grid w-full max-w-full min-w-0 gap-2 overflow-x-hidden px-0 py-2 sm:gap-4 sm:px-6 sm:py-5 md:max-w-4xl lg:px-8">
+      <section className="signal-detail-shell mx-auto grid w-full max-w-full min-w-0 gap-2 overflow-x-hidden px-2 py-2 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:gap-4 sm:px-6 sm:py-5 md:max-w-4xl lg:px-8">
         <SignalErrorBoundary label="Signal detail card">
           <SignalCard signal={signal} size="LG" />
         </SignalErrorBoundary>
@@ -89,13 +93,13 @@ export default async function SignalDetailPage({
           Build {BUILD_ID} · {BUILD_TIME} · {RUNTIME_DIAGNOSTIC_VERSION}
         </p>
       </section>
-      <div className="mobile-safe-bottom fixed inset-x-0 bottom-[4.1rem] z-30 border-t border-white/10 bg-rook-void/90 px-3 py-2 backdrop-blur-2xl md:hidden">
-        <div className="mx-auto grid max-w-md grid-cols-3 gap-2">
+      <div className="mobile-safe-bottom fixed inset-x-0 bottom-[4.1rem] z-30 max-w-full overflow-hidden border-t border-white/10 bg-rook-void/90 px-2 py-2 backdrop-blur-2xl md:hidden">
+        <div className="mx-auto grid w-full max-w-md min-w-0 grid-cols-3 gap-1.5">
           <a href="#comments" className="focus-ring flex min-h-10 items-center justify-center gap-2 rounded-full bg-white text-xs font-black text-rook-void">
             <MessageCircle className="h-4 w-4" />
             Reply
           </a>
-          <ShareSignalButton signalId={signal.id} title={signal.title} />
+          <ShareSignalButton signalId={signal.id} title={signal.title} className="min-h-10 px-1.5 text-[11px]" />
           <a href="#" className="focus-ring flex min-h-10 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.055] text-xs font-black text-rook-muted">
             <ArrowUp className="h-4 w-4 text-rook-cyan" />
             Top
@@ -104,6 +108,29 @@ export default async function SignalDetailPage({
       </div>
     </>
   );
+}
+
+function UnavailableSignal({ id, reason }: { id: string; reason: string }) {
+  return (
+    <section className="signal-detail-shell mx-auto grid w-full max-w-full min-w-0 gap-3 overflow-x-hidden px-3 py-4 sm:px-6 md:max-w-2xl">
+      <div className="surface-card rounded-xl p-5">
+        <p className="text-xs font-black uppercase tracking-[0.18em] text-rook-cyan">Signal unavailable</p>
+        <h1 className="mt-2 text-2xl font-black text-white">This Signal route is safe, but no thread is available.</h1>
+        <p className="mt-3 text-sm leading-6 text-rook-muted">{reason}</p>
+        <p className="mt-3 break-all rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-rook-muted">
+          {decodeURIComponent(id)}
+        </p>
+        <Link href="/feed" className="focus-ring mt-4 inline-flex min-h-10 items-center gap-2 rounded-full bg-white px-4 text-sm font-black text-rook-void">
+          <ArrowLeft className="h-4 w-4" />
+          Back to feed
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
 
 function summarizeSignalShape(signal: unknown) {

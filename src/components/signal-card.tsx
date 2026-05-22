@@ -144,7 +144,7 @@ export function SignalCard({
 
       {!imageFirst && showMedia && <div className="hidden md:block">{media}</div>}
 
-      <Link href={`/signals/${safeSignal.id}`} className="focus-ring mt-4 block rounded-md">
+      <Link href={getSignalDetailHref(safeSignal)} className="focus-ring mt-4 block rounded-md">
         <h2 className={`mobile-clamp-title mobile-readable font-black text-white hover:text-rook-cyan ${sizeConfig.titleClass}`}>
           {safeSignal.title}
         </h2>
@@ -337,7 +337,7 @@ function SignalEngagementRow({ signal }: { signal: SignalWithAuthor }) {
         return (
           <Link
             key={item.label}
-            href={`/signals/${signal.id}${item.label === "Replies" ? "#comments" : ""}`}
+            href={`${getSignalDetailHref(signal)}${item.label === "Replies" && isUuid(signal.id) ? "#comments" : ""}`}
             aria-label={`${item.label}: ${formatCompactNumber(item.value)}`}
             className="focus-ring inline-flex min-h-9 min-w-0 items-center justify-center gap-1 rounded-full bg-white/[0.035] px-1.5 transition hover:bg-white/[0.06] hover:text-white"
           >
@@ -360,6 +360,15 @@ function estimateSignalViews(signal: SignalWithAuthor) {
   const explicit = (signal as SignalWithAuthor & { engagement?: { views?: number } }).engagement?.views;
   if (typeof explicit === "number" && Number.isFinite(explicit)) return explicit;
   return Math.max(12, (signal.likes_count * 8) + (signal.amplifies_count * 15) + (signal.comments_count * 11));
+}
+
+function getSignalDetailHref(signal: SignalWithAuthor) {
+  if (isUuid(signal.id)) return `/signals/${signal.id}`;
+  return signal.source_url || signal.reference_url || "/feed";
+}
+
+function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
 
 function formatCompactNumber(value: number) {

@@ -15,35 +15,35 @@ export function ShareableSignalCard({ signal }: { signal: SignalWithAuthor }) {
   const tags = Array.isArray(intelligence.narrative_tags) ? intelligence.narrative_tags : [];
 
   return (
-    <div className="accent-border min-w-0 rounded-xl bg-rook-graphite p-4 sm:p-5">
-      <div className="flex flex-wrap items-start justify-between gap-4 sm:gap-5">
-        <div className="flex items-center gap-3">
-          <RookBirdIcon className="h-10 w-10" />
-          <div>
-            <p className="text-sm font-black text-white">Rook Signal Card</p>
-            <p className="mt-1 text-xs font-semibold text-rook-muted">
+    <div className="accent-border w-full max-w-full min-w-0 overflow-hidden rounded-xl bg-rook-graphite p-3 sm:p-5">
+      <div className="flex min-w-0 max-w-full flex-wrap items-start justify-between gap-3 sm:gap-5">
+        <div className="flex min-w-0 items-center gap-3">
+          <RookBirdIcon className="h-10 w-10 flex-shrink-0" />
+          <div className="min-w-0">
+            <p className="truncate text-sm font-black text-white">Rook Signal Card</p>
+            <p className="mt-1 truncate text-xs font-semibold text-rook-muted">
               @{safeSignal.author?.username ?? "unknown"} · {safeSignal.flock?.name ?? "Open Network"}
             </p>
           </div>
         </div>
-        <span className="inline-flex items-center gap-2 rounded-full border border-rook-green/25 bg-rook-green/10 px-3 py-1 text-xs font-black text-rook-green">
-          <RadioTower className="h-3.5 w-3.5" />
+        <span className="inline-flex max-w-full flex-shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-rook-green/25 bg-rook-green/10 px-2.5 py-1 text-xs font-black text-rook-green">
+          <RadioTower className="h-3.5 w-3.5 flex-shrink-0" />
           Pulse {pulse.pulse_score}
         </span>
       </div>
-      <h3 className="mobile-readable mt-6 text-2xl font-black leading-tight text-white">{safeSignal.title}</h3>
-      <p className="mobile-readable mt-3 line-clamp-4 text-sm leading-6 text-rook-muted">{safeSignal.body}</p>
+      <h3 className="mobile-readable mt-5 max-w-full text-xl font-black leading-tight text-white [overflow-wrap:anywhere] sm:mt-6 sm:text-2xl">{safeSignal.title}</h3>
+      <p className="mobile-readable mt-3 line-clamp-4 max-w-full text-sm leading-6 text-rook-muted [overflow-wrap:anywhere]">{safeSignal.body}</p>
       <MediaBoundary>
         <SignalMedia signal={safeSignal} />
       </MediaBoundary>
-      <div className="mt-6 grid gap-2 sm:grid-cols-3">
+      <div className="mt-5 grid min-w-0 max-w-full gap-2 sm:mt-6 sm:grid-cols-3">
         <Metric label="Confidence" value={`${intelligence.confidence}%`} />
         <Metric label="Velocity" value={`${pulse.velocity}/h`} />
         <Metric label="Sentiment" value={intelligence.sentiment} />
       </div>
-      <div className="mt-5 flex flex-wrap gap-2">
+      <div className="mt-5 flex min-w-0 max-w-full flex-wrap gap-2 overflow-hidden">
         {tags.map((tag) => (
-          <span key={tag} className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-bold text-rook-muted">
+          <span key={tag} className="max-w-full truncate rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-bold text-rook-muted">
             {tag}
           </span>
         ))}
@@ -76,9 +76,9 @@ function normalizeShareSignal(signal: SignalWithAuthor): SignalWithAuthor {
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-white/10 bg-white/[0.04] p-3">
-      <p className="text-sm font-black text-white">{value}</p>
-      <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.12em] text-rook-muted">{label}</p>
+    <div className="min-w-0 overflow-hidden rounded-lg border border-white/10 bg-white/[0.04] p-3">
+      <p className="truncate text-sm font-black text-white">{value}</p>
+      <p className="mt-1 truncate text-[10px] font-bold uppercase tracking-[0.12em] text-rook-muted">{label}</p>
     </div>
   );
 }

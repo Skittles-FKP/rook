@@ -64,7 +64,7 @@ export default async function PulsePage() {
               topSignals.map((signal) => (
                 <Link
                   key={signal.id}
-                  href={`/signals/${signal.id}`}
+                  href={getSignalHref(signal.id)}
                   className="focus-ring inline-flex w-full min-w-0 max-w-full items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 transition hover:border-rook-cyan/40 sm:min-w-64 sm:max-w-[18rem]"
                 >
                   <span className="truncate text-sm font-bold text-white">{signal.title}</span>
@@ -159,7 +159,7 @@ export default async function PulsePage() {
             )}
             {anomalies.map((signal) => (
               <Link
-                href={`/signals/${signal.id}`}
+                href={getSignalHref(signal.id)}
                 key={signal.id}
                 className="surface-card focus-ring block rounded-xl p-5 transition hover:border-rook-amber/40"
               >
@@ -188,6 +188,14 @@ export default async function PulsePage() {
       </section>
     </>
   );
+}
+
+function getSignalHref(id: string) {
+  return isUuid(id) ? `/signals/${id}` : "/feed";
+}
+
+function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
 
 function Metric({ label, value }: { label: string; value: number }) {
