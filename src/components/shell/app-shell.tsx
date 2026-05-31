@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, ChevronsLeft, ChevronsRight, Download, Menu, PanelRightOpen, Plus, Search, X } from "lucide-react";
+import { Bell, ChevronsLeft, ChevronsRight, Download, Menu, PanelRightOpen, Plus, Search, UserRound, X } from "lucide-react";
 import { clsx } from "clsx";
 import { OperatorSwitcher } from "@/components/auth/operator-switcher";
 import { SignOutButton } from "@/components/auth/sign-out-button";
@@ -148,10 +148,7 @@ export function AppShell({
 
   return (
     <FeedShellBoundary>
-    <div className="min-h-[100dvh] w-full max-w-full overflow-x-hidden bg-rook-void/75 text-rook-text md:min-h-screen">
-      <div className="pointer-events-none fixed inset-0 z-0 hidden opacity-60 lg:block">
-        <span className="ambient-scanline absolute left-0 top-1/3 h-px w-full bg-rook-cyan/20" />
-      </div>
+    <div className="min-h-[100dvh] w-full max-w-full overflow-x-hidden bg-rook-void text-rook-text md:min-h-screen">
       <div className="md:hidden">
         <MobileHeader events={safeEvents} setDrawerOpen={setDrawerOpen} />
       </div>
@@ -180,7 +177,7 @@ export function AppShell({
           <FeedContentBoundary>{children}</FeedContentBoundary>
         </main>
 
-        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-l border-white/10 px-3 py-4 opacity-95 xl:block">
+        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-l border-white/10 bg-rook-void px-3 py-4 opacity-95 xl:block">
           <RightRail events={safeEvents} />
         </aside>
 
@@ -195,7 +192,7 @@ export function AppShell({
             await prompt.prompt?.();
             setInstallPrompt(null);
           }}
-          className="focus-ring fixed bottom-[calc(4.9rem+env(safe-area-inset-bottom))] right-4 z-50 inline-flex min-h-10 items-center gap-2 rounded-full border border-rook-cyan/25 bg-rook-void/92 px-3 text-xs font-black uppercase tracking-[0.12em] text-rook-cyan shadow-panel backdrop-blur-xl md:hidden"
+          className="focus-ring fixed bottom-[calc(4.9rem+env(safe-area-inset-bottom))] right-4 z-50 inline-flex min-h-11 items-center gap-2 rounded-full border border-rook-cyan/25 bg-rook-ink px-3 text-xs font-black uppercase tracking-[0.12em] text-rook-cyan shadow-panel md:hidden"
         >
           <Download className="h-4 w-4" />
           Install
@@ -203,16 +200,16 @@ export function AppShell({
       )}
 
       <MobileNavigationBoundary>
-        <nav className="rook-mobile-bottom-nav mobile-safe-bottom fixed inset-x-0 bottom-0 z-40 w-full max-w-full overflow-hidden border-t border-white/10 bg-rook-void/90 pl-[max(0.45rem,env(safe-area-inset-left))] pr-[max(0.45rem,env(safe-area-inset-right))] pt-1 backdrop-blur-2xl md:hidden">
-          <div className="mx-auto grid h-11 w-full max-w-md min-w-0 grid-cols-5 gap-1 overflow-hidden">
+        <nav className="rook-mobile-bottom-nav mobile-safe-bottom fixed inset-x-0 bottom-0 z-40 w-full max-w-full overflow-hidden border-t border-white/10 bg-rook-ink/95 pl-[max(0.45rem,env(safe-area-inset-left))] pr-[max(0.45rem,env(safe-area-inset-right))] pt-1 backdrop-blur-xl md:hidden">
+          <div className="mx-auto grid h-12 w-full max-w-md min-w-0 grid-cols-5 gap-1 overflow-hidden">
             {safeNavItems(mobileNavItems).map((item) => {
               const Icon = item.icon;
               const active = pathname === item.href;
               const classes = clsx(
-                "focus-ring flex min-h-10 touch-manipulation flex-col items-center justify-center gap-0.5 rounded-xl px-1 text-[9px] font-bold transition duration-200 active:scale-95 xs:text-[9.5px]",
+                "focus-ring flex min-h-11 touch-manipulation flex-col items-center justify-center gap-0.5 rounded-xl px-1 text-[10px] font-bold transition duration-200 active:scale-95 xs:text-[10.5px]",
                 active
-                  ? "is-active bg-white/[0.1] text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08),0_0_18px_rgba(53,216,255,0.08)]"
-                  : "text-rook-muted hover:bg-white/[0.06] hover:text-white",
+                  ? "is-active text-rook-blue"
+                  : "text-rook-muted hover:bg-white/[0.06] hover:text-rook-text",
                 item.href === "/feed#compose" && "text-rook-cyan",
               );
               if (item.href === "/feed#compose") {
@@ -263,34 +260,37 @@ function MobileHeader({
   setDrawerOpen: (open: boolean) => void;
 }) {
   return (
-    <header className="sticky top-0 z-40 w-full max-w-full min-w-0 overflow-hidden border-b border-white/10 bg-rook-void/82 pl-[max(0.65rem,env(safe-area-inset-left))] pr-[max(0.65rem,env(safe-area-inset-right))] py-1.5 pt-[calc(0.35rem+env(safe-area-inset-top))] backdrop-blur-2xl">
+    <header className="sticky top-0 z-40 w-full max-w-full min-w-0 overflow-hidden border-b border-white/10 bg-rook-ink/95 pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] py-2 pt-[calc(0.45rem+env(safe-area-inset-top))] backdrop-blur-xl">
       <div className="flex h-11 w-full min-w-0 items-center justify-between gap-2 overflow-hidden">
         <button
           type="button"
           aria-label="Open operator menu"
           onClick={() => setDrawerOpen(true)}
-          className="focus-ring relative z-[80] grid h-10 w-10 touch-manipulation place-items-center rounded-full border border-white/10 bg-white/[0.07] text-rook-muted transition active:scale-95"
+          className="focus-ring relative z-[80] grid h-11 w-11 touch-manipulation place-items-center rounded-full border border-white/10 bg-rook-graphite text-rook-muted transition active:scale-95"
         >
           <Menu className="h-[18px] w-[18px]" />
         </button>
-        <Link href="/feed" aria-label="Rook feed" className="focus-ring relative grid h-9 w-9 place-items-center overflow-hidden rounded-lg border border-white/10 bg-rook-graphite shadow-glow">
-          <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_20%,rgba(53,216,255,0.55),transparent_34%),radial-gradient(circle_at_70%_70%,rgba(138,92,255,0.5),transparent_38%)]" />
-          <RookBirdIcon className="relative h-7 w-7 animate-rook-pulse" />
+        <Link href="/feed" aria-label="Rook feed" className="focus-ring flex min-w-0 items-center gap-2 rounded-lg px-2">
+          <RookBirdIcon className="h-6 w-6" />
+          <span className="text-sm font-black uppercase tracking-[0.18em] text-rook-text">ROOK</span>
         </Link>
-        <div className="flex min-w-0 shrink-0 items-center gap-1.5">
-          <Link href="/search" aria-label="Search" className="focus-ring grid h-9 w-9 place-items-center rounded-full border border-white/10 bg-white/[0.05] text-rook-muted">
+        <div className="flex min-w-0 shrink-0 items-center gap-1">
+          <Link href="/search" aria-label="Search" className="focus-ring grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-rook-graphite text-rook-muted">
             <Search className="h-4 w-4" />
           </Link>
-          <Link href="/alerts" aria-label="Alerts" className="focus-ring relative grid h-9 w-9 place-items-center rounded-full border border-white/10 bg-white/[0.05] text-rook-muted">
+          <Link href="/alerts" aria-label="Notifications" className="focus-ring relative grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-rook-graphite text-rook-muted">
             <Bell className="h-4 w-4" />
-            {events.length > 0 && <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-rook-cyan shadow-glow" />}
+            {events.length > 0 && <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-rook-blue" />}
+          </Link>
+          <Link href="/profile" aria-label="Profile" className="focus-ring grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-rook-graphite text-rook-muted">
+            <UserRound className="h-4 w-4" />
           </Link>
         </div>
       </div>
-      <div className="mt-1 flex h-8 w-full min-w-0 items-center gap-2 overflow-hidden rounded-full border border-white/10 bg-white/[0.045] px-2.5">
-        <Search className="h-3.5 w-3.5 shrink-0 text-rook-cyan" />
-        <Link href="/search" className="min-w-0 flex-1 truncate text-xs font-semibold text-rook-muted">
-          Search Signals, operators, narratives
+      <div className="mt-2 flex h-10 w-full min-w-0 items-center gap-2 overflow-hidden rounded-full border border-white/10 bg-rook-graphite px-3">
+        <Search className="h-4 w-4 shrink-0 text-rook-muted" />
+        <Link href="/search" className="min-w-0 flex-1 truncate text-sm font-semibold text-rook-muted">
+          Search Signals
         </Link>
       </div>
     </header>
@@ -299,7 +299,7 @@ function MobileHeader({
 
 function TabletHeader({ setRightRailOpen }: { setRightRailOpen: (open: boolean) => void }) {
   return (
-    <header className="sticky top-0 z-30 hidden border-b border-white/10 bg-rook-void/82 px-4 py-2.5 backdrop-blur-2xl md:block xl:hidden">
+    <header className="sticky top-0 z-30 hidden border-b border-white/10 bg-rook-ink/95 px-4 py-3 backdrop-blur-xl md:block xl:hidden">
       <div className="flex items-center justify-between gap-3">
         <Link href="/feed" className="focus-ring rounded-lg">
           <RookMark compact />
@@ -307,7 +307,7 @@ function TabletHeader({ setRightRailOpen }: { setRightRailOpen: (open: boolean) 
         <button
           type="button"
           onClick={() => setRightRailOpen(true)}
-          className="focus-ring inline-flex min-h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-3 text-xs font-black uppercase tracking-[0.12em] text-rook-muted"
+          className="focus-ring inline-flex min-h-11 items-center gap-2 rounded-full border border-white/10 bg-rook-graphite px-3 text-xs font-black uppercase tracking-[0.12em] text-rook-muted"
         >
           <PanelRightOpen className="h-4 w-4 text-rook-cyan" />
           Intelligence
@@ -331,7 +331,7 @@ function DesktopSidebar({
   return (
     <aside
       className={clsx(
-        "sticky top-0 hidden h-screen shrink-0 overflow-y-auto border-r border-white/10 px-2 py-3 transition-[width] duration-300 md:block",
+        "sticky top-0 hidden h-screen shrink-0 overflow-y-auto border-r border-white/10 bg-rook-ink px-2 py-3 transition-[width] duration-300 md:block",
         sidebarCollapsed ? "w-16" : "w-16 xl:w-44",
       )}
     >
@@ -342,7 +342,7 @@ function DesktopSidebar({
           type="button"
           aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           onClick={() => setSidebarCollapsed((value) => !value)}
-          className="focus-ring hidden h-8 w-8 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-rook-muted transition hover:text-white xl:grid"
+          className="focus-ring hidden h-9 w-9 place-items-center rounded-lg border border-white/10 bg-rook-graphite text-rook-muted transition hover:text-rook-text xl:grid"
         >
           {sidebarCollapsed ? <ChevronsRight className="h-4 w-4" /> : <ChevronsLeft className="h-4 w-4" />}
         </button>
@@ -351,7 +351,7 @@ function DesktopSidebar({
         {safeDesktopGroups(desktopNavGroups).map((group, groupIndex) => (
           <details key={group.label} open={groupIndex < 2} className="group">
             <summary className={clsx(
-              "flex min-h-8 cursor-pointer list-none items-center justify-center rounded-lg px-2 text-[10px] font-black uppercase tracking-[0.16em] text-rook-muted transition hover:bg-white/[0.04] hover:text-white",
+              "flex min-h-8 cursor-pointer list-none items-center justify-center rounded-lg px-2 text-[10px] font-black uppercase tracking-[0.16em] text-rook-muted transition hover:bg-white/[0.04] hover:text-rook-text",
               !sidebarCollapsed && "xl:justify-between",
             )}>
               <span className={clsx("hidden", !sidebarCollapsed && "xl:inline")}>{group.label}</span>
@@ -371,8 +371,8 @@ function DesktopSidebar({
                       "focus-ring flex min-h-11 items-center justify-center gap-3 rounded-lg px-2 text-sm font-semibold transition",
                       !sidebarCollapsed && "xl:justify-start xl:px-3",
                       active
-                        ? "accent-border text-white shadow-glow"
-                        : "text-rook-muted hover:bg-white/[0.06] hover:text-white",
+                        ? "accent-border text-rook-blue"
+                        : "text-rook-muted hover:bg-white/[0.06] hover:text-rook-text",
                     )}
                   >
                     <Icon className="h-5 w-5 shrink-0" />
@@ -387,7 +387,7 @@ function DesktopSidebar({
       <Link
         href="/feed"
         title="Create Signal"
-        className="mt-4 flex min-h-11 items-center justify-center gap-2 rounded-lg bg-white text-sm font-black text-rook-void transition hover:bg-rook-cyan"
+        className="mt-4 flex min-h-11 items-center justify-center gap-2 rounded-lg bg-rook-blue text-sm font-black text-white transition hover:opacity-90"
       >
         <Plus className="h-4 w-4" />
         <span className={clsx("hidden", !sidebarCollapsed && "xl:inline")}>Create Signal</span>

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { memo, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import type { ComponentType } from "react";
 import { AlertTriangle, BarChart3, Bookmark, BrainCircuit, ChevronDown, Eye, Maximize2, MessageCircle, Radio, Repeat2, ShieldCheck, Sparkles, ThumbsUp, TrendingUp, X } from "lucide-react";
 import { clsx } from "clsx";
 import { toggleAmplifyAction, toggleLikeAction } from "@/app/actions/signals";
@@ -30,6 +31,12 @@ type MobileVisual = {
   kind: "image" | "video";
   src: string;
   poster?: string | null;
+};
+type MobileBadge = {
+  key: string;
+  label: string;
+  icon: ComponentType<{ className?: string }> | null;
+  className: string;
 };
 
 export function MobileSignalFeed({
@@ -200,7 +207,7 @@ export function MobileSignalFeed({
           </div>
         )}
 
-        <div className="mobile-signal-stack grid w-full min-w-0 max-w-full gap-1.5 overflow-x-hidden px-1.5 sm:gap-2 sm:px-3">
+        <div className="mobile-signal-stack grid w-full min-w-0 max-w-full gap-2 overflow-x-hidden px-0 sm:gap-3">
           {visibleSignals.slice(0, visibleLimit).map((item, index) => (
             <SignalErrorBoundary key={item.signal.id} label="Signal card">
               <MemoMobileSignalCard
@@ -295,7 +302,7 @@ function MobileSignalCard({
   }
 
   return (
-    <div className={clsx("mobile-card-shell relative mx-0 w-full min-w-0 max-w-full overflow-hidden rounded-xl border border-white/10 bg-rook-void/45", featured && "rook-live-arrival")}>
+    <div className={clsx("mobile-card-shell relative mx-2 my-1 w-[calc(100%-1rem)] min-w-0 max-w-[calc(100%-1rem)] overflow-hidden rounded-2xl border border-white/10 bg-rook-ink", featured && "rook-live-arrival")}>
       <div
         className={clsx(
           "absolute inset-y-4 flex items-center rounded-xl px-4 text-xs font-black uppercase tracking-[0.16em] transition-opacity",
@@ -336,7 +343,7 @@ function MobileSignalCard({
       >
         <div className="relative w-full min-w-0 max-w-full overflow-hidden">
           <MobileNativeSignalPost item={item} featured={featured} saved={saved} onSave={onSave} onBrief={onBrief} />
-          <div className="actions-row mb-1 mt-0.5 grid min-w-0 grid-cols-4 gap-1 overflow-hidden px-2 text-[8.5px] font-black text-rook-muted sm:gap-1.5 sm:px-2 sm:text-[9.5px]">
+          <div className="actions-row mb-2 mt-1 grid min-w-0 grid-cols-4 gap-1.5 overflow-hidden px-3 text-[10px] font-black text-rook-muted sm:gap-2 sm:px-4 sm:text-xs">
             <button
               type="button"
               disabled={isPending || !canPersistInteractions}
@@ -346,7 +353,7 @@ function MobileSignalCard({
                   void toggleLikeAction(signal.id);
                 });
               }}
-              className="action-button focus-ring flex h-7 min-w-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
+              className="action-button focus-ring flex min-h-10 min-w-0 items-center justify-center gap-1.5 overflow-hidden rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95"
             >
               <ThumbsUp className="h-3.5 w-3.5 flex-shrink-0 text-rook-cyan" />
               <span className="min-w-0 truncate">Like</span>
@@ -355,7 +362,7 @@ function MobileSignalCard({
               type="button"
               onClick={onSave}
               className={clsx(
-                "action-button focus-ring flex h-7 min-w-0 items-center justify-center gap-1 overflow-hidden rounded-full border transition active:scale-95 sm:h-8",
+                "action-button focus-ring flex min-h-10 min-w-0 items-center justify-center gap-1.5 overflow-hidden rounded-full border transition active:scale-95",
                 saved ? "border-rook-cyan/40 bg-rook-cyan/15 text-rook-cyan" : "border-white/10 bg-white/[0.035]",
               )}
             >
@@ -365,7 +372,7 @@ function MobileSignalCard({
             <button
               type="button"
               onClick={onBrief}
-              className="action-button focus-ring flex h-7 min-w-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
+              className="action-button focus-ring flex min-h-10 min-w-0 items-center justify-center gap-1.5 overflow-hidden rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95"
             >
               <Maximize2 className="h-3.5 w-3.5 flex-shrink-0 text-rook-violet" />
               <span className="min-w-0 truncate">Brief</span>
@@ -373,7 +380,7 @@ function MobileSignalCard({
             <button
               type="button"
               onClick={onDismiss}
-              className="action-button focus-ring flex h-7 min-w-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95 sm:h-8"
+              className="action-button focus-ring flex min-h-10 min-w-0 items-center justify-center gap-1.5 overflow-hidden rounded-full border border-white/10 bg-white/[0.035] transition active:scale-95"
             >
               <X className="h-3.5 w-3.5 flex-shrink-0 text-rook-amber" />
               <span className="min-w-0 truncate">Pass</span>
@@ -414,9 +421,20 @@ function MobileNativeSignalPost({
     { label: "Reference", value: readString(signal.reference_url) ?? "", href: readString(signal.reference_url) },
     { label: "Analytics", value: `Velocity ${pulse.velocity}/h · Confidence ${signal.confidence_score ?? evidence.credibility}%${(signal.contradiction_score ?? 0) > 0 ? ` · Contradiction ${signal.contradiction_score}%` : ""}` },
   ].filter((row) => row.value);
+  const badgeOptions: Array<MobileBadge | null> = [
+    { key: "type", label: signalType, icon: Radio, className: "bg-rook-cyan/10 text-rook-cyan" },
+    signal.author?.operator_type === "ai_agent" || signal.author?.operator_type === "autonomous"
+      ? { key: "ai", label: "AI operator", icon: null, className: "bg-rook-violet/10 text-rook-violet" }
+      : null,
+    featured ? { key: "featured", label: "Featured", icon: Sparkles, className: "bg-rook-green/10 text-rook-green" } : null,
+    pulse.pulse_score >= 58 ? { key: "pulse", label: "Pulse hot", icon: null, className: "rook-pulse-hot border border-rook-amber/25 bg-rook-amber/10 text-rook-amber" } : null,
+  ];
+  const badges = badgeOptions.filter((badge): badge is MobileBadge => Boolean(badge));
+  const visibleBadges = badges.slice(0, 2);
+  const hiddenBadgeCount = Math.max(0, badges.length - visibleBadges.length);
 
   return (
-    <article className="mobile-native-post w-full min-w-0 max-w-full overflow-hidden bg-rook-void px-2.5 py-2 text-rook-text sm:px-3 sm:py-3">
+    <article className="mobile-native-post w-full min-w-0 max-w-full overflow-hidden bg-rook-ink px-3 py-3 text-rook-text sm:px-4 sm:py-4">
       <div className="operator-row flex min-w-0 max-w-full items-start gap-2.5 sm:gap-3">
         <Link href={`/profile/${username}`} className="focus-ring shrink-0 rounded-lg">
           <span className="relative block">
@@ -427,46 +445,40 @@ function MobileNativeSignalPost({
               size={36}
               className="h-9 w-9 rounded-full sm:h-10 sm:w-10"
             />
-            <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-rook-void bg-rook-green shadow-[0_0_14px_rgba(46,232,159,0.8)]" />
+            <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-rook-ink bg-rook-green" />
           </span>
         </Link>
         <div className="min-w-0 flex-1">
           <div className="signal-meta-row flex min-w-0 max-w-full flex-wrap items-center gap-x-1.5 gap-y-0.5">
-            <Link href={`/profile/${username}`} className="focus-ring min-w-0 max-w-full truncate text-[13px] font-black leading-5 text-white sm:text-sm">
+            <Link href={`/profile/${username}`} className="focus-ring min-w-0 max-w-full truncate text-[14px] font-black leading-5 text-white sm:text-sm">
               {authorName}
             </Link>
             <VerificationBadge subject={signal.author} />
-            <span className="min-w-0 max-w-[8rem] truncate text-[11px] font-semibold text-rook-muted sm:max-w-[14rem] sm:text-xs">@{username}</span>
+            <span className="min-w-0 max-w-[8rem] truncate text-[12px] font-semibold text-rook-muted sm:max-w-[14rem] sm:text-xs">@{username}</span>
             <span className="h-1 w-1 shrink-0 rounded-full bg-rook-muted" />
-            <span className="shrink-0 text-[11px] text-rook-muted sm:text-xs">{formatRelativeTime(signal.created_at)}</span>
+            <span className="shrink-0 text-[12px] text-rook-muted sm:text-xs">{formatRelativeTime(signal.created_at)}</span>
           </div>
-          <div className="signal-chip-row mt-0.5 flex min-w-0 max-w-full flex-wrap items-center gap-1 overflow-hidden">
-            <span className="signal-chip inline-flex items-center gap-1 rounded-full bg-rook-cyan/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-rook-cyan">
-              <Radio className="h-3 w-3" />
-              {signalType}
-            </span>
-            {(signal.author?.operator_type === "ai_agent" || signal.author?.operator_type === "autonomous") && (
-              <span className="signal-chip inline-flex items-center gap-1 rounded-full bg-rook-violet/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-rook-violet">
-                AI operator
-              </span>
-            )}
-            {featured && (
-              <span className="signal-chip inline-flex items-center gap-1 rounded-full bg-white/[0.06] px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-white">
-                <Sparkles className="h-3 w-3 text-rook-green" />
-                Featured
-              </span>
-            )}
-            {pulse.pulse_score >= 58 && (
-              <span className="signal-chip rook-pulse-hot inline-flex items-center gap-1 rounded-full border border-rook-amber/25 bg-rook-amber/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-rook-amber">
-                Pulse hot
+          <div className="signal-chip-row mt-1 flex min-w-0 max-w-full flex-wrap items-center gap-1 overflow-hidden">
+            {visibleBadges.map((badge) => {
+              const Icon = badge.icon;
+              return (
+                <span key={badge.key} className={`signal-chip inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.06em] ${badge.className}`}>
+                  {Icon && <Icon className="h-3 w-3" />}
+                  {badge.label}
+                </span>
+              );
+            })}
+            {hiddenBadgeCount > 0 && (
+              <span className="signal-chip inline-flex items-center rounded-full bg-rook-graphite px-2 py-0.5 text-[10px] font-black text-rook-muted">
+                +{hiddenBadgeCount}
               </span>
             )}
           </div>
         </div>
       </div>
 
-      <Link href={getSignalDetailHref(signal)} className="focus-ring mt-1.5 block rounded-md">
-        <h2 className="signal-title line-clamp-2 text-[0.9rem] font-black leading-[1.18rem] text-white xs:text-[0.96rem] sm:text-[1.08rem] sm:leading-6">
+      <Link href={getSignalDetailHref(signal)} className="focus-ring mt-3 block rounded-md">
+        <h2 className="signal-title line-clamp-3 text-[1.08rem] font-black leading-[1.34rem] text-white xs:text-[1.14rem] sm:text-xl sm:leading-7">
           {signal.title}
         </h2>
       </Link>
@@ -475,20 +487,20 @@ function MobileNativeSignalPost({
         <MobilePostMedia visual={visual} visuals={visuals} type={signalType} title={signal.title} fallbackAllowed={syntheticMediaAllowed} />
       </MediaBoundary>
 
-      <p className="signal-summary mt-1 line-clamp-2 text-[11.5px] leading-[1.15rem] text-rook-muted sm:line-clamp-3 sm:text-sm sm:leading-6">
+      <p className="signal-summary mt-2 line-clamp-3 text-[15px] leading-6 text-rook-muted sm:text-base sm:leading-7">
         {summarizeSignal(signal)}
       </p>
 
-      <div className="metrics-row mt-1.5 grid min-w-0 grid-cols-2 gap-1 overflow-hidden sm:grid-cols-4">
-        <MetricChip icon={TrendingUp} label={`${engagement.propagation}%`} tone="cyan" />
-        <MetricChip icon={MessageCircle} label={`${engagement.replies}`} tone="muted" />
-        <MetricChip icon={Repeat2} label={`${engagement.boosts}`} tone="green" />
-        <MetricChip icon={Bookmark} label={`${engagement.bookmarks}`} tone="muted" />
+      <div className="metrics-row mt-3 grid min-w-0 grid-cols-2 gap-1.5 overflow-hidden sm:grid-cols-5">
+        <MetricChip icon={TrendingUp} label={`Momentum ${engagement.propagation}%`} tone="cyan" />
+        <MetricChip icon={Repeat2} label={`Reshares ${engagement.boosts}`} tone="green" />
+        <MetricChip icon={MessageCircle} label={`Comments ${engagement.replies}`} tone="muted" />
+        <MetricChip icon={Bookmark} label={`Saves ${engagement.bookmarks}`} tone="muted" />
+        <MetricChip icon={ShieldCheck} label={`Confidence ${signal.confidence_score ?? evidence.credibility}%`} tone="green" />
       </div>
 
-      <div className="metrics-row mt-1 grid min-w-0 grid-cols-2 gap-1 overflow-hidden sm:grid-cols-3">
+      <div className="metrics-row mt-1.5 grid min-w-0 grid-cols-2 gap-1.5 overflow-hidden sm:grid-cols-3">
         <MetricChip icon={Radio} label={pulse.velocity > 2 ? "accelerating" : "watch"} tone="cyan" />
-        <MetricChip icon={ShieldCheck} label={`${signal.confidence_score ?? evidence.credibility}%`} tone="green" />
         {(signal.contradiction_score ?? 0) > 24 ? (
           <MetricChip icon={AlertTriangle} label={`${signal.contradiction_score}%`} tone="amber" />
         ) : (
@@ -496,7 +508,7 @@ function MobileNativeSignalPost({
         )}
       </div>
 
-      <div className="signal-quick-actions actions-row mt-1.5 flex w-full min-w-0 max-w-full flex-wrap gap-2 overflow-hidden">
+      <div className="signal-quick-actions actions-row mt-3 flex w-full min-w-0 max-w-full flex-wrap gap-2 overflow-hidden">
         <button
           type="button"
           onClick={onSave}
@@ -567,7 +579,7 @@ function MobilePostMedia({
 
   if (currentVisual?.kind === "video" && !mediaFailed) {
     return (
-      <div className="mobile-post-media media-skeleton group relative mt-1.5 max-h-[250px] overflow-hidden rounded-xl border border-white/10 bg-rook-ink sm:mt-3 sm:rounded-2xl">
+      <div className="mobile-post-media media-skeleton group relative mt-3 max-h-[250px] overflow-hidden rounded-xl border border-white/10 bg-rook-graphite sm:mt-4">
         <video
           src={currentVisual.src}
           poster={currentVisual.poster ?? undefined}
@@ -584,7 +596,7 @@ function MobilePostMedia({
 
   if (currentVisual?.kind === "image" && !mediaFailed) {
     return (
-      <button type="button" onClick={() => setExpanded(true)} className="mobile-post-media media-skeleton group relative mt-1.5 block aspect-[4/3] max-h-[250px] w-full overflow-hidden rounded-xl border border-white/10 bg-rook-ink text-left sm:mt-3 sm:rounded-2xl md:aspect-video">
+      <button type="button" onClick={() => setExpanded(true)} className="mobile-post-media media-skeleton group relative mt-3 block aspect-[4/3] max-h-[250px] w-full overflow-hidden rounded-xl border border-white/10 bg-rook-graphite text-left sm:mt-4 md:aspect-video">
         <Image
           src={currentVisual.src}
           alt=""
@@ -595,7 +607,7 @@ function MobilePostMedia({
           unoptimized
           onError={() => setMediaFailed(true)}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-rook-void/35 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-rook-void/10 via-transparent to-transparent" />
         {visuals.length > 1 && (
           <span className="absolute right-2 top-2 rounded-full bg-rook-void/75 px-2 py-0.5 text-[10px] font-black text-white backdrop-blur-md">
             {activeIndex + 1}/{visuals.length}
@@ -643,7 +655,7 @@ function MobilePostMedia({
     <div className={`mobile-post-media mobile-feed-visual-${getPlaceholderCategory(type, title)} relative mt-1.5 aspect-[4/3] max-h-[250px] overflow-hidden rounded-xl border border-white/10 sm:mt-3 sm:rounded-2xl md:aspect-video`}>
       <span className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[length:26px_26px] opacity-40" />
       <span className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full border border-rook-cyan/35 shadow-[0_0_50px_rgba(53,216,255,0.18)]" />
-      <span className="absolute bottom-2 left-2 inline-flex items-center gap-1.5 rounded-full bg-rook-void/70 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-rook-cyan backdrop-blur-md sm:bottom-3 sm:left-3 sm:text-[10px]">
+      <span className="absolute bottom-2 left-2 inline-flex items-center gap-1.5 rounded-full bg-rook-ink/85 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.08em] text-rook-cyan backdrop-blur-md sm:bottom-3 sm:left-3 sm:text-[10px]">
         <BarChart3 className="h-3.5 w-3.5" />
         {mediaFailed ? "Media unavailable" : "AI visual"}
       </span>
@@ -656,7 +668,7 @@ function MetricChip({
   label,
   tone,
 }: {
-  icon: React.ComponentType<{ className?: string }>;
+  icon: ComponentType<{ className?: string }>;
   label: string;
   tone: "cyan" | "green" | "amber" | "muted";
 }) {
@@ -669,8 +681,8 @@ function MetricChip({
         : "bg-white/[0.045] text-rook-muted";
 
   return (
-    <div className={`metric-pill flex h-5 min-w-0 max-w-full items-center justify-center gap-0.5 rounded-full px-1 text-[8px] font-black uppercase tracking-[0.02em] sm:h-7 sm:gap-1 sm:text-[9.5px] ${className}`}>
-      <Icon className="h-2.5 w-2.5 shrink-0 sm:h-3 sm:w-3" />
+    <div className={`metric-pill flex min-h-8 min-w-0 max-w-full items-center justify-center gap-1 rounded-full px-2 text-[10px] font-black tracking-normal sm:min-h-9 sm:text-xs ${className}`}>
+      <Icon className="h-3.5 w-3.5 shrink-0" />
       <span className="truncate">{label}</span>
     </div>
   );

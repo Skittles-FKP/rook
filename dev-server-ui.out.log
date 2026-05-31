@@ -1,0 +1,19 @@
+
+> rook@0.1.0 predev
+> node scripts/repair-next-cache.mjs && tailwindcss -i ./src/app/globals.css -o ./public/rook.css --minify
+
+[rook] repaired Next cache: stale production build artifact
+
+> rook@0.1.0 dev
+> next dev --port 3000
+
+   ▲ Next.js 15.5.18
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.102:3000
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · serverActions
+     ⨯ devtoolSegmentExplorer
+
+ ✓ Starting...
+ ✓ Ready in 3s

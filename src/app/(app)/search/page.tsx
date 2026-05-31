@@ -1,7 +1,8 @@
 export const runtime = "edge";
 
 import Link from "next/link";
-import { Search, Server } from "lucide-react";
+import type { ComponentType } from "react";
+import { Clock3, Search, Server, TrendingUp } from "lucide-react";
 import { PageHeader } from "@/components/shell/page-header";
 import { getEmbeddingReadiness, semanticSearch } from "@/lib/search";
 
@@ -21,17 +22,22 @@ export default async function SearchPage({
         description="Search Signals, narratives, Briefs, and operators through the retrieval layer. Vector infrastructure is used when configured; lexical fallback keeps the interface operational."
       />
       <section className="grid gap-4 px-4 py-5 sm:px-6 lg:px-8">
-        <form className="surface-card rounded-xl p-4">
+        <form className="surface-card rounded-2xl p-3 sm:p-4">
           <div className="relative">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-rook-muted" />
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-rook-muted" />
             <input
               name="q"
               defaultValue={q}
               placeholder="Search compute markets, policy drift, operator alignment..."
-              className="h-12 w-full rounded-lg border border-white/10 bg-white/[0.05] pl-11 pr-4 text-sm text-white outline-none placeholder:text-rook-muted focus:border-rook-cyan/40"
+              className="h-12 w-full rounded-full border border-white/10 bg-rook-graphite pl-12 pr-4 text-base text-white outline-none placeholder:text-rook-muted focus:border-rook-cyan/40"
             />
           </div>
-          <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-bold text-rook-muted">
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <SuggestionGroup icon={Clock3} title="Recent searches" items={["AI capex pressure", "regulatory drift", "operator alignment"]} />
+            <SuggestionGroup icon={TrendingUp} title="Trending signals" items={["compute supply", "model pricing", "security incident"]} />
+            <SuggestionGroup icon={Search} title="Operators" items={["from:@operator", "tag:policy", "confidence:>80"]} />
+          </div>
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-xs font-bold text-rook-muted">
             <Server className="h-4 w-4 text-rook-cyan" />
             Retrieval mode: {readiness.mode}
           </div>
@@ -59,5 +65,31 @@ export default async function SearchPage({
         </div>
       </section>
     </>
+  );
+}
+
+function SuggestionGroup({
+  icon: Icon,
+  title,
+  items,
+}: {
+  icon: ComponentType<{ className?: string }>;
+  title: string;
+  items: string[];
+}) {
+  return (
+    <div className="rounded-xl border border-white/10 bg-rook-graphite p-3">
+      <div className="flex items-center gap-2">
+        <Icon className="h-4 w-4 text-rook-cyan" />
+        <p className="text-xs font-black uppercase tracking-[0.12em] text-rook-muted">{title}</p>
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {items.map((item) => (
+          <button key={item} type="submit" name="q" value={item} className="focus-ring rounded-full bg-rook-ink px-3 py-1.5 text-xs font-bold text-rook-muted transition hover:text-rook-text">
+            {item}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }

@@ -2,7 +2,7 @@ import type { RadarPoint } from "@/lib/intelligence";
 
 export function PulseRadar({ points }: { points: RadarPoint[] }) {
   return (
-    <div className="surface-card pulse-heartbeat rounded-xl p-4 sm:p-5">
+    <div className="surface-card pulse-heartbeat rounded-2xl p-4 sm:p-5">
       <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.2em] text-rook-cyan">Pulse Radar</p>
@@ -14,9 +14,9 @@ export function PulseRadar({ points }: { points: RadarPoint[] }) {
       </div>
       <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(240px,360px)_1fr] lg:gap-5">
         <svg viewBox="0 0 360 360" className="aspect-square w-full max-w-[320px] justify-self-center sm:max-w-[360px]">
-          <rect width="360" height="360" rx="12" fill="rgba(255,255,255,0.025)" />
+          <rect width="360" height="360" rx="18" fill="rgba(148,163,184,0.08)" />
           {[150, 105, 62].map((radius) => (
-            <circle key={radius} cx="180" cy="180" r={radius} fill="none" stroke="rgba(255,255,255,0.12)" />
+            <circle key={radius} cx="180" cy="180" r={radius} fill="none" stroke="rgba(100,116,139,0.22)" />
           ))}
           {Array.from({ length: 8 }).map((_, index) => {
             const angle = (Math.PI * 2 * index) / 8;
@@ -27,12 +27,12 @@ export function PulseRadar({ points }: { points: RadarPoint[] }) {
                 y1="180"
                 x2={180 + Math.cos(angle) * 150}
                 y2={180 + Math.sin(angle) * 150}
-                stroke="rgba(255,255,255,0.1)"
+                stroke="rgba(100,116,139,0.18)"
               />
             );
           })}
-          <circle cx="180" cy="180" r="4" fill="#35d8ff" />
-          <circle cx="180" cy="180" r="26" fill="none" stroke="rgba(53,216,255,0.22)" className="pulse-core-ring" />
+          <circle cx="180" cy="180" r="4" fill="#2563EB" />
+          <circle cx="180" cy="180" r="26" fill="none" stroke="rgba(37,99,235,0.20)" className="pulse-core-ring" />
           {points.map((point) => {
             const angle = (point.angle * Math.PI) / 180;
             const distance = Math.min(148, Math.max(20, point.radius));
@@ -40,9 +40,9 @@ export function PulseRadar({ points }: { points: RadarPoint[] }) {
             const y = 180 + Math.sin(angle) * distance;
             return (
               <g key={point.id}>
-                <circle cx={x} cy={y} r={10 + Math.min(12, point.score / 18)} fill="rgba(53,216,255,0.14)" className="pulse-node" />
-                <circle cx={x} cy={y} r={4 + Math.min(7, point.anomaly)} fill={point.anomaly > 4 ? "#ffbf47" : "#35d8ff"} />
-                {point.anomaly > 4 && <circle cx={x} cy={y} r={18 + Math.min(16, point.anomaly)} fill="none" stroke="rgba(255,191,71,0.45)" className="pulse-volatility-ring" />}
+                <circle cx={x} cy={y} r={10 + Math.min(12, point.score / 18)} fill="rgba(37,99,235,0.10)" className="pulse-node" />
+                <circle cx={x} cy={y} r={4 + Math.min(7, point.anomaly)} fill={point.anomaly > 4 ? "#D97706" : "#2563EB"} />
+                {point.anomaly > 4 && <circle cx={x} cy={y} r={18 + Math.min(16, point.anomaly)} fill="none" stroke="rgba(217,119,6,0.35)" className="pulse-volatility-ring" />}
               </g>
             );
           })}

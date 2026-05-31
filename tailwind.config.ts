@@ -18,27 +18,27 @@ const config: Config = {
     extend: {
       colors: {
         rook: {
-          void: "#05060a",
-          ink: "#080a12",
-          graphite: "#10131d",
-          panel: "#141824",
-          line: "#252b3c",
-          muted: "#8f9bb3",
-          text: "#f7f9ff",
-          blue: "#2f8cff",
-          violet: "#8a5cff",
-          cyan: "#35d8ff",
-          green: "#2ee89f",
-          amber: "#ffbf47"
+          void: "#F8FAFC",
+          ink: "#FFFFFF",
+          graphite: "#F1F5F9",
+          panel: "#FFFFFF",
+          line: "#E2E8F0",
+          muted: "#64748B",
+          text: "#0F172A",
+          blue: "#2563EB",
+          violet: "#7C3AED",
+          cyan: "#2563EB",
+          green: "#16A34A",
+          amber: "#D97706"
         }
       },
       boxShadow: {
-        glow: "0 0 40px rgba(47, 140, 255, 0.22)",
-        violet: "0 0 50px rgba(138, 92, 255, 0.18)",
-        panel: "0 24px 80px rgba(0, 0, 0, 0.42)"
+        glow: "0 8px 30px rgba(15, 23, 42, 0.06)",
+        violet: "0 8px 30px rgba(15, 23, 42, 0.06)",
+        panel: "0 8px 30px rgba(15, 23, 42, 0.06)"
       },
       backgroundImage: {
-        "radial-command": "radial-gradient(circle at top left, rgba(47, 140, 255, 0.22), transparent 34%), radial-gradient(circle at 78% 18%, rgba(138, 92, 255, 0.2), transparent 30%), linear-gradient(180deg, #080a12 0%, #05060a 100%)"
+        "radial-command": "linear-gradient(180deg, #F8FAFC 0%, #EEF2FF 100%)"
       },
       keyframes: {
         "pulse-line": {
