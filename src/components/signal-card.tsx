@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import type { ComponentType } from "react";
 import { AlertTriangle, BarChart3, Bookmark, Bot, BrainCircuit, Clock3, Eye, Gauge, GitBranch, ImageIcon, Link2, MessageCircle, MoreHorizontal, Network, Repeat2, Route, ShieldAlert, ShieldCheck, Sparkles, ThumbsUp, TrendingUp } from "lucide-react";
 import { OperatorAvatar } from "@/components/operator-avatar";
 import { VerificationBadge } from "@/components/profile/verification-badge";
@@ -90,6 +91,50 @@ export function SignalCard({
     whyItMatters,
     evidencePacket,
   });
+  const desktopBadges = [
+    safeSignal.flock ? {
+      key: "flock",
+      content: safeSignal.flock.name,
+      className: "border-rook-blue/30 bg-rook-blue/10 text-rook-cyan",
+    } : null,
+    {
+      key: "brief",
+      content: "Brief-ready",
+      icon: Sparkles,
+      className: "border-white/10 bg-white/[0.04] text-rook-muted",
+    },
+    ...pulseLabels.map((label) => ({
+      key: `pulse-${label}`,
+      content: label,
+      className: "border-rook-green/25 bg-rook-green/10 text-rook-green",
+    })),
+    pulse.velocity > 0 ? {
+      key: "velocity",
+      content: `v${pulse.velocity}/h`,
+      className: "border-rook-amber/25 bg-rook-amber/10 text-rook-amber",
+    } : null,
+    ...topicTerms.map((term) => ({
+      key: `topic-${term}`,
+      content: term,
+      icon: Network,
+      className: "border-rook-violet/25 bg-rook-violet/10 text-rook-muted",
+    })),
+    ...safeArray(narrativeLabels).slice(0, 3).map((label) => ({
+      key: `narrative-${label}`,
+      content: label.replace(/^operator:/, "@"),
+      icon: GitBranch,
+      className: "border-white/10 bg-white/[0.04] text-rook-muted",
+      href: `/graph?focus=${encodeURIComponent(label)}`,
+    })),
+  ].filter((badge): badge is {
+    key: string;
+    content: string;
+    className: string;
+    icon?: ComponentType<{ className?: string }>;
+    href?: string;
+  } => Boolean(badge));
+  const visibleDesktopBadges = desktopBadges.slice(0, 2);
+  const hiddenDesktopBadgeCount = Math.max(0, desktopBadges.length - visibleDesktopBadges.length);
 
   const media = (
     <MediaBoundary>
@@ -149,7 +194,27 @@ export function SignalCard({
           {safeSignal.title}
         </h2>
       </Link>
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-rook-green/25 bg-rook-green/10 px-2.5 py-1 text-[11px] font-black text-rook-green">
+          <ShieldCheck className="h-3.5 w-3.5" />
+          {ringValue}% confidence
+        </span>
+        <span className="rounded-full border border-white/10 bg-white/[0.035] px-2.5 py-1 text-[11px] font-bold text-rook-muted">
+          {evidencePacket.sourceDomain || "network evidence"}
+        </span>
+      </div>
       <p className={`mobile-clamp-body mobile-readable mt-2 text-sm leading-6 text-rook-muted ${compact ? "" : "sm:text-base sm:leading-7"}`}>{truncateText(safeSignal.body, bodyLimit)}</p>
+      {!compact && (
+        <div className="mt-3 hidden rounded-lg border border-white/10 bg-white/[0.03] p-3 md:block">
+          <div className="flex items-center justify-between gap-3">
+            <p className="truncate text-xs font-black uppercase tracking-[0.16em] text-rook-cyan">Source Preview</p>
+            <p className="shrink-0 text-[11px] font-black text-rook-muted">{evidencePacket.credibility}%</p>
+          </div>
+          <p className="mt-2 line-clamp-2 text-xs leading-5 text-rook-muted">
+            {evidencePacket.sourceTitle}{evidencePacket.sourceDomain ? ` · ${evidencePacket.sourceDomain}` : ""}
+          </p>
+        </div>
+      )}
 
       <MobileSignalVisual signal={safeSignal} type={resolvedType} src={visualUrl} />
 
@@ -228,43 +293,14 @@ export function SignalCard({
       </div>}
       {showDeepIntel && <SignalEvidenceSection signal={safeSignal} />}
       <div className="mt-4 hidden min-w-0 flex-wrap gap-2 md:flex">
-        {safeSignal.flock && (
-          <span className="rounded-full border border-rook-blue/30 bg-rook-blue/10 px-3 py-1 text-xs font-bold text-rook-cyan">
-            {safeSignal.flock.name}
+        {visibleDesktopBadges.map((badge) => (
+          <DesktopBadge key={badge.key} badge={badge} />
+        ))}
+        {hiddenDesktopBadgeCount > 0 && (
+          <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-black text-rook-muted">
+            +{hiddenDesktopBadgeCount}
           </span>
         )}
-        <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-bold text-rook-muted">
-          <Sparkles className="h-3.5 w-3.5" />
-          Brief-ready
-        </span>
-        {pulseLabels.map((label) => (
-          <span key={label} className="rounded-full border border-rook-green/25 bg-rook-green/10 px-3 py-1 text-xs font-black text-rook-green">
-            {label}
-          </span>
-        ))}
-        {pulse.velocity > 0 && (
-          <span className="rounded-full border border-rook-amber/25 bg-rook-amber/10 px-3 py-1 text-xs font-bold text-rook-amber">
-            v{pulse.velocity}/h
-          </span>
-        )}
-        {typeof safeSignal.confidence_score === "number" && (
-          <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-bold text-rook-muted">
-            <ShieldCheck className="h-3.5 w-3.5 text-rook-green" />
-            {safeSignal.confidence_score}% confidence
-          </span>
-        )}
-        {topicTerms.map((term) => (
-          <span key={term} className="inline-flex items-center gap-1 rounded-full border border-rook-violet/25 bg-rook-violet/10 px-3 py-1 text-xs font-bold text-rook-muted">
-            <Network className="h-3.5 w-3.5 text-rook-violet" />
-            {term}
-          </span>
-        ))}
-        {safeArray(narrativeLabels).slice(0, 3).map((label) => (
-          <Link key={label} href={`/graph?focus=${encodeURIComponent(label)}`} className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-bold text-rook-muted transition hover:border-rook-cyan/30 hover:text-white">
-            <GitBranch className="h-3.5 w-3.5 text-rook-cyan" />
-            {label.replace(/^operator:/, "@")}
-          </Link>
-        ))}
       </div>
       {showDeepIntel && <SignalIntelligencePanel signal={safeSignal} />}
       <SignalEngagementRow signal={safeSignal} />
@@ -301,6 +337,36 @@ function SignalTypePill({ type }: { type: SignalType }) {
       {type}
     </span>
   );
+}
+
+function DesktopBadge({
+  badge,
+}: {
+  badge: {
+    content: string;
+    className: string;
+    icon?: ComponentType<{ className?: string }>;
+    href?: string;
+  };
+}) {
+  const Icon = badge.icon;
+  const className = `inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-bold ${badge.className}`;
+  const content = (
+    <>
+      {Icon && <Icon className="h-3.5 w-3.5 text-rook-cyan" />}
+      {badge.content}
+    </>
+  );
+
+  if (badge.href) {
+    return (
+      <Link href={badge.href} className={`${className} transition hover:border-rook-cyan/30 hover:text-white`}>
+        {content}
+      </Link>
+    );
+  }
+
+  return <span className={className}>{content}</span>;
 }
 
 function OperatorBadge({ label, className }: { label: string; className: string }) {

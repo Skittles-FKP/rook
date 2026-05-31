@@ -1,7 +1,7 @@
 export const runtime = "edge";
 
 import Link from "next/link";
-import { ArrowLeft, ArrowUp, MessageCircle } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowUp, BrainCircuit, FileSearch, MessageCircle, RadioTower, ShieldCheck } from "lucide-react";
 import { PageHeader } from "@/components/shell/page-header";
 import { SignalCard } from "@/components/signal-card";
 import { CommentForm } from "@/components/signals/comment-form";
@@ -10,6 +10,9 @@ import { CommentThreadBoundary, SignalErrorBoundary } from "@/components/signals
 import { ShareableSignalCard } from "@/components/signals/shareable-signal-card";
 import { ShareSignalButton } from "@/components/signals/share-signal-button";
 import { getSignalById, getSignalCommentsResult } from "@/lib/data/signals";
+import { buildSignalEvidencePacket } from "@/lib/signal-evidence";
+import { scorePulseSignal } from "@/lib/pulse";
+import type { SignalWithAuthor } from "@/lib/supabase/types";
 
 const BUILD_ID =
   process.env.CF_PAGES_COMMIT_SHA?.slice(0, 8) ??
@@ -81,6 +84,9 @@ export default async function SignalDetailPage({
         <SignalErrorBoundary label="Signal detail card">
           <SignalCard signal={signal} size="LG" />
         </SignalErrorBoundary>
+        <SignalErrorBoundary label="Signal detail intelligence">
+          <SignalDetailAccordions signal={signal} />
+        </SignalErrorBoundary>
         <SignalErrorBoundary label="Signal share card">
           <ShareableSignalCard signal={signal} />
         </SignalErrorBoundary>
@@ -108,6 +114,77 @@ export default async function SignalDetailPage({
       </div>
     </>
   );
+}
+
+function SignalDetailAccordions({ signal }: { signal: SignalWithAuthor }) {
+  const evidence = buildSignalEvidencePacket(signal);
+  const pulse = scorePulseSignal(signal);
+  const sections = [
+    {
+      label: "What Changed",
+      icon: RadioTower,
+      body: extractSection(signal.body, "what changed") || signal.summary || signal.body,
+      open: true,
+    },
+    {
+      label: "Why It Matters",
+      icon: ShieldCheck,
+      body: extractSection(signal.body, "why it matters") || `This Signal is carrying ${signal.confidence_score ?? evidence.credibility}% confidence with ${signal.amplifies_count + signal.comments_count + signal.likes_count} network interaction${signal.amplifies_count + signal.comments_count + signal.likes_count === 1 ? "" : "s"}.`,
+      open: true,
+    },
+    {
+      label: "Evidence",
+      icon: FileSearch,
+      body: evidence.items.length > 0
+        ? evidence.items.map((item) => item.title).join(" / ")
+        : evidence.sourceTitle,
+    },
+    {
+      label: "Source Intelligence",
+      icon: FileSearch,
+      body: `${evidence.sourceTitle}${evidence.sourceDomain ? ` · ${evidence.sourceDomain}` : ""} · credibility ${evidence.credibility}%`,
+    },
+    {
+      label: "Contradictions",
+      icon: AlertTriangle,
+      body: (signal.contradiction_score ?? 0) > 0
+        ? `Contradiction pressure is ${signal.contradiction_score}%. Review counterclaims before amplification.`
+        : "No material contradiction pressure has been detected for this Signal.",
+    },
+    {
+      label: "AI Analysis",
+      icon: BrainCircuit,
+      body: signal.ai_summary || `Pulse score ${pulse.pulse_score}, velocity ${pulse.velocity}/h, acceleration ${pulse.acceleration}. Narrative tags: ${(signal.ai_narrative_tags ?? []).slice(0, 5).join(", ") || "pending"}.`,
+    },
+  ];
+
+  return (
+    <div className="grid gap-2">
+      {sections.map((section) => {
+        const Icon = section.icon;
+        return (
+          <details key={section.label} open={section.open} className="group surface-card overflow-hidden rounded-xl">
+            <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3">
+              <span className="inline-flex min-w-0 items-center gap-2">
+                <Icon className="h-4 w-4 shrink-0 text-rook-cyan" />
+                <span className="truncate text-sm font-black text-white">{section.label}</span>
+              </span>
+              <span className="text-rook-cyan transition group-open:rotate-90">›</span>
+            </summary>
+            <div className="border-t border-white/10 px-4 py-3 text-sm leading-6 text-rook-muted">
+              {section.body}
+            </div>
+          </details>
+        );
+      })}
+    </div>
+  );
+}
+
+function extractSection(body: string, label: string) {
+  const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = body.match(new RegExp(`${escaped}:\\s*([\\s\\S]*?)(?:\\n\\n[A-Z][^:]{2,40}:|$)`, "i"));
+  return match?.[1]?.trim() ?? null;
 }
 
 function UnavailableSignal({ id, reason }: { id: string; reason: string }) {

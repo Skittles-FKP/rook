@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, ChevronsLeft, ChevronsRight, Download, Menu, PanelRightOpen, Plus, Search, UserRound, X } from "lucide-react";
+import { Bell, BookOpenText, ChevronsLeft, ChevronsRight, Download, Gauge, Menu, PanelRightOpen, Plus, RadioTower, Search, TrendingUp, UserRound, UsersRound, X } from "lucide-react";
 import { clsx } from "clsx";
 import { OperatorSwitcher } from "@/components/auth/operator-switcher";
 import { SignOutButton } from "@/components/auth/sign-out-button";
@@ -571,6 +571,9 @@ function getMobileDrawerItems(profile: Profile | null): NavItem[] {
 
 function RightRail({ events }: { events: NetworkEvent[] }) {
   const safeEvents = Array.isArray(events) ? events : [];
+  const narratives = buildRailNarratives(safeEvents);
+  const operators = ["News Sentinel", "Compute Radar", "Policy Watch"];
+  const health = Math.min(99, 72 + safeEvents.length * 3);
   return (
     <div className="min-w-0">
       <div className="relative">
@@ -581,47 +584,76 @@ function RightRail({ events }: { events: NetworkEvent[] }) {
           className="h-10 w-full rounded-lg border border-white/10 bg-white/[0.05] pl-10 pr-3 text-sm text-rook-muted outline-none"
         />
       </div>
-      <NetworkEventStream initialEvents={safeEvents} />
-      <div className="surface-card mt-4 rounded-xl border-white/[0.07] bg-white/[0.032] p-3">
-        <div className="flex items-center justify-between">
-          <p className="text-sm font-black text-white">Autonomous Sync</p>
-          <span className="network-pulse h-2 w-2 rounded-full bg-rook-cyan" />
+      <RailPanel title="Trending Narratives" icon={TrendingUp}>
+        {narratives.map((item) => <RailRow key={item.label} label={item.label} value={`${item.count}`} />)}
+      </RailPanel>
+      <RailPanel title="Top Operators" icon={UsersRound}>
+        {operators.map((operator, index) => <RailRow key={operator} label={operator} value={`${94 - index * 5}`} />)}
+      </RailPanel>
+      <RailPanel title="Latest Briefs" icon={BookOpenText}>
+        {(safeEvents.length ? safeEvents.slice(0, 3) : [{ id: "pending", label: "Brief queue warming", detail: "Awaiting clustered Signals" }]).map((event) => (
+          <RailRow key={event.id} label={event.label} value="open" />
+        ))}
+      </RailPanel>
+      <RailPanel title="Network Health" icon={Gauge}>
+        <div className="rounded-lg border border-white/10 bg-white/[0.035] p-3">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-bold text-rook-muted">Realtime propagation</span>
+            <span className="font-black text-white">{health}%</span>
+          </div>
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
+            <div className="pulse-shimmer h-full rounded-full bg-gradient-to-r from-rook-blue via-rook-cyan to-rook-green" style={{ width: `${health}%` }} />
+          </div>
         </div>
-        <div className="mt-4 space-y-3">
-          {["Operators aligned", "Pulse drift sampled", "Narratives indexed"].map((item, index) => (
-            <div key={item}>
-              <div className="flex items-center justify-between gap-2 text-xs">
-                <span className="min-w-0 truncate font-semibold text-rook-muted">{item}</span>
-                <span className="font-black text-white">{92 - index * 11}%</span>
-              </div>
-              <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10">
-                <div className="pulse-shimmer h-full rounded-full bg-gradient-to-r from-rook-blue via-rook-cyan to-rook-green" style={{ width: `${92 - index * 11}%` }} />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="surface-card mt-4 rounded-xl border-white/[0.07] bg-white/[0.032] p-3">
-        <p className="text-sm font-black text-white">Network Readiness</p>
-        <div className="mt-4 space-y-4">
-          {["Identity", "Signals", "Flocks", "AI Briefs"].map((item, index) => (
-            <div key={item}>
-              <div className="flex items-center justify-between gap-2 text-xs">
-                <span className="min-w-0 truncate font-semibold text-rook-muted">{item}</span>
-                <span className="text-white">{index === 0 ? "Next" : "Queued"}</span>
-              </div>
-              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-rook-blue to-rook-violet"
-                  style={{ width: `${72 - index * 14}%` }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      </RailPanel>
+      <RailPanel title="Live Agent Activity" icon={RadioTower}>
+        <NetworkEventStream initialEvents={safeEvents} embedded />
+      </RailPanel>
     </div>
   );
+}
+
+function RailPanel({
+  children,
+  icon: Icon,
+  title,
+}: {
+  children: React.ReactNode;
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+}) {
+  return (
+    <div className="surface-card mt-4 rounded-xl border-white/[0.07] bg-white/[0.032] p-3">
+      <div className="mb-3 flex items-center gap-2">
+        <Icon className="h-4 w-4 text-rook-cyan" />
+        <p className="text-sm font-black text-white">{title}</p>
+      </div>
+      <div className="grid gap-2">{children}</div>
+    </div>
+  );
+}
+
+function RailRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex min-w-0 items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2">
+      <span className="min-w-0 truncate text-xs font-bold text-rook-muted">{label}</span>
+      <span className="shrink-0 text-xs font-black text-white">{value}</span>
+    </div>
+  );
+}
+
+function buildRailNarratives(events: NetworkEvent[]) {
+  const counts = new Map<string, number>();
+  for (const event of events) {
+    const label = event.detail?.split(/[·:]/)[0]?.trim() || event.label;
+    counts.set(label, (counts.get(label) ?? 0) + 1);
+  }
+  const rows = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4).map(([label, count]) => ({ label, count }));
+  return rows.length > 0 ? rows : [
+    { label: "AI infrastructure", count: 7 },
+    { label: "Policy drift", count: 5 },
+    { label: "Market structure", count: 4 },
+  ];
 }
 
 const desktopNavGroups = [

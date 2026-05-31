@@ -149,8 +149,8 @@ export function SignalComposer({ flocks, compact = false, autoFocus = false }: {
           <Radio className="h-5 w-5" />
         </div>
         <div className="min-w-0">
-          <h2 className="text-lg font-black text-white">Publish a Signal</h2>
-          <p className="text-sm text-rook-muted">Share high-context intelligence with the network.</p>
+          <h2 className="text-lg font-black text-white">What&apos;s happening?</h2>
+          <p className="text-sm text-rook-muted">Compose the Signal first. Add evidence and routing only when needed.</p>
         </div>
       </div>
       <div className="mt-5 grid gap-3">
@@ -161,7 +161,7 @@ export function SignalComposer({ flocks, compact = false, autoFocus = false }: {
           onChange={(event) => setTitle(event.target.value)}
           minLength={4}
           maxLength={180}
-          placeholder="Signal title"
+          placeholder="Add a concise Signal headline"
           className="h-12 rounded-lg border border-white/10 bg-white/[0.05] px-3 text-sm font-bold text-white outline-none transition focus:border-rook-blue"
         />
         <textarea
@@ -172,9 +172,26 @@ export function SignalComposer({ flocks, compact = false, autoFocus = false }: {
           onChange={(event) => setBody(event.target.value)}
           rows={3}
           maxLength={2000}
-          placeholder="What changed, why it matters, and what evidence supports it?"
-          className="min-h-28 resize-none rounded-lg border border-white/10 bg-white/[0.05] px-3 py-3 text-sm leading-6 text-white outline-none transition focus:border-rook-blue"
+          placeholder="What changed?"
+          className="min-h-36 resize-none rounded-lg border border-white/10 bg-white/[0.05] px-3 py-3 text-base leading-7 text-white outline-none transition focus:border-rook-blue"
         />
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2">
+          <label className="inline-flex touch-manipulation items-center gap-2 text-xs font-black uppercase tracking-[0.12em] text-rook-muted">
+            <input name="markdownEnabled" type="checkbox" checked={markdownEnabled} onChange={(event) => setMarkdownEnabled(event.target.checked)} className="accent-rook-cyan" />
+            Markdown
+          </label>
+          <button type="button" onClick={draftWithAi} className="focus-ring inline-flex min-h-11 items-center gap-2 rounded-full border border-rook-violet/25 bg-rook-violet/10 px-3 text-xs font-black uppercase tracking-[0.12em] text-rook-violet">
+            <WandSparkles className="h-3.5 w-3.5" />
+            AI draft
+          </button>
+          <span className={`ml-auto text-xs font-black ${remaining < 120 ? "text-rook-amber" : "text-rook-muted"}`}>{remaining}</span>
+        </div>
+        <details className="group rounded-xl border border-white/10 bg-white/[0.025]">
+          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-3 text-sm font-black text-white">
+            Advanced fields
+            <span className="text-rook-cyan transition group-open:rotate-90">›</span>
+          </summary>
+          <div className="grid gap-3 border-t border-white/10 p-3">
         <div className="grid gap-2 md:grid-cols-[0.8fr_1fr]">
           <label className="relative">
             <ListChecks className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-rook-muted" />
@@ -197,17 +214,6 @@ export function SignalComposer({ flocks, compact = false, autoFocus = false }: {
               className="h-11 w-full rounded-lg border border-white/10 bg-white/[0.05] pl-10 pr-3 text-sm text-white outline-none transition focus:border-rook-blue"
             />
           </label>
-        </div>
-        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2">
-          <label className="inline-flex touch-manipulation items-center gap-2 text-xs font-black uppercase tracking-[0.12em] text-rook-muted">
-            <input name="markdownEnabled" type="checkbox" checked={markdownEnabled} onChange={(event) => setMarkdownEnabled(event.target.checked)} className="accent-rook-cyan" />
-            Markdown
-          </label>
-          <button type="button" onClick={draftWithAi} className="focus-ring inline-flex min-h-9 items-center gap-2 rounded-full border border-rook-violet/25 bg-rook-violet/10 px-3 text-xs font-black uppercase tracking-[0.12em] text-rook-violet">
-            <WandSparkles className="h-3.5 w-3.5" />
-            AI draft
-          </button>
-          <span className={`ml-auto text-xs font-black ${remaining < 120 ? "text-rook-amber" : "text-rook-muted"}`}>{remaining}</span>
         </div>
         <div className="grid gap-2 rounded-xl border border-white/10 bg-white/[0.035] p-3 md:grid-cols-3">
           <input name="appName" value={appName} onChange={(event) => setAppName(event.target.value)} placeholder="AI app/project name" className="h-11 rounded-lg border border-white/10 bg-white/[0.05] px-3 text-sm text-white outline-none transition focus:border-rook-blue" />
@@ -335,6 +341,8 @@ export function SignalComposer({ flocks, compact = false, autoFocus = false }: {
             </div>
           )}
         </div>
+          </div>
+        </details>
         <div className="sticky bottom-0 z-10 mx-0 flex flex-col gap-3 border-t border-white/10 bg-rook-void/92 px-3 py-2 backdrop-blur-xl md:static md:flex-row md:items-center md:justify-between md:border-0 md:bg-transparent md:px-0 md:py-0 md:backdrop-blur-none">
           <select
             name="flockId"

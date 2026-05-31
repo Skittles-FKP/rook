@@ -122,6 +122,7 @@ export function MobileSignalFeed({
     () => normalizeRankedSignals(liveSignals).filter((item) => !dismissed.has(item.signal.id)),
     [dismissed, liveSignals],
   );
+  const feedStats = useMemo(() => buildMobileFeedStats(visibleSignals.map((item) => item.signal)), [visibleSignals]);
 
   return (
     <SignalErrorBoundary label="Mobile feed">
@@ -162,6 +163,20 @@ export function MobileSignalFeed({
             <p className="mt-1.5 text-[11px] leading-4 text-rook-muted">
               {refreshing ? "Refreshing live graph..." : `NewsFeedAgent inserted ${liveInsertions} autonomous signal${liveInsertions === 1 ? "" : "s"} this session.`}
             </p>
+            <div className="mt-2 grid grid-cols-3 gap-1.5">
+              <MobileFeedStat label="Signals Today" value={feedStats.signalsToday} />
+              <MobileFeedStat label="Operators Active" value={feedStats.activeOperators} />
+              <MobileFeedStat label="Narratives Trending" value={feedStats.trendingNarratives} />
+            </div>
+            {feedStats.narratives.length > 0 && (
+              <div className="mt-2 flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none]">
+                {feedStats.narratives.map((narrative) => (
+                  <span key={narrative} className="shrink-0 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[10px] font-black text-rook-muted">
+                    {narrative.replace(/^operator:/, "@")}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -247,6 +262,35 @@ export function MobileSignalFeed({
       )}
     </SignalErrorBoundary>
   );
+}
+
+function MobileFeedStat({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-lg border border-white/10 bg-white/[0.035] px-2 py-2">
+      <p className="text-sm font-black text-white">{value}</p>
+      <p className="mt-0.5 truncate text-[9px] font-black uppercase tracking-[0.08em] text-rook-muted">{label}</p>
+    </div>
+  );
+}
+
+function buildMobileFeedStats(signals: SignalWithAuthor[]) {
+  const today = new Date().toDateString();
+  const todaySignals = signals.filter((signal) => new Date(signal.created_at).toDateString() === today);
+  const operators = new Set(signals.map((signal) => signal.author?.id ?? signal.author_id).filter(Boolean));
+  const counts = new Map<string, number>();
+
+  for (const signal of signals) {
+    for (const tag of signal.ai_narrative_tags ?? []) counts.set(tag, (counts.get(tag) ?? 0) + 1);
+    if (signal.flock?.name) counts.set(signal.flock.name, (counts.get(signal.flock.name) ?? 0) + 1);
+  }
+
+  const narratives = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([label]) => label).slice(0, 5);
+  return {
+    signalsToday: Math.max(todaySignals.length, signals.length),
+    activeOperators: operators.size,
+    trendingNarratives: narratives.length,
+    narratives,
+  };
 }
 
 const MemoMobileSignalCard = memo(MobileSignalCard);

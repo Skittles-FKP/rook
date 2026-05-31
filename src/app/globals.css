@@ -1098,9 +1098,19 @@ textarea {
 
   .rook-signal-engagement-row a,
   .rook-signal-engagement-row button {
-    min-height: 1.85rem;
+    min-height: 2.75rem;
     padding-left: 0.25rem;
     padding-right: 0.25rem;
+  }
+
+  .action-button,
+  .signal-quick-actions .action-button,
+  .actions-row .action-button,
+  .mobile-native-post button,
+  .mobile-native-post a,
+  .mobile-card-shell button,
+  .mobile-card-shell a {
+    min-height: 2.75rem;
   }
 
   .rook-topic-chip,

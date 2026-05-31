@@ -18,7 +18,7 @@ const eventIcons = {
   alert: Bell,
 };
 
-export function NetworkEventStream({ initialEvents }: { initialEvents: NetworkEvent[] }) {
+export function NetworkEventStream({ initialEvents, embedded = false }: { initialEvents: NetworkEvent[]; embedded?: boolean }) {
   const [events, setEvents] = useState(() => normalizeNetworkEvents(initialEvents));
   const [mountedAt, setMountedAt] = useState<number | null>(null);
 
@@ -166,7 +166,7 @@ export function NetworkEventStream({ initialEvents }: { initialEvents: NetworkEv
   const visibleEvents = useMemo(() => normalizeNetworkEvents(events).slice(0, 8), [events]);
 
   return (
-    <div className="surface-card mt-4 rounded-xl border-white/[0.07] bg-white/[0.032] p-3">
+    <div className={embedded ? "rounded-xl" : "surface-card mt-4 rounded-xl border-white/[0.07] bg-white/[0.032] p-3"}>
       <div className="flex items-center justify-between">
         <div>
           <p className="text-xs font-black text-white">Network Stream</p>

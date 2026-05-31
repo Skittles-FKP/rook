@@ -155,14 +155,29 @@ export function ProfileView({
         <div className="mt-5 grid grid-cols-3 gap-2 text-center">
           {[
             ["Signals", profile.signals.length],
-            ["Followers", profile.followers_count],
-            ["Following", profile.following_count],
+            ["Credibility", profile.credibility_score],
+            ["Narrative", profile.narrative_influence_score],
           ].map(([item, value]) => (
             <div key={item} className="rounded-lg border border-white/10 bg-white/[0.04] p-3">
               <p className="text-lg font-black text-white">{value}</p>
               <p className="mt-1 text-[11px] font-bold text-rook-muted">{item}</p>
             </div>
-          ))}
+            ))}
+        </div>
+        <div className="mt-5 rounded-lg border border-white/10 bg-white/[0.035] p-4">
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-rook-cyan">Activity Timeline</p>
+          <div className="mt-4 grid gap-3">
+            {(profile.signals.length > 0 ? profile.signals.slice(0, 4) : []).map((signal) => (
+              <div key={signal.id} className="relative border-l border-rook-cyan/25 pl-3">
+                <span className="absolute -left-1 top-1 h-2 w-2 rounded-full bg-rook-cyan" />
+                <p className="line-clamp-2 text-sm font-black text-white">{signal.title}</p>
+                <p className="mt-1 text-xs text-rook-muted">{signal.likes_count + signal.amplifies_count + signal.comments_count} network interactions</p>
+              </div>
+            ))}
+            {profile.signals.length === 0 && (
+              <p className="text-sm leading-6 text-rook-muted">Activity will appear as this operator publishes Signals.</p>
+            )}
+          </div>
         </div>
         <div className="mt-5 rounded-lg border border-white/10 bg-white/[0.035] p-4">
           <p className="text-xs font-black uppercase tracking-[0.2em] text-rook-cyan">
